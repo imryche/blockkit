@@ -1,5 +1,5 @@
 from .components import Component
-from .objects import Text
+from .objects import Text, validate_plain
 from .validators import validate_url, validate_type, validate_choices
 
 
@@ -26,7 +26,7 @@ class Button(Element):
         super().__init__(action_id)
         self._add_field('type', self.TYPE)
         # TODO: can only be of type: plain_text
-        self._add_field('text', text, [validate_type(Text)])
+        self._add_field('text', text, [validate_type(Text), validate_plain])
         self._add_field('value', value)
         self._add_field('url', url, [validate_url])
         self._add_field('style', style,

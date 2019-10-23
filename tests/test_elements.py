@@ -51,6 +51,11 @@ def test_button_with_incorrect_url_raises_exception(plain_text):
         Button(plain_text, url='bad_url')
 
 
+def test_button_with_incorrect_style_raises_exception(plain_text):
+    with pytest.raises(ValueError):
+        Button(plain_text, style='warning')
+
+
 def test_builds_image(basic_image):
     assert basic_image.build() == {
         'type': Image.TYPE,
