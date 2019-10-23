@@ -16,6 +16,11 @@ def basic_text():
 
 
 @pytest.fixture
+def plain_text():
+    return Text(TEST_TEXT, type=Text.PLAIN)
+
+
+@pytest.fixture
 def basic_image():
     return Image(TEST_IMAGE, TEST_ALT_TEXT)
 

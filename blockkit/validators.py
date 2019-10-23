@@ -45,3 +45,12 @@ def validate_url(url):
     if not validators.url(url):
         raise ValueError(f'{url} is not correct url')
     return url
+
+
+def validate_attr(attr, attr_value):
+    def validate(value):
+        if getattr(value, attr) != attr_value:
+            raise ValueError(
+                f'{value}.{attr} has incorrect value of {attr_value}')
+
+    return validate
