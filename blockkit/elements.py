@@ -25,7 +25,6 @@ class Button(Element):
     def __init__(self, text, value=None, url=None, style=None, action_id=None):
         super().__init__(action_id)
         self._add_field('type', self.TYPE)
-        # TODO: can only be of type: plain_text
         self._add_field('text', text, [validate_type(Text), validate_plain])
         self._add_field('value', value)
         self._add_field('url', url, [validate_url])
