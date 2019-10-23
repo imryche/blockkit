@@ -5,7 +5,8 @@ from blockkit import Section
 from .conftest import TEST_TEXT, TEST_IMAGE, TEST_ALT_TEXT
 
 
-def test_section_builds_correctly(basic_text, basic_image):
+def test_builds_section_with_text_fields_accessory(
+        basic_text, basic_image):
     section = Section(basic_text,
                       fields=[basic_text, basic_text],
                       accessory=basic_image,
