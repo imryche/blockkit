@@ -2,7 +2,7 @@ import pytest
 
 from blockkit import Section
 
-from .conftest import TEST_ALT_TEXT, TEST_IMAGE, TEST_TEXT
+from .conftest import TEST_TEXT, TEST_IMAGE, TEST_ALT_TEXT
 
 
 def test_section_builds_correctly(basic_text, basic_image):
@@ -12,21 +12,22 @@ def test_section_builds_correctly(basic_text, basic_image):
                       block_id='test_block')
 
     assert section.build() == {
-        'type':
-        'section',
-        'block_id':
-        'test_block',
+        'type': 'section',
+        'block_id': 'test_block',
         'text': {
             'type': 'mrkdwn',
             'text': TEST_TEXT
         },
-        'fields': [{
-            'type': 'mrkdwn',
-            'text': TEST_TEXT
-        }, {
-            'type': 'mrkdwn',
-            'text': TEST_TEXT
-        }],
+        'fields': [
+            {
+                'type': 'mrkdwn',
+                'text': TEST_TEXT
+            },
+            {
+                'type': 'mrkdwn',
+                'text': TEST_TEXT
+            }
+        ],
         'accessory': {
             'type': 'image',
             'image_url': TEST_IMAGE,
