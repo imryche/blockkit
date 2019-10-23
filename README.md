@@ -1,2 +1,2 @@
 # blockkit-python
-🔷 Build Block Kit expiriences in python faster.
+🔷 Build Block Kit experiences in python faster.
