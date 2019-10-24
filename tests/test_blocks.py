@@ -13,7 +13,7 @@ def test_builds_section_with_text_fields_accessory(
                       block_id='test_block')
 
     assert section.build() == {
-        'type': 'section',
+        'type': Section.TYPE,
         'block_id': 'test_block',
         'text': {
             'type': 'mrkdwn',

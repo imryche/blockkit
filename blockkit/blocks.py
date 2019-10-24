@@ -20,9 +20,11 @@ class Block(Component):
 
 
 class Section(Block):
+    TYPE = 'section'
+
     def __init__(self, text, fields=None, accessory=None, block_id=None):
         super().__init__(block_id)
-        self._add_field('type', 'section')
+        self._add_field('type', self.TYPE)
         self._add_field('text', text, [validate_type(Text)])
         self._add_field(
             'fields', fields,
