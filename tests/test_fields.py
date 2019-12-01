@@ -1,7 +1,14 @@
 import pytest
 
-from blockkit.fields import ArrayField, BooleanField, StringField, TextField, UrlField
-from blockkit.objects import Text
+from blockkit.fields import (
+    ArrayField,
+    BooleanField,
+    ConfirmField,
+    StringField,
+    TextField,
+    UrlField,
+)
+from blockkit import Text, Confirm
 from blockkit.validators import ValidationError
 
 from .conftest import TEXT, URL
@@ -87,3 +94,14 @@ def test_url_field_with_exeeding_length_raises_exception():
 def test_url_field_with_incorrect_input_raises_exception():
     with pytest.raises(ValidationError):
         UrlField().validate("thisisnoturl")
+
+
+def test_confirm_field_validates_input(short_text):
+    assert ConfirmField().validate(
+        Confirm(short_text, short_text, short_text, short_text)
+    )
+
+
+def test_confirm_field_with_incorrect_input_raises_exception(basic_text):
+    with pytest.raises(ValidationError):
+        ConfirmField().validate(basic_text)

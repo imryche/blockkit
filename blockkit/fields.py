@@ -82,3 +82,11 @@ class UrlField(Field):
             validate_len(value, self.max_length)
 
         return value
+
+
+class ConfirmField(Field):
+    def validate(self, value):
+        from . import Confirm
+        validate_type(Confirm)(value)
+
+        return value
