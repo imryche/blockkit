@@ -1,30 +1,29 @@
 import pytest
 
-from blockkit import Image, Section, Text
+from blockkit import Text, Option
 
-TEST_TEXT = 'The way to get started is to quit _talking_ and begin *doing*'
-TEST_IMAGE = 'http://placekitten.com/200/200'
-TEST_ALT_TEXT = 'There is a kitten'
-TEST_URL = 'https://example.com'
-TEST_VALUE = 'test_value'
-TEST_ACTION_ID = 'test_action'
+TITLE = "Bot thought"
+TEXT = "The way to get started is to quit _talking_ and begin *doing*"
+IMAGE = "http://placekitten.com/200/200"
+ALT_TEXT = "There is a kitten"
+URL = "https://example.com"
+VALUE = "test_value"
+ACTION_ID = "test_action"
+CONFIRM_TEXT = "Confirm"
+DENY_TEXT = "Deny"
+VALUE = "value"
 
 
 @pytest.fixture
 def basic_text():
-    return Text(TEST_TEXT)
+    return Text(TEXT)
 
 
 @pytest.fixture
 def plain_text():
-    return Text(TEST_TEXT, type=Text.PLAIN)
+    return Text(TEXT, type=Text.PLAIN)
 
 
 @pytest.fixture
-def basic_image():
-    return Image(TEST_IMAGE, TEST_ALT_TEXT)
-
-
-@pytest.fixture
-def basic_section(basic_text):
-    return Section(basic_text)
+def basic_option(plain_text):
+    return Option(plain_text, VALUE)

@@ -1,27 +1,40 @@
-class Component:
-    def _add_field(self, name, value, validators=None):
-        if value is None:
-            return
+from collections import OrderedDict
 
-        for validator in validators or []:
-            validator(value)
+from .fields import Field
 
-        validator = getattr(self, f'_validate_{name}', None)
-        if validator:
-            validator(value)
 
-        if not hasattr(self, '_fields'):
-            self._fields = []
+class ComponentMeta(type):
+    def __new__(cls, name, bases, attrs, **kwargs):
+        new_class = super().__new__(cls, name, bases, attrs, **kwargs)
+        fields = OrderedDict((key, attrs[key]) for key in attrs if issubclass(
+            attrs[key].__class__, Field))
+        new_class._fields = fields
+        return new_class
 
-        self._fields.append(name)
 
-        setattr(self, name, value)
+class Component(metaclass=ComponentMeta):
+    def __init__(self, *args):
+        if len(args) > len(self._fields):
+            raise IndexError('Number of args exceeds number of fields')
+
+        fields_iter = iter(self._fields)
+
+        for value in args:
+            field_name = next(fields_iter)
+            field = self._fields[field_name]
+            if value is not None:
+                value = field.validate(value)
+                validate = getattr(self, f'validate_{field_name}', None)
+                validate(value) if validate else None
+            setattr(self, field_name, value)
 
     def build(self):
         result = {}
 
-        for field in self._fields:
-            value = getattr(self, field)
+        for name, field in self._fields.items():
+            value = getattr(self, name, None)
+            if value is None:
+                continue
 
             if isinstance(value, list):
                 value = [a.build() for a in value]
@@ -29,6 +42,6 @@ class Component:
                 if issubclass(type(value), Component):
                     value = value.build()
 
-            result[field] = value
+            result[name] = value
 
         return result
