@@ -43,7 +43,7 @@ class TextField(Field):
         self.plain = plain
 
     def validate(self, value):
-        from .objects import Text
+        from . import Text
 
         validate_type(Text)(value)
 
