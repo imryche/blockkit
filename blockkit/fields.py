@@ -51,7 +51,7 @@ class TextField(Field):
             validate_len(value.text, self.max_length)
 
         if self.plain:
-            validate_attr("type", Text.PLAIN)(value)
+            validate_attr("type", Text.plain)(value)
 
         return value
 
@@ -87,6 +87,7 @@ class UrlField(Field):
 class ConfirmField(Field):
     def validate(self, value):
         from . import Confirm
+
         validate_type(Confirm)(value)
 
         return value

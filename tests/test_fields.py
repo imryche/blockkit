@@ -59,7 +59,7 @@ def test_text_field_with_exeeding_length_raises_exception():
 
 def test_plain_text_field_with_incorrect_type_raises_exception():
     with pytest.raises(ValidationError):
-        TextField(plain=True).validate(Text(TEXT, type=Text.MARKDOWN))
+        TextField(plain=True).validate(Text(TEXT, type=Text.markdown))
 
 
 def test_array_field_validates_input():

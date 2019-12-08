@@ -22,12 +22,12 @@ def basic_text():
 
 @pytest.fixture
 def short_text():
-    return Text(SHORT_TEXT, type=Text.PLAIN)
+    return Text(SHORT_TEXT, type=Text.plain)
 
 
 @pytest.fixture
 def plain_text():
-    return Text(TEXT, type=Text.PLAIN)
+    return Text(TEXT, type=Text.plain)
 
 
 @pytest.fixture

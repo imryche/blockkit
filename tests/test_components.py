@@ -47,8 +47,8 @@ def test_component_builds_fields():
 
     component = FakeComponent(
         TITLE,
-        Text(TEXT, type=Text.MARKDOWN),
-        [Text(TEXT, type=Text.PLAIN) for _ in range(2)]
+        Text(TEXT, type=Text.markdown),
+        [Text(TEXT, type=Text.plain) for _ in range(2)]
     )
 
     assert component.build() == {

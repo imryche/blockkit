@@ -4,27 +4,27 @@ from .validators import ValidationError
 
 
 class Text(Component):
-    MARKDOWN = "mrkdwn"
-    PLAIN = "plain_text"
+    markdown = "mrkdwn"
+    plain = "plain_text"
 
     text = StringField()
-    type = StringField(options=[MARKDOWN, PLAIN])
+    type = StringField(options=[markdown, plain])
     emoji = BooleanField()
     verbatim = BooleanField()
 
-    def __init__(self, text, type=MARKDOWN, emoji=None, verbatim=None):
+    def __init__(self, text, type=markdown, emoji=None, verbatim=None):
         super().__init__(text, type, emoji, verbatim)
 
     def validate_emoji(self, emoji):
-        if self.type == self.MARKDOWN and emoji:
+        if self.type == self.markdown and emoji:
             raise ValidationError(
-                f"'emoji' field is usable only when type is {self.PLAIN}"
+                f"'emoji' field is usable only when type is {self.plain}"
             )
 
     def validate_verbatim(self, verbatim):
-        if self.type == self.PLAIN and verbatim:
+        if self.type == self.plain and verbatim:
             raise ValidationError(
-                f"'verbatim' field is usable only when type is {self.MARKDOWN}"
+                f"'verbatim' field is usable only when type is {self.markdown}"
             )
 
 
