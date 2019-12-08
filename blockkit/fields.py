@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 from .validators import (
     validate_attr,
     validate_len,
@@ -8,9 +10,10 @@ from .validators import (
 )
 
 
-class Field:
+class Field(ABC):
+    @abstractmethod
     def validate(self, value):
-        return value
+        pass
 
 
 class StringField(Field):
