@@ -11,8 +11,6 @@ from blockkit.fields import (
 from blockkit import Text, Confirm
 from blockkit.validators import ValidationError
 
-from .conftest import TEXT, URL
-
 
 def test_string_field_validates_input():
     assert StringField().validate("input") == "input"
@@ -42,8 +40,8 @@ def test_boolean_field_with_incorrect_input_raises_exception():
         BooleanField().validate("true")
 
 
-def test_text_field_validates_input():
-    text = Text(TEXT)
+def test_text_field_validates_input(values):
+    text = Text(values.text)
     assert TextField().validate(text) == text
 
 
@@ -57,13 +55,13 @@ def test_text_field_with_exeeding_length_raises_exception():
         TextField(max_length=5).validate(Text("foobar"))
 
 
-def test_plain_text_field_with_incorrect_type_raises_exception():
+def test_plain_text_field_with_incorrect_type_raises_exception(values):
     with pytest.raises(ValidationError):
-        TextField(plain=True).validate(Text(TEXT, type=Text.markdown))
+        TextField(plain=True).validate(Text(values.text, type=Text.markdown))
 
 
-def test_array_field_validates_input():
-    texts = [Text(TEXT) for _ in range(3)]
+def test_array_field_validates_input(values):
+    texts = [Text(values.text) for _ in range(3)]
     assert ArrayField().validate(texts)
 
 
@@ -82,8 +80,8 @@ def test_array_field_with_exeeding_items_raises_exception(plain_text):
         ArrayField([Text], max_items=5).validate([plain_text for _ in range(10)])
 
 
-def test_url_field_validates_input():
-    assert UrlField().validate(URL)
+def test_url_field_validates_input(values):
+    assert UrlField().validate(values.url)
 
 
 def test_url_field_with_exeeding_length_raises_exception():

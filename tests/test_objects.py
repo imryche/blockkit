@@ -3,69 +3,66 @@ import pytest
 from blockkit import Confirm, Option, OptionGroup, Text
 from blockkit.validators import ValidationError
 
-from .conftest import CONFIRM_TEXT, DENY_TEXT, TEXT, URL, VALUE
+def test_builds_markdown_text(values):
+    assert Text(values.text).build() == {"type": "mrkdwn", "text": values.text}
 
 
-def test_builds_markdown_text():
-    assert Text(TEXT).build() == {"type": "mrkdwn", "text": TEXT}
+def test_builds_plain_text_with_emoji(values):
+    text = Text(values.text, type=Text.plain, emoji=True)
+    assert text.build() == {"type": Text.plain, "text": values.text, "emoji": True}
 
 
-def test_builds_plain_text_with_emoji():
-    text = Text(TEXT, type=Text.plain, emoji=True)
-    assert text.build() == {"type": Text.plain, "text": TEXT, "emoji": True}
-
-
-def test_builds_markdown_text_with_no_emoji_and_verbatim():
-    text = Text(TEXT, type=Text.markdown, emoji=False, verbatim=True)
+def test_builds_markdown_text_with_no_emoji_and_verbatim(values):
+    text = Text(values.text, type=Text.markdown, emoji=False, verbatim=True)
 
     assert text.build() == {
         "type": Text.markdown,
-        "text": TEXT,
+        "text": values.text,
         "emoji": False,
         "verbatim": True,
     }
 
 
-def test_mrkdwn_text_with_emoji_raises_exception():
+def test_mrkdwn_text_with_emoji_raises_exception(values):
     with pytest.raises(ValidationError):
-        Text(TEXT, type=Text.markdown, emoji=True)
+        Text(values.text, type=Text.markdown, emoji=True)
 
 
-def test_plain_text_with_verbatim_raises_exception():
+def test_plain_text_with_verbatim_raises_exception(values):
     with pytest.raises(ValidationError):
-        Text(TEXT, type=Text.plain, verbatim=True)
+        Text(values.text, type=Text.plain, verbatim=True)
 
 
-def test_builds_confirm(plain_text, basic_text):
+def test_builds_confirm(plain_text, basic_text, values):
     confirm = Confirm(
         plain_text,
         basic_text,
-        Text(CONFIRM_TEXT, type=Text.plain),
-        Text(DENY_TEXT, type=Text.plain),
+        Text(values.confirm_text, type=Text.plain),
+        Text(values.deny_text, type=Text.plain),
     )
 
     assert confirm.build() == {
-        "title": {"type": Text.plain, "text": TEXT},
-        "text": {"type": Text.markdown, "text": TEXT},
-        "confirm": {"type": Text.plain, "text": CONFIRM_TEXT},
-        "deny": {"type": Text.plain, "text": DENY_TEXT},
+        "title": {"type": Text.plain, "text": values.text},
+        "text": {"type": Text.markdown, "text": values.text},
+        "confirm": {"type": Text.plain, "text": values.confirm_text},
+        "deny": {"type": Text.plain, "text": values.deny_text},
     }
 
 
-def test_builds_option(plain_text):
-    option = Option(plain_text, VALUE, URL)
+def test_builds_option(plain_text, values):
+    option = Option(plain_text, values.value, values.url)
 
     assert option.build() == {
-        "text": {"type": Text.plain, "text": TEXT},
-        "value": VALUE,
-        "url": URL,
+        "text": {"type": Text.plain, "text": values.text},
+        "value": values.value,
+        "url": values.url,
     }
 
 
-def test_builds_option_group(plain_text, basic_option):
+def test_builds_option_group(plain_text, basic_option, values):
     option_group = OptionGroup(plain_text, [basic_option for _ in range(3)])
 
     assert option_group.build() == {
-        "label": {"type": Text.plain, "text": TEXT},
+        "label": {"type": Text.plain, "text": values.text},
         "options": [basic_option.build() for _ in range(3)],
     }

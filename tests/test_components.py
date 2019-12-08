@@ -4,8 +4,6 @@ from blockkit.components import Component
 from blockkit.objects import Text
 from blockkit.fields import StringField, TextField, ArrayField
 
-from .conftest import TITLE, TEXT
-
 
 def test_component_detects_all_fields():
     class NotField:
@@ -28,7 +26,7 @@ def test_component_with_exeeding_args_raises_exception():
         FakeComponent('test', 'test', 'test')
 
 
-def test_component_with_custom_validation_raises_exception():
+def test_component_with_custom_validation_raises_exception(values):
     class FakeComponent(Component):
         title = StringField()
 
@@ -36,35 +34,35 @@ def test_component_with_custom_validation_raises_exception():
             raise ValueError
 
     with pytest.raises(ValueError):
-        FakeComponent(TITLE)
+        FakeComponent(values.title)
 
 
-def test_component_builds_fields():
+def test_component_builds_fields(values):
     class FakeComponent(Component):
         title = StringField()
         text = TextField()
         elements = ArrayField([Text])
 
     component = FakeComponent(
-        TITLE,
-        Text(TEXT, type=Text.markdown),
-        [Text(TEXT, type=Text.plain) for _ in range(2)]
+        values.title,
+        Text(values.text, type=Text.markdown),
+        [Text(values.text, type=Text.plain) for _ in range(2)]
     )
 
     assert component.build() == {
-        'title': TITLE,
+        'title': values.title,
         'text': {
             'type': 'mrkdwn',
-            'text': TEXT
+            'text': values.text
         },
         'elements': [
             {
                 'type': 'plain_text',
-                'text': TEXT
+                'text': values.text
             },
             {
                 'type': 'plain_text',
-                'text': TEXT
+                'text': values.text
             }
         ]
     }
