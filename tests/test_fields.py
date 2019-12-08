@@ -1,5 +1,6 @@
 import pytest
 
+from blockkit import Confirm, Text
 from blockkit.fields import (
     ArrayField,
     BooleanField,
@@ -7,8 +8,8 @@ from blockkit.fields import (
     StringField,
     TextField,
     UrlField,
+    DateField,
 )
-from blockkit import Text, Confirm
 from blockkit.validators import ValidationError
 
 
@@ -103,3 +104,12 @@ def test_confirm_field_validates_input(short_text):
 def test_confirm_field_with_incorrect_input_raises_exception(basic_text):
     with pytest.raises(ValidationError):
         ConfirmField().validate(basic_text)
+
+
+def test_date_field_validates_input(values):
+    assert DateField().validate(values.date)
+
+
+def test_date_field_with_incorrect_input_raises_exception():
+    with pytest.raises(ValidationError):
+        DateField().validate('2019-12-43')

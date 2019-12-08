@@ -7,6 +7,7 @@ from .validators import (
     validate_type,
     validate_types,
     validate_url,
+    validate_date,
 )
 
 
@@ -92,5 +93,12 @@ class ConfirmField(Field):
         from . import Confirm
 
         validate_type(Confirm)(value)
+
+        return value
+
+
+class DateField(Field):
+    def validate(self, value):
+        validate_date(value)
 
         return value

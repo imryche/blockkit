@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from datetime import datetime
 
 import validators.url
 
@@ -69,3 +70,12 @@ def validate_attr(attr, attr_value):
 def validate_len(value, length):
     if len(value) > length:
         raise ValidationError(f'{value} length is more than {length}')
+
+
+def validate_date(value):
+    try:
+        datetime.strptime(value, '%Y-%m-%d')
+    except ValueError:
+        raise ValidationError(f'{value} has incorrect date format')
+
+    return value
