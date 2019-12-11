@@ -1,5 +1,14 @@
-from blockkit.fields import ConfirmField, StringField, TextField, UrlField, DateField
+from blockkit.fields import (
+    ArrayField,
+    ConfirmField,
+    DateField,
+    IntegerField,
+    StringField,
+    TextField,
+    UrlField,
+)
 
+from . import Option, OptionGroup
 from .components import Component
 
 
@@ -37,3 +46,35 @@ class Image(Component):
 
     def __init__(self, image_url, alt_text):
         super().__init__("image", image_url, alt_text)
+
+
+class MultiSelect(Component):
+    type = StringField()
+    placeholder = TextField(plain=True, max_length=150)
+    action_id = StringField(max_length=255)
+    options = ArrayField([Option], max_items=100)
+    option_groups = ArrayField([OptionGroup], max_items=100)
+    initial_options = ArrayField([Option, OptionGroup], max_items=100)
+    confirm = ConfirmField()
+    max_selected_items = IntegerField()
+
+    def __init__(
+        self,
+        placeholder,
+        action_id,
+        options=None,
+        option_groups=None,
+        initial_options=None,
+        confirm=None,
+        max_selected_items=None,
+    ):
+        super().__init__(
+            "multi_static_select",
+            placeholder,
+            action_id,
+            options,
+            option_groups,
+            initial_options,
+            confirm,
+            max_selected_items,
+        )

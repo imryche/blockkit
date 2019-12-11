@@ -2,7 +2,7 @@ from collections import namedtuple
 
 import pytest
 
-from blockkit import Option, Text, Confirm
+from blockkit import Confirm, Option, OptionGroup, Text
 
 TestValues = namedtuple(
     "TestValues",
@@ -26,7 +26,7 @@ def values():
         confirm_text="Confirm",
         deny_text="Deny",
         value="value",
-        date="2019-12-08"
+        date="2019-12-08",
     )
 
 
@@ -58,3 +58,21 @@ def confirm(values, plain_text, basic_text):
         Text(values.confirm_text, type=Text.plain),
         Text(values.deny_text, type=Text.plain),
     )
+
+
+@pytest.fixture
+def option(values, plain_text):
+    return Option(plain_text, values.value)
+
+
+@pytest.fixture
+def option_group(values, plain_text, option):
+    return OptionGroup(plain_text, [option for _ in range(2)])
+
+
+@pytest.fixture
+def required_option(request, option, option_group):
+    return {
+        'option': option,
+        'option_group': option_group
+    }[request.param]
