@@ -34,6 +34,13 @@ class StringField(Field):
         return value
 
 
+class IntegerField(Field):
+    def validate(self, value):
+        validate_type(int)(value)
+
+        return value
+
+
 class BooleanField(Field):
     def validate(self, value):
         validate_type(bool)(value)

@@ -9,6 +9,7 @@ from blockkit.fields import (
     TextField,
     UrlField,
     DateField,
+    IntegerField,
 )
 from blockkit.validators import ValidationError
 
@@ -30,6 +31,15 @@ def test_string_field_with_exeeding_length_raises_exception():
 def test_string_field_with_incorrect_option_raises_exception():
     with pytest.raises(ValidationError):
         StringField(options=["foo", "bar"]).validate("bad_option")
+
+
+def test_integer_field_validates_input():
+    assert IntegerField().validate(1)
+
+
+def test_integer_field_with_incorrect_input_raises_exception():
+    with pytest.raises(ValidationError):
+        IntegerField().validate('one')
 
 
 def test_boolean_field_validates_input():
