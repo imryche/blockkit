@@ -15,14 +15,12 @@ class Text(Component):
     def __init__(self, text, type_=markdown, emoji=None, verbatim=None):
         super().__init__(text, type_, emoji, verbatim)
 
-    def validate_emoji(self, emoji):
-        if self.type == self.markdown and emoji:
+        if type_ == self.markdown and emoji:
             raise ValidationError(
                 f"'emoji' field is usable only when type is {self.plain}"
             )
 
-    def validate_verbatim(self, verbatim):
-        if self.type == self.plain and verbatim:
+        if type_ == self.plain and verbatim:
             raise ValidationError(
                 f"'verbatim' field is usable only when type is {self.markdown}"
             )
