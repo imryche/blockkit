@@ -12,8 +12,8 @@ class Text(Component):
     emoji = BooleanField()
     verbatim = BooleanField()
 
-    def __init__(self, text, type=markdown, emoji=None, verbatim=None):
-        super().__init__(text, type, emoji, verbatim)
+    def __init__(self, text, type_=markdown, emoji=None, verbatim=None):
+        super().__init__(text, type_, emoji, verbatim)
 
     def validate_emoji(self, emoji):
         if self.type == self.markdown and emoji:

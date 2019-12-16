@@ -37,12 +37,12 @@ def basic_text(values):
 
 @pytest.fixture
 def short_text(values):
-    return Text(values.short_text, type=Text.plain)
+    return Text(values.short_text, type_=Text.plain)
 
 
 @pytest.fixture
 def plain_text(values):
-    return Text(values.text, type=Text.plain)
+    return Text(values.text, type_=Text.plain)
 
 
 @pytest.fixture
@@ -55,8 +55,8 @@ def confirm(values, plain_text, basic_text):
     return Confirm(
         plain_text,
         basic_text,
-        Text(values.confirm_text, type=Text.plain),
-        Text(values.deny_text, type=Text.plain),
+        Text(values.confirm_text, type_=Text.plain),
+        Text(values.deny_text, type_=Text.plain),
     )
 
 

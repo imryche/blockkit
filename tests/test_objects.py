@@ -3,17 +3,18 @@ import pytest
 from blockkit import Confirm, Option, OptionGroup, Text
 from blockkit.validators import ValidationError
 
+
 def test_builds_markdown_text(values):
     assert Text(values.text).build() == {"type": "mrkdwn", "text": values.text}
 
 
 def test_builds_plain_text_with_emoji(values):
-    text = Text(values.text, type=Text.plain, emoji=True)
+    text = Text(values.text, type_=Text.plain, emoji=True)
     assert text.build() == {"type": Text.plain, "text": values.text, "emoji": True}
 
 
 def test_builds_markdown_text_with_no_emoji_and_verbatim(values):
-    text = Text(values.text, type=Text.markdown, emoji=False, verbatim=True)
+    text = Text(values.text, type_=Text.markdown, emoji=False, verbatim=True)
 
     assert text.build() == {
         "type": Text.markdown,
@@ -25,20 +26,20 @@ def test_builds_markdown_text_with_no_emoji_and_verbatim(values):
 
 def test_mrkdwn_text_with_emoji_raises_exception(values):
     with pytest.raises(ValidationError):
-        Text(values.text, type=Text.markdown, emoji=True)
+        Text(values.text, type_=Text.markdown, emoji=True)
 
 
 def test_plain_text_with_verbatim_raises_exception(values):
     with pytest.raises(ValidationError):
-        Text(values.text, type=Text.plain, verbatim=True)
+        Text(values.text, type_=Text.plain, verbatim=True)
 
 
 def test_builds_confirm(plain_text, basic_text, values):
     confirm = Confirm(
         plain_text,
         basic_text,
-        Text(values.confirm_text, type=Text.plain),
-        Text(values.deny_text, type=Text.plain),
+        Text(values.confirm_text, type_=Text.plain),
+        Text(values.deny_text, type_=Text.plain),
     )
 
     assert confirm.build() == {
