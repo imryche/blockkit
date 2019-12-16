@@ -26,17 +26,6 @@ def test_component_with_exeeding_args_raises_exception():
         FakeComponent('test', 'test', 'test')
 
 
-def test_component_with_custom_validation_raises_exception(values):
-    class FakeComponent(Component):
-        title = StringField()
-
-        def validate_title(self, value):
-            raise ValueError
-
-    with pytest.raises(ValueError):
-        FakeComponent(values.title)
-
-
 def test_component_builds_fields(values):
     class FakeComponent(Component):
         title = StringField()

@@ -29,8 +29,6 @@ class Component(metaclass=ComponentMeta):
 
             if value is not None:
                 value = field.validate(value)
-                validate = getattr(self, f"validate_{field_name}", None)
-                validate(value) if validate else None
 
             setattr(self, field_name, value)
 
