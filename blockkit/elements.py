@@ -10,6 +10,7 @@ from blockkit.fields import (
 
 from . import Option, OptionGroup
 from .components import Component
+from .validators import ValidationError
 
 
 class Button(Component):
@@ -27,6 +28,11 @@ class Button(Component):
     def __init__(self, text, action_id, url=None, value=None, style=None, confirm=None):
         super().__init__("button", text, action_id, url, value, style, confirm)
 
+    def __repr__(self):
+        return (f"{self.__class__.__name__}("
+                f"{self.type}, {self.text}, {self.action_id}, "
+                f"{self.url}, {self.value}, {self.style}, {self.confirm})")
+
 
 class DatePicker(Component):
     type = StringField()
@@ -38,6 +44,11 @@ class DatePicker(Component):
     def __init__(self, action_id, placeholder=None, initial_date=None, confirm=None):
         super().__init__("datepicker", action_id, placeholder, initial_date, confirm)
 
+    def __repr__(self):
+        return (f"{self.__class__.__name__}("
+                f"{self.type}, {self.action_id}, {self.placeholder}, "
+                f"{self.initial_date}, {self.confirm})")
+
 
 class Image(Component):
     type = StringField()
@@ -46,6 +57,10 @@ class Image(Component):
 
     def __init__(self, image_url, alt_text):
         super().__init__("image", image_url, alt_text)
+
+    def __repr__(self):
+        return (f"{self.__class__.__name__}("
+                f"{self.type}, {self.image_url}, {self.alt_text})")
 
 
 class MultiSelect(Component):
@@ -81,3 +96,9 @@ class MultiSelect(Component):
             confirm,
             max_selected_items,
         )
+
+    def __repr__(self):
+        return (f"{self.__class__.__name__}("
+                f"{self.placeholder}, {self.action_id}, {self.options}, "
+                f"{self.option_groups}, {self.initial_options}, {self.confirm}, "
+                f"{self.max_selected_items})")
