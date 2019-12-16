@@ -1,6 +1,7 @@
 import pytest
 
 from blockkit import Button, DatePicker, Image, MultiSelect
+from blockkit.validators import ValidationError
 
 
 def test_builds_button(values, plain_text, confirm):
@@ -65,3 +66,15 @@ def test_builds_static_multiselect(required_option, field, plain_text, values, c
         "max_selected_items": 3,
         field: [required_option.build() for _ in range(3)],
     }
+
+
+def test_static_multiselect_with_options_and_option_groups_raises_exception(
+    plain_text, values, option, option_group, confirm
+):
+    with pytest.raises(ValidationError):
+        MultiSelect(
+            plain_text,
+            values.action_id,
+            options=[option for _ in range(2)],
+            option_groups=[option_group for _ in range(2)]
+        )

@@ -68,6 +68,9 @@ class MultiSelect(Component):
         confirm=None,
         max_selected_items=None,
     ):
+        if options and option_groups:
+            raise ValidationError("You can specify either options or option_groups")
+
         super().__init__(
             "multi_static_select",
             placeholder,
