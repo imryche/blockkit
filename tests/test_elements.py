@@ -46,9 +46,7 @@ def test_builds_image(values):
     [("option_group", "option_groups"), ("option", "options")],
     indirect=["required_option"],
 )
-def test_builds_options_multiselect(
-    required_option, field, plain_text, values, confirm
-):
+def test_builds_static_multiselect(required_option, field, plain_text, values, confirm):
     multiselect = MultiSelect(
         plain_text,
         values.action_id,
