@@ -32,6 +32,10 @@ class Component(metaclass=ComponentMeta):
 
             setattr(self, field_name, value)
 
+    def __repr__(self):
+        values = ', '.join(str(getattr(self, f)) for f in self._fields)
+        return (f"{self.__class__.__name__}({values})")
+
     def build(self):
         result = {}
 

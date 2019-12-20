@@ -25,11 +25,6 @@ class Text(Component):
                 f"'verbatim' field is usable only when type is {self.markdown}"
             )
 
-    def __repr__(self):
-        return (f"{self.__class__.__name__}("
-                f"{self.text}, {self.type}, {self.emoji}, "
-                f"{self.verbatim})")
-
 
 class Confirm(Component):
     title = TextField(max_length=100, plain=True)
@@ -40,11 +35,6 @@ class Confirm(Component):
     def __init__(self, title, text, confirm, deny):
         super().__init__(title, text, confirm, deny)
 
-    def __repr__(self):
-        return (f"{self.__class__.__name__}("
-                f"{self.title}, {self.text}, {self.confirm}, "
-                f"{self.deny})")
-
 
 class Option(Component):
     text = TextField(max_length=75, plain=True)
@@ -54,10 +44,6 @@ class Option(Component):
     def __init__(self, text, value, url=None):
         super().__init__(text, value, url)
 
-    def __repr__(self):
-        return (f"{self.__class__.__name__}("
-                f"{self.text}, {self.value}, {self.url})")
-
 
 class OptionGroup(Component):
     label = TextField(max_length=75, plain=True)
@@ -65,7 +51,3 @@ class OptionGroup(Component):
 
     def __init__(self, label, options):
         super().__init__(label, options)
-
-    def __repr__(self):
-        return (f"{self.__class__.__name__}("
-                f"{self.label}, {self.options})")
