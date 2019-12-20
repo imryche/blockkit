@@ -12,7 +12,7 @@ class Text(Component):
     emoji = BooleanField()
     verbatim = BooleanField()
 
-    def __init__(self, text, type_=markdown, emoji=None, verbatim=None):
+    def __init__(self, text, type_, emoji=None, verbatim=None):
         super().__init__(text, type_, emoji, verbatim)
 
         if type_ == self.markdown and emoji:

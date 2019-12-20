@@ -32,7 +32,7 @@ def values():
 
 @pytest.fixture
 def basic_text(values):
-    return Text(values.text)
+    return Text(values.text, type_=Text.markdown)
 
 
 @pytest.fixture

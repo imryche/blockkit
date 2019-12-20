@@ -52,7 +52,7 @@ def test_boolean_field_with_incorrect_input_raises_exception():
 
 
 def test_text_field_validates_input(values):
-    text = Text(values.text)
+    text = Text(values.text, type_=Text.plain)
     assert TextField().validate(text) == text
 
 
@@ -63,7 +63,7 @@ def test_text_field_with_incorrect_input_raises_exception():
 
 def test_text_field_with_exeeding_length_raises_exception():
     with pytest.raises(ValidationError):
-        TextField(max_length=5).validate(Text("foobar"))
+        TextField(max_length=5).validate(Text("foobar", type_=Text.plain))
 
 
 def test_plain_text_field_with_incorrect_type_raises_exception(values):
@@ -72,7 +72,7 @@ def test_plain_text_field_with_incorrect_type_raises_exception(values):
 
 
 def test_array_field_validates_input(values):
-    texts = [Text(values.text) for _ in range(3)]
+    texts = [Text(values.text, type_=Text.plain) for _ in range(3)]
     assert ArrayField().validate(texts)
 
 

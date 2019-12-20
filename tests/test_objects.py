@@ -5,7 +5,10 @@ from blockkit.validators import ValidationError
 
 
 def test_builds_markdown_text(values):
-    assert Text(values.text).build() == {"type": "mrkdwn", "text": values.text}
+    assert Text(values.text, type_=Text.markdown).build() == {
+        "type": "mrkdwn",
+        "text": values.text,
+    }
 
 
 def test_builds_plain_text_with_emoji(values):
