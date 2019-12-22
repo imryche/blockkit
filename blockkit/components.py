@@ -5,18 +5,26 @@ from .fields import Field
 
 class ComponentMeta(type):
     def __new__(cls, name, bases, attrs, **kwargs):
-        new_class = super().__new__(cls, name, bases, attrs, **kwargs)
+        class_ = super().__new__(cls, name, bases, attrs, **kwargs)
+
         fields = OrderedDict(
             (key, attrs[key])
             for key in attrs
             if issubclass(attrs[key].__class__, Field)
         )
-        new_class._fields = fields
 
-        return new_class
+        parent_fields = getattr(class_, '_fields', None)
+        if parent_fields:
+            class_._fields = {**parent_fields, **fields}
+        else:
+            class_._fields = fields
+
+        return class_
 
 
 class Component(metaclass=ComponentMeta):
+    _fields = {}
+
     def __init__(self, *args):
         if len(args) > len(self._fields):
             raise IndexError("Number of args exceeds number of fields")

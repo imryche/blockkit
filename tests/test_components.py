@@ -27,9 +27,11 @@ def test_component_with_exeeding_args_raises_exception():
 
 
 def test_component_builds_fields(values):
-    class FakeComponent(Component):
+    class ParentFakeComponent(Component):
         title = StringField()
         text = TextField()
+
+    class FakeComponent(ParentFakeComponent):
         elements = ArrayField([Text])
 
     component = FakeComponent(
