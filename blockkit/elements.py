@@ -109,3 +109,24 @@ class MultiExternalSelect(MultiSelect):
             initial_options,
             min_query_length,
         )
+
+
+class MultiUsersSelect(MultiSelect):
+    initial_users = ArrayField([str], max_items=100)
+
+    def __init__(
+        self,
+        placeholder,
+        action_id,
+        confirm=None,
+        max_selected_items=None,
+        initial_users=None,
+    ):
+        super().__init__(
+            "multi_users_select",
+            placeholder,
+            action_id,
+            confirm,
+            max_selected_items,
+            initial_users,
+        )

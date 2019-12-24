@@ -1,6 +1,13 @@
 import pytest
 
-from blockkit import Button, DatePicker, Image, MultiStaticSelect, MultiExternalSelect
+from blockkit import (
+    Button,
+    DatePicker,
+    Image,
+    MultiExternalSelect,
+    MultiStaticSelect,
+    MultiUsersSelect,
+)
 from blockkit.validators import ValidationError
 
 
@@ -98,4 +105,25 @@ def test_builds_external_multiselect(option, plain_text, values, confirm):
         "max_selected_items": 3,
         "initial_options": [option.build()],
         "min_query_length": 2,
+    }
+
+
+def test_builds_users_multiselect(plain_text, values, confirm):
+    initial_users = ["U123456", "U654321"]
+
+    multiselect = MultiUsersSelect(
+        plain_text,
+        values.action_id,
+        confirm=confirm,
+        max_selected_items=3,
+        initial_users=initial_users,
+    )
+
+    assert multiselect.build() == {
+        "type": "multi_users_select",
+        "placeholder": plain_text.build(),
+        "action_id": values.action_id,
+        "confirm": confirm.build(),
+        "max_selected_items": 3,
+        "initial_users": initial_users,
     }
