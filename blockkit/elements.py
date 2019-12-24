@@ -53,21 +53,24 @@ class MultiSelect(Component):
     type = StringField()
     placeholder = TextField(plain=True, max_length=150)
     action_id = StringField(max_length=255)
-    options = ArrayField([Option], max_items=100)
-    option_groups = ArrayField([OptionGroup], max_items=100)
     initial_options = ArrayField([Option, OptionGroup], max_items=100)
     confirm = ConfirmField()
     max_selected_items = IntegerField()
+
+
+class MultiStaticSelect(MultiSelect):
+    options = ArrayField([Option], max_items=100)
+    option_groups = ArrayField([OptionGroup], max_items=100)
 
     def __init__(
         self,
         placeholder,
         action_id,
-        options=None,
-        option_groups=None,
         initial_options=None,
         confirm=None,
         max_selected_items=None,
+        options=None,
+        option_groups=None,
     ):
         if options and option_groups:
             raise ValidationError("You can specify either options or option_groups")
@@ -76,9 +79,32 @@ class MultiSelect(Component):
             "multi_static_select",
             placeholder,
             action_id,
-            options,
-            option_groups,
             initial_options,
             confirm,
             max_selected_items,
+            options,
+            option_groups,
+        )
+
+
+class MultiExternalSelect(MultiSelect):
+    min_query_length = IntegerField()
+
+    def __init__(
+        self,
+        placeholder,
+        action_id,
+        initial_options=None,
+        confirm=None,
+        max_selected_items=None,
+        min_query_length=None,
+    ):
+        super().__init__(
+            "multi_external_select",
+            placeholder,
+            action_id,
+            initial_options,
+            confirm,
+            max_selected_items,
+            min_query_length,
         )
