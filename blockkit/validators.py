@@ -67,7 +67,7 @@ def validate_attr(attr, attr_value):
     return validate
 
 
-def validate_len(value, length):
+def validate_max_len(value, length):
     if len(value) > length:
         raise ValidationError(f'{value} length is more than {length}')
 

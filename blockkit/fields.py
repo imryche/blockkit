@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from .validators import (
     validate_attr,
-    validate_len,
+    validate_max_len,
     validate_options,
     validate_type,
     validate_types,
@@ -27,7 +27,7 @@ class StringField(Field):
         validate_type(str)(value)
 
         if self.max_length:
-            validate_len(value, self.max_length)
+            validate_max_len(value, self.max_length)
 
         if self.options:
             validate_options(value, self.options)
@@ -60,7 +60,7 @@ class TextField(Field):
         validate_type(Text)(value)
 
         if self.max_length:
-            validate_len(value.text, self.max_length)
+            validate_max_len(value.text, self.max_length)
 
         if self.plain:
             validate_attr("type", Text.plain)(value)
@@ -82,7 +82,7 @@ class ArrayField(Field):
             validate_min_len(value, self.min_items)
 
         if self.max_items:
-            validate_len(value, self.max_items)
+            validate_max_len(value, self.max_items)
 
         return value
 
@@ -95,7 +95,7 @@ class UrlField(Field):
         validate_url(value)
 
         if self.max_length:
-            validate_len(value, self.max_length)
+            validate_max_len(value, self.max_length)
 
         return value
 
