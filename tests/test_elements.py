@@ -131,14 +131,14 @@ def test_builds_users_multiselect(plain_text, values, confirm):
 
 
 def test_builds_conversations_multiselect(plain_text, values, confirm):
-    initial_users = ["C123456", "C654321"]
+    initial_conversations = ["C123456", "C654321"]
 
     multiselect = MultiConversationsSelect(
         plain_text,
         values.action_id,
         confirm=confirm,
         max_selected_items=3,
-        initial_conversations=initial_users,
+        initial_conversations=initial_conversations,
     )
 
     assert multiselect.build() == {
@@ -147,5 +147,5 @@ def test_builds_conversations_multiselect(plain_text, values, confirm):
         "action_id": values.action_id,
         "confirm": confirm.build(),
         "max_selected_items": 3,
-        "initial_conversations": initial_users,
+        "initial_conversations": initial_conversations,
     }
