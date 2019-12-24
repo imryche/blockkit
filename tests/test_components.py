@@ -33,11 +33,14 @@ def test_component_builds_fields(values):
 
     class FakeComponent(ParentFakeComponent):
         elements = ArrayField([PlainText])
+        users = ArrayField([str])
 
+    users = ["U123456", "U654321"]
     component = FakeComponent(
         values.title,
         MarkdownText(values.text),
         [PlainText(values.text) for _ in range(2)],
+        users,
     )
 
     assert component.build() == {
@@ -47,4 +50,5 @@ def test_component_builds_fields(values):
             {"type": "plain_text", "text": values.text},
             {"type": "plain_text", "text": values.text},
         ],
+        "users": users,
     }

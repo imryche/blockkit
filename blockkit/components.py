@@ -53,7 +53,9 @@ class Component(metaclass=ComponentMeta):
                 continue
 
             if isinstance(value, list):
-                value = [a.build() for a in value]
+                value = [
+                    el.build() if isinstance(el, Component) else el for el in value
+                ]
             else:
                 if issubclass(type(value), Component):
                     value = value.build()
