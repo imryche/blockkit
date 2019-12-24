@@ -1,7 +1,7 @@
 import pytest
 
+from blockkit import MarkdownText, PlainText
 from blockkit.components import Component
-from blockkit.objects import Text
 from blockkit.fields import StringField, TextField, ArrayField
 
 
@@ -15,7 +15,7 @@ def test_component_detects_all_fields():
         not_field = NotField()
 
     component = FakeComponent()
-    assert list(component._fields.keys()) == ['title', 'text']
+    assert list(component._fields.keys()) == ["title", "text"]
 
 
 def test_component_with_exeeding_args_raises_exception():
@@ -23,7 +23,7 @@ def test_component_with_exeeding_args_raises_exception():
         title = StringField()
 
     with pytest.raises(IndexError):
-        FakeComponent('test', 'test', 'test')
+        FakeComponent("test", "test", "test")
 
 
 def test_component_builds_fields(values):
@@ -32,28 +32,19 @@ def test_component_builds_fields(values):
         text = TextField()
 
     class FakeComponent(ParentFakeComponent):
-        elements = ArrayField([Text])
+        elements = ArrayField([PlainText])
 
     component = FakeComponent(
         values.title,
-        Text(values.text, type_=Text.markdown),
-        [Text(values.text, type_=Text.plain) for _ in range(2)]
+        MarkdownText(values.text),
+        [PlainText(values.text) for _ in range(2)],
     )
 
     assert component.build() == {
-        'title': values.title,
-        'text': {
-            'type': 'mrkdwn',
-            'text': values.text
-        },
-        'elements': [
-            {
-                'type': 'plain_text',
-                'text': values.text
-            },
-            {
-                'type': 'plain_text',
-                'text': values.text
-            }
-        ]
+        "title": values.title,
+        "text": {"type": "mrkdwn", "text": values.text},
+        "elements": [
+            {"type": "plain_text", "text": values.text},
+            {"type": "plain_text", "text": values.text},
+        ],
     }

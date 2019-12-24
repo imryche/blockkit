@@ -2,7 +2,7 @@ from collections import namedtuple
 
 import pytest
 
-from blockkit import Confirm, Option, OptionGroup, Text
+from blockkit import Confirm, Option, OptionGroup, MarkdownText, PlainText
 
 TestValues = namedtuple(
     "TestValues",
@@ -32,17 +32,17 @@ def values():
 
 @pytest.fixture
 def basic_text(values):
-    return Text(values.text, type_=Text.markdown)
+    return MarkdownText(values.text)
 
 
 @pytest.fixture
 def short_text(values):
-    return Text(values.short_text, type_=Text.plain)
+    return PlainText(values.short_text)
 
 
 @pytest.fixture
 def plain_text(values):
-    return Text(values.text, type_=Text.plain)
+    return PlainText(values.text)
 
 
 @pytest.fixture
@@ -55,8 +55,8 @@ def confirm(values, plain_text, basic_text):
     return Confirm(
         plain_text,
         basic_text,
-        Text(values.confirm_text, type_=Text.plain),
-        Text(values.deny_text, type_=Text.plain),
+        PlainText(values.confirm_text),
+        PlainText(values.deny_text),
     )
 
 
@@ -72,7 +72,4 @@ def option_group(values, plain_text, option):
 
 @pytest.fixture
 def required_option(request, option, option_group):
-    return {
-        'option': option,
-        'option_group': option_group
-    }[request.param]
+    return {"option": option, "option_group": option_group}[request.param]

@@ -1,6 +1,6 @@
 import pytest
 
-from blockkit import Confirm, Text
+from blockkit import Confirm, PlainText, MarkdownText
 from blockkit.fields import (
     ArrayField,
     BooleanField,
@@ -52,7 +52,7 @@ def test_boolean_field_with_incorrect_input_raises_exception():
 
 
 def test_text_field_validates_input(values):
-    text = Text(values.text, type_=Text.plain)
+    text = PlainText(values.text)
     assert TextField().validate(text) == text
 
 
@@ -63,16 +63,16 @@ def test_text_field_with_incorrect_input_raises_exception():
 
 def test_text_field_with_exeeding_length_raises_exception():
     with pytest.raises(ValidationError):
-        TextField(max_length=5).validate(Text("foobar", type_=Text.plain))
+        TextField(max_length=5).validate(PlainText("foobar"))
 
 
 def test_plain_text_field_with_incorrect_type_raises_exception(values):
     with pytest.raises(ValidationError):
-        TextField(plain=True).validate(Text(values.text, type_=Text.markdown))
+        TextField(plain=True).validate(MarkdownText(values.text))
 
 
 def test_array_field_validates_input(values):
-    texts = [Text(values.text, type_=Text.plain) for _ in range(3)]
+    texts = [PlainText(values.text) for _ in range(3)]
     assert ArrayField().validate(texts)
 
 
@@ -83,12 +83,12 @@ def test_array_field_with_incorrect_input_raises_exception():
     images = [FakeImage() for _ in range(3)]
 
     with pytest.raises(ValidationError):
-        ArrayField([Text]).validate(images)
+        ArrayField([PlainText]).validate(images)
 
 
 def test_array_field_with_exeeding_items_raises_exception(plain_text):
     with pytest.raises(ValidationError):
-        ArrayField([Text], max_items=5).validate([plain_text for _ in range(10)])
+        ArrayField([PlainText], max_items=5).validate([plain_text for _ in range(10)])
 
 
 def test_url_field_validates_input(values):
