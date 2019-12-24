@@ -6,7 +6,7 @@ from blockkit.validators import ValidationError
 
 def test_builds_markdown_text(values):
     assert MarkdownText(values.text, verbatim=True).build() == {
-        "type": "mrkdwn",
+        "type": Text.markdown,
         "text": values.text,
         "verbatim": True,
     }
