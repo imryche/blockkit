@@ -1,18 +1,19 @@
 import pytest
 
-from blockkit import Confirm, Option, OptionGroup, Text
+from blockkit import Confirm, Option, OptionGroup, Text, MarkdownText, PlainText
 from blockkit.validators import ValidationError
 
 
 def test_builds_markdown_text(values):
-    assert Text(values.text, type_=Text.markdown).build() == {
+    assert MarkdownText(values.text, verbatim=True).build() == {
         "type": "mrkdwn",
         "text": values.text,
+        "verbatim": True,
     }
 
 
 def test_builds_plain_text_with_emoji(values):
-    text = Text(values.text, type_=Text.plain, emoji=True)
+    text = PlainText(values.text, emoji=True)
     assert text.build() == {"type": Text.plain, "text": values.text, "emoji": True}
 
 

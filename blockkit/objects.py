@@ -26,6 +26,16 @@ class Text(Component):
             )
 
 
+class MarkdownText(Text):
+    def __init__(self, text, verbatim=None):
+        super().__init__(text, self.markdown, None, verbatim)
+
+
+class PlainText(Text):
+    def __init__(self, text, emoji=None):
+        super().__init__(text, self.plain, emoji, None)
+
+
 class Confirm(Component):
     title = TextField(max_length=100, plain=True)
     text = TextField(max_length=300)
