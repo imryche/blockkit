@@ -13,7 +13,7 @@ class ComponentMeta(type):
             if issubclass(attrs[key].__class__, Field)
         )
 
-        parent_fields = getattr(class_, '_fields', None)
+        parent_fields = getattr(class_, "_fields", None)
         if parent_fields:
             class_._fields = {**parent_fields, **fields}
         else:
@@ -41,8 +41,8 @@ class Component(metaclass=ComponentMeta):
             setattr(self, field_name, value)
 
     def __repr__(self):
-        values = ', '.join(str(getattr(self, f)) for f in self._fields)
-        return (f"{self.__class__.__name__}({values})")
+        values = ", ".join(str(getattr(self, f)) for f in self._fields)
+        return f"{self.__class__.__name__}({values})"
 
     def build(self):
         result = {}
