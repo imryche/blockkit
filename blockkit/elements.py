@@ -53,12 +53,12 @@ class MultiSelect(Component):
     type = StringField()
     placeholder = TextField(plain=True, max_length=150)
     action_id = StringField(max_length=255)
-    initial_options = ArrayField([Option, OptionGroup], max_items=100)
     confirm = ConfirmField()
     max_selected_items = IntegerField()
 
 
 class MultiStaticSelect(MultiSelect):
+    initial_options = ArrayField([Option, OptionGroup], max_items=100)
     options = ArrayField([Option], max_items=100)
     option_groups = ArrayField([OptionGroup], max_items=100)
 
@@ -66,9 +66,9 @@ class MultiStaticSelect(MultiSelect):
         self,
         placeholder,
         action_id,
-        initial_options=None,
         confirm=None,
         max_selected_items=None,
+        initial_options=None,
         options=None,
         option_groups=None,
     ):
@@ -79,32 +79,33 @@ class MultiStaticSelect(MultiSelect):
             "multi_static_select",
             placeholder,
             action_id,
-            initial_options,
             confirm,
             max_selected_items,
+            initial_options,
             options,
             option_groups,
         )
 
 
 class MultiExternalSelect(MultiSelect):
+    initial_options = ArrayField([Option, OptionGroup], max_items=100)
     min_query_length = IntegerField()
 
     def __init__(
         self,
         placeholder,
         action_id,
-        initial_options=None,
         confirm=None,
         max_selected_items=None,
+        initial_options=None,
         min_query_length=None,
     ):
         super().__init__(
             "multi_external_select",
             placeholder,
             action_id,
-            initial_options,
             confirm,
             max_selected_items,
+            initial_options,
             min_query_length,
         )

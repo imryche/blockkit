@@ -51,9 +51,9 @@ def test_builds_static_multiselect(required_option, field, plain_text, values, c
     multiselect = MultiStaticSelect(
         plain_text,
         values.action_id,
-        initial_options=[required_option],
         confirm=confirm,
         max_selected_items=3,
+        initial_options=[required_option],
         **{field: [required_option for _ in range(3)]}
     )
 
@@ -61,9 +61,9 @@ def test_builds_static_multiselect(required_option, field, plain_text, values, c
         "type": "multi_static_select",
         "placeholder": plain_text.build(),
         "action_id": values.action_id,
-        "initial_options": [required_option.build()],
         "confirm": confirm.build(),
         "max_selected_items": 3,
+        "initial_options": [required_option.build()],
         field: [required_option.build() for _ in range(3)],
     }
 
@@ -84,9 +84,9 @@ def test_builds_external_multiselect(option, plain_text, values, confirm):
     multiselect = MultiExternalSelect(
         plain_text,
         values.action_id,
-        initial_options=[option],
         confirm=confirm,
         max_selected_items=3,
+        initial_options=[option],
         min_query_length=2,
     )
 
@@ -94,8 +94,8 @@ def test_builds_external_multiselect(option, plain_text, values, confirm):
         "type": "multi_external_select",
         "placeholder": plain_text.build(),
         "action_id": values.action_id,
-        "min_query_length": 2,
-        "initial_options": [option.build()],
         "confirm": confirm.build(),
         "max_selected_items": 3,
+        "initial_options": [option.build()],
+        "min_query_length": 2,
     }
