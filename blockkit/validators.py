@@ -72,6 +72,13 @@ def validate_len(value, length):
         raise ValidationError(f'{value} length is more than {length}')
 
 
+def validate_min_len(value, length):
+    if len(value) < length:
+        raise ValidationError(f'{value} length is less than {length}')
+
+    return value
+
+
 def validate_date(value):
     try:
         datetime.strptime(value, '%Y-%m-%d')

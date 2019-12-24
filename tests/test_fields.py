@@ -91,6 +91,11 @@ def test_array_field_with_exeeding_items_raises_exception(plain_text):
         ArrayField([PlainText], max_items=5).validate([plain_text for _ in range(10)])
 
 
+def test_array_field_with_lacking_items_raises_exception(plain_text):
+    with pytest.raises(ValidationError):
+        ArrayField([PlainText], min_items=2).validate([plain_text])
+
+
 def test_url_field_validates_input(values):
     assert UrlField().validate(values.url)
 
