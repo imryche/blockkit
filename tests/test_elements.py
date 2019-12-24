@@ -8,6 +8,7 @@ from blockkit import (
     MultiStaticSelect,
     MultiUsersSelect,
     MultiConversationsSelect,
+    MultiChannelsSelect,
 )
 from blockkit.validators import ValidationError
 
@@ -148,4 +149,25 @@ def test_builds_conversations_multiselect(plain_text, values, confirm):
         "confirm": confirm.build(),
         "max_selected_items": 3,
         "initial_conversations": initial_conversations,
+    }
+
+
+def test_builds_channels_multiselect(plain_text, values, confirm):
+    initial_channels = ["C123456", "C654321"]
+
+    multiselect = MultiChannelsSelect(
+        plain_text,
+        values.action_id,
+        confirm=confirm,
+        max_selected_items=3,
+        initial_channels=initial_channels,
+    )
+
+    assert multiselect.build() == {
+        "type": "multi_channels_select",
+        "placeholder": plain_text.build(),
+        "action_id": values.action_id,
+        "confirm": confirm.build(),
+        "max_selected_items": 3,
+        "initial_channels": initial_channels,
     }

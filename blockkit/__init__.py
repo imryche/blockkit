@@ -7,4 +7,5 @@ from .elements import (
     MultiStaticSelect,
     MultiUsersSelect,
     MultiConversationsSelect,
+    MultiChannelsSelect,
 )
