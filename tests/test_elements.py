@@ -1,6 +1,6 @@
 import pytest
 
-from blockkit import Button, DatePicker, Image, MultiSelect
+from blockkit import Button, DatePicker, Image, MultiStaticSelect, MultiExternalSelect
 from blockkit.validators import ValidationError
 
 
@@ -48,7 +48,7 @@ def test_builds_image(values):
     indirect=["required_option"],
 )
 def test_builds_static_multiselect(required_option, field, plain_text, values, confirm):
-    multiselect = MultiSelect(
+    multiselect = MultiStaticSelect(
         plain_text,
         values.action_id,
         initial_options=[required_option],
@@ -72,9 +72,30 @@ def test_static_multiselect_with_options_and_option_groups_raises_exception(
     plain_text, values, option, option_group, confirm
 ):
     with pytest.raises(ValidationError):
-        MultiSelect(
+        MultiStaticSelect(
             plain_text,
             values.action_id,
             options=[option for _ in range(2)],
-            option_groups=[option_group for _ in range(2)]
+            option_groups=[option_group for _ in range(2)],
         )
+
+
+def test_builds_external_multiselect(option, plain_text, values, confirm):
+    multiselect = MultiExternalSelect(
+        plain_text,
+        values.action_id,
+        initial_options=[option],
+        confirm=confirm,
+        max_selected_items=3,
+        min_query_length=2,
+    )
+
+    assert multiselect.build() == {
+        "type": "multi_external_select",
+        "placeholder": plain_text.build(),
+        "action_id": values.action_id,
+        "min_query_length": 2,
+        "initial_options": [option.build()],
+        "confirm": confirm.build(),
+        "max_selected_items": 3,
+    }
