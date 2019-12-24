@@ -112,7 +112,7 @@ class MultiExternalSelect(MultiSelect):
 
 
 class MultiUsersSelect(MultiSelect):
-    initial_users = ArrayField([str], max_items=100)
+    initial_users = ArrayField([str])
 
     def __init__(
         self,
