@@ -6,4 +6,5 @@ from .elements import (
     MultiExternalSelect,
     MultiStaticSelect,
     MultiUsersSelect,
+    MultiConversationsSelect,
 )

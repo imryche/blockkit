@@ -7,6 +7,7 @@ from blockkit import (
     MultiExternalSelect,
     MultiStaticSelect,
     MultiUsersSelect,
+    MultiConversationsSelect,
 )
 from blockkit.validators import ValidationError
 
@@ -126,4 +127,25 @@ def test_builds_users_multiselect(plain_text, values, confirm):
         "confirm": confirm.build(),
         "max_selected_items": 3,
         "initial_users": initial_users,
+    }
+
+
+def test_builds_conversations_multiselect(plain_text, values, confirm):
+    initial_users = ["C123456", "C654321"]
+
+    multiselect = MultiConversationsSelect(
+        plain_text,
+        values.action_id,
+        confirm=confirm,
+        max_selected_items=3,
+        initial_conversations=initial_users,
+    )
+
+    assert multiselect.build() == {
+        "type": "multi_conversations_select",
+        "placeholder": plain_text.build(),
+        "action_id": values.action_id,
+        "confirm": confirm.build(),
+        "max_selected_items": 3,
+        "initial_conversations": initial_users,
     }

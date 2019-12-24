@@ -130,3 +130,24 @@ class MultiUsersSelect(MultiSelect):
             max_selected_items,
             initial_users,
         )
+
+
+class MultiConversationsSelect(MultiSelect):
+    initial_conversations = ArrayField([str])
+
+    def __init__(
+        self,
+        placeholder,
+        action_id,
+        confirm=None,
+        max_selected_items=None,
+        initial_conversations=None,
+    ):
+        super().__init__(
+            "multi_conversations_select",
+            placeholder,
+            action_id,
+            confirm,
+            max_selected_items,
+            initial_conversations,
+        )
