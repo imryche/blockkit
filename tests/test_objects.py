@@ -17,17 +17,6 @@ def test_builds_plain_text_with_emoji(values):
     assert text.build() == {"type": Text.plain, "text": values.text, "emoji": True}
 
 
-def test_builds_markdown_text_with_no_emoji_and_verbatim(values):
-    text = Text(values.text, type_=Text.markdown, emoji=False, verbatim=True)
-
-    assert text.build() == {
-        "type": Text.markdown,
-        "text": values.text,
-        "emoji": False,
-        "verbatim": True,
-    }
-
-
 def test_mrkdwn_text_with_emoji_raises_exception(values):
     with pytest.raises(ValidationError):
         Text(values.text, type_=Text.markdown, emoji=True)
