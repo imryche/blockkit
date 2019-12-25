@@ -109,6 +109,16 @@ class ConfirmField(Field):
         return value
 
 
+class ObjectField(Field):
+    def __init__(self, field_type):
+        self.field_type = field_type
+
+    def validate(self, value):
+        validate_type(self.field_type)(value)
+
+        return value
+
+
 class DateField(Field):
     def validate(self, value):
         validate_date(value)

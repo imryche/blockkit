@@ -4,7 +4,7 @@ from blockkit import Confirm, PlainText, MarkdownText
 from blockkit.fields import (
     ArrayField,
     BooleanField,
-    ConfirmField,
+    ObjectField,
     StringField,
     TextField,
     UrlField,
@@ -110,15 +110,15 @@ def test_url_field_with_incorrect_input_raises_exception():
         UrlField().validate("thisisnoturl")
 
 
-def test_confirm_field_validates_input(short_text):
-    assert ConfirmField().validate(
+def test_object_field_validates_input(short_text):
+    assert ObjectField(Confirm).validate(
         Confirm(short_text, short_text, short_text, short_text)
     )
 
 
-def test_confirm_field_with_incorrect_input_raises_exception(basic_text):
+def test_object_field_with_incorrect_input_raises_exception(basic_text):
     with pytest.raises(ValidationError):
-        ConfirmField().validate(basic_text)
+        ObjectField(Confirm).validate(basic_text)
 
 
 def test_date_field_validates_input(values):
