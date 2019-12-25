@@ -49,18 +49,18 @@ class Image(Component):
         super().__init__("image", image_url, alt_text)
 
 
-class MultiSelect(Component):
+class SelectBase(Component):
     type = StringField()
     placeholder = TextField(plain=True, max_length=150)
     action_id = StringField(max_length=255)
     confirm = ConfirmField()
-    max_selected_items = IntegerField()
 
 
-class MultiStaticSelect(MultiSelect):
+class MultiStaticSelect(SelectBase):
     initial_options = ArrayField([Option, OptionGroup], max_items=100)
     options = ArrayField([Option], max_items=100)
     option_groups = ArrayField([OptionGroup], max_items=100)
+    max_selected_items = IntegerField()
 
     def __init__(
         self,
@@ -80,16 +80,17 @@ class MultiStaticSelect(MultiSelect):
             placeholder,
             action_id,
             confirm,
-            max_selected_items,
             initial_options,
             options,
             option_groups,
+            max_selected_items,
         )
 
 
-class MultiExternalSelect(MultiSelect):
+class MultiExternalSelect(SelectBase):
     initial_options = ArrayField([Option, OptionGroup], max_items=100)
     min_query_length = IntegerField()
+    max_selected_items = IntegerField()
 
     def __init__(
         self,
@@ -105,14 +106,15 @@ class MultiExternalSelect(MultiSelect):
             placeholder,
             action_id,
             confirm,
-            max_selected_items,
             initial_options,
             min_query_length,
+            max_selected_items,
         )
 
 
-class MultiUsersSelect(MultiSelect):
+class MultiUsersSelect(SelectBase):
     initial_users = ArrayField([str])
+    max_selected_items = IntegerField()
 
     def __init__(
         self,
@@ -127,13 +129,14 @@ class MultiUsersSelect(MultiSelect):
             placeholder,
             action_id,
             confirm,
-            max_selected_items,
             initial_users,
+            max_selected_items,
         )
 
 
-class MultiConversationsSelect(MultiSelect):
+class MultiConversationsSelect(SelectBase):
     initial_conversations = ArrayField([str])
+    max_selected_items = IntegerField()
 
     def __init__(
         self,
@@ -148,27 +151,28 @@ class MultiConversationsSelect(MultiSelect):
             placeholder,
             action_id,
             confirm,
-            max_selected_items,
             initial_conversations,
+            max_selected_items,
         )
 
 
-class MultiChannelsSelect(MultiSelect):
+class MultiChannelsSelect(SelectBase):
     initial_channels = ArrayField([str])
+    max_selected_items = IntegerField()
 
     def __init__(
         self,
         placeholder,
         action_id,
         confirm=None,
-        max_selected_items=None,
         initial_channels=None,
+        max_selected_items=None,
     ):
         super().__init__(
             "multi_channels_select",
             placeholder,
             action_id,
             confirm,
-            max_selected_items,
             initial_channels,
+            max_selected_items,
         )
