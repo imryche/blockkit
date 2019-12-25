@@ -9,6 +9,7 @@ from blockkit import (
     MultiUsersSelect,
     MultiConversationsSelect,
     MultiChannelsSelect,
+    StaticSelect,
 )
 from blockkit.validators import ValidationError
 
@@ -74,6 +75,30 @@ def test_builds_static_multiselect(required_option, field, plain_text, values, c
         "max_selected_items": 3,
         "initial_options": [required_option.build()],
         field: [required_option.build() for _ in range(3)],
+    }
+
+
+@pytest.mark.parametrize(
+    "required_option, field",
+    [("option_group", "option_groups"), ("option", "options")],
+    indirect=["required_option"],
+)
+def test_builds_static_select(required_option, field, plain_text, values, confirm):
+    select = StaticSelect(
+        plain_text,
+        values.action_id,
+        confirm=confirm,
+        initial_option=required_option,
+        **{field: [required_option for _ in range(3)]}
+    )
+
+    assert select.build() == {
+        "type": "static_select",
+        "placeholder": plain_text.build(),
+        "action_id": values.action_id,
+        field: [required_option.build() for _ in range(3)],
+        "initial_option": required_option.build(),
+        "confirm": confirm.build(),
     }
 
 

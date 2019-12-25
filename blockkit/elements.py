@@ -56,10 +56,40 @@ class SelectBase(Component):
     confirm = ObjectField(Confirm)
 
 
-class MultiStaticSelect(SelectBase):
-    initial_options = ArrayField([Option, OptionGroup], max_items=100)
+class StaticSelectBase(SelectBase):
     options = ArrayField([Option], max_items=100)
     option_groups = ArrayField([OptionGroup], max_items=100)
+
+
+class StaticSelect(StaticSelectBase):
+    initial_option = ObjectField(Option, OptionGroup)
+
+    def __init__(
+        self,
+        placeholder,
+        action_id,
+        options=None,
+        option_groups=None,
+        initial_option=None,
+        confirm=None,
+        max_selected_items=None,
+    ):
+        if options and option_groups:
+            raise ValidationError("You can specify either options or option_groups")
+
+        super().__init__(
+            "static_select",
+            placeholder,
+            action_id,
+            confirm,
+            options,
+            option_groups,
+            initial_option,
+        )
+
+
+class MultiStaticSelect(StaticSelectBase):
+    initial_options = ArrayField([Option, OptionGroup], max_items=100)
     max_selected_items = IntegerField()
 
     def __init__(
@@ -80,9 +110,9 @@ class MultiStaticSelect(SelectBase):
             placeholder,
             action_id,
             confirm,
-            initial_options,
             options,
             option_groups,
+            initial_options,
             max_selected_items,
         )
 
