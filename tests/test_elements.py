@@ -102,11 +102,12 @@ def test_builds_static_select(required_option, field, plain_text, values, confir
     }
 
 
+@pytest.mark.parametrize("select_class", [StaticSelect, MultiStaticSelect])
 def test_static_multiselect_with_options_and_option_groups_raises_exception(
-    plain_text, values, option, option_group, confirm
+    select_class, plain_text, values, option, option_group, confirm
 ):
     with pytest.raises(ValidationError):
-        MultiStaticSelect(
+        select_class(
             plain_text,
             values.action_id,
             options=[option for _ in range(2)],
