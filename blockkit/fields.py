@@ -101,11 +101,11 @@ class UrlField(Field):
 
 
 class ObjectField(Field):
-    def __init__(self, field_type):
-        self.field_type = field_type
+    def __init__(self, *field_types):
+        self.field_types = field_types
 
     def validate(self, value):
-        validate_type(self.field_type)(value)
+        validate_types(self.field_types)((value,))
 
         return value
 

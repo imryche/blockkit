@@ -111,7 +111,7 @@ def test_url_field_with_incorrect_input_raises_exception():
 
 
 def test_object_field_validates_input(short_text):
-    assert ObjectField(Confirm).validate(
+    assert ObjectField(Confirm, PlainText).validate(
         Confirm(short_text, short_text, short_text, short_text)
     )
 
