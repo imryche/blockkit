@@ -117,9 +117,12 @@ class MultiStaticSelect(StaticSelectBase):
         )
 
 
-class MultiExternalSelect(SelectBase):
-    initial_options = ArrayField([Option, OptionGroup], max_items=100)
+class ExternalSelectBase(SelectBase):
     min_query_length = IntegerField()
+
+
+class MultiExternalSelect(ExternalSelectBase):
+    initial_options = ArrayField([Option, OptionGroup], max_items=100)
     max_selected_items = IntegerField()
 
     def __init__(
@@ -136,8 +139,8 @@ class MultiExternalSelect(SelectBase):
             placeholder,
             action_id,
             confirm,
-            initial_options,
             min_query_length,
+            initial_options,
             max_selected_items,
         )
 
