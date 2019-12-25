@@ -66,11 +66,11 @@ class MultiStaticSelect(SelectBase):
         self,
         placeholder,
         action_id,
-        confirm=None,
-        max_selected_items=None,
-        initial_options=None,
         options=None,
         option_groups=None,
+        initial_options=None,
+        confirm=None,
+        max_selected_items=None,
     ):
         if options and option_groups:
             raise ValidationError("You can specify either options or option_groups")
@@ -96,10 +96,10 @@ class MultiExternalSelect(SelectBase):
         self,
         placeholder,
         action_id,
+        min_query_length=None,
+        initial_options=None,
         confirm=None,
         max_selected_items=None,
-        initial_options=None,
-        min_query_length=None,
     ):
         super().__init__(
             "multi_external_select",
@@ -120,9 +120,9 @@ class MultiUsersSelect(SelectBase):
         self,
         placeholder,
         action_id,
+        initial_users=None,
         confirm=None,
         max_selected_items=None,
-        initial_users=None,
     ):
         super().__init__(
             "multi_users_select",
@@ -142,9 +142,9 @@ class MultiConversationsSelect(SelectBase):
         self,
         placeholder,
         action_id,
+        initial_conversations=None,
         confirm=None,
         max_selected_items=None,
-        initial_conversations=None,
     ):
         super().__init__(
             "multi_conversations_select",
@@ -164,8 +164,8 @@ class MultiChannelsSelect(SelectBase):
         self,
         placeholder,
         action_id,
-        confirm=None,
         initial_channels=None,
+        confirm=None,
         max_selected_items=None,
     ):
         super().__init__(
