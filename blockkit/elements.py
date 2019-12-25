@@ -1,6 +1,6 @@
 from blockkit.fields import (
     ArrayField,
-    ConfirmField,
+    ObjectField,
     DateField,
     IntegerField,
     StringField,
@@ -8,7 +8,7 @@ from blockkit.fields import (
     UrlField,
 )
 
-from . import Option, OptionGroup
+from . import Option, OptionGroup, Confirm
 from .components import Component
 from .validators import ValidationError
 
@@ -23,7 +23,7 @@ class Button(Component):
     url = UrlField(max_length=3000)
     value = StringField(max_length=2000)
     style = StringField(options=[primary, danger])
-    confirm = ConfirmField()
+    confirm = ObjectField(Confirm)
 
     def __init__(self, text, action_id, url=None, value=None, style=None, confirm=None):
         super().__init__("button", text, action_id, url, value, style, confirm)
@@ -34,7 +34,7 @@ class DatePicker(Component):
     action_id = StringField(max_length=255)
     placeholder = TextField(plain=True, max_length=150)
     initial_date = DateField()
-    confirm = ConfirmField()
+    confirm = ObjectField(Confirm)
 
     def __init__(self, action_id, placeholder=None, initial_date=None, confirm=None):
         super().__init__("datepicker", action_id, placeholder, initial_date, confirm)
@@ -53,7 +53,7 @@ class SelectBase(Component):
     type = StringField()
     placeholder = TextField(plain=True, max_length=150)
     action_id = StringField(max_length=255)
-    confirm = ConfirmField()
+    confirm = ObjectField(Confirm)
 
 
 class MultiStaticSelect(SelectBase):

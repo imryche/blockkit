@@ -100,15 +100,6 @@ class UrlField(Field):
         return value
 
 
-class ConfirmField(Field):
-    def validate(self, value):
-        from . import Confirm
-
-        validate_type(Confirm)(value)
-
-        return value
-
-
 class ObjectField(Field):
     def __init__(self, field_type):
         self.field_type = field_type
