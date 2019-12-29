@@ -10,6 +10,7 @@ from blockkit import (
     MultiConversationsSelect,
     MultiChannelsSelect,
     StaticSelect,
+    ExternalSelect,
 )
 from blockkit.validators import ValidationError
 
@@ -133,6 +134,25 @@ def test_builds_external_multiselect(option, plain_text, values, confirm):
         "max_selected_items": 3,
         "initial_options": [option.build()],
         "min_query_length": 2,
+    }
+
+
+def test_builds_external_select(option, plain_text, values, confirm):
+    select = ExternalSelect(
+        plain_text,
+        values.action_id,
+        initial_option=option,
+        min_query_length=2,
+        confirm=confirm,
+    )
+
+    assert select.build() == {
+        "type": "external_select",
+        "placeholder": plain_text.build(),
+        "action_id": values.action_id,
+        "initial_option": option.build(),
+        "min_query_length": 2,
+        "confirm": confirm.build(),
     }
 
 

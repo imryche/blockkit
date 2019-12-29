@@ -9,4 +9,5 @@ from .elements import (
     MultiConversationsSelect,
     MultiChannelsSelect,
     StaticSelect,
+    ExternalSelect,
 )

@@ -121,6 +121,27 @@ class ExternalSelectBase(SelectBase):
     min_query_length = IntegerField()
 
 
+class ExternalSelect(ExternalSelectBase):
+    initial_option = ObjectField(Option, OptionGroup)
+
+    def __init__(
+        self,
+        placeholder,
+        action_id,
+        initial_option=None,
+        min_query_length=None,
+        confirm=None,
+    ):
+        super().__init__(
+            "external_select",
+            placeholder,
+            action_id,
+            confirm,
+            min_query_length,
+            initial_option,
+        )
+
+
 class MultiExternalSelect(ExternalSelectBase):
     initial_options = ArrayField(Option, OptionGroup, max_items=100)
     max_selected_items = IntegerField()
