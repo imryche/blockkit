@@ -13,25 +13,26 @@ from .components import Component
 from .validators import ValidationError
 
 
-class Button(Component):
+class Element(Component):
+    type = StringField()
+    action_id = StringField(max_length=255)
+
+
+class Button(Element):
     primary = "primary"
     danger = "danger"
 
-    type = StringField()
     text = TextField(plain=True, max_length=75)
-    action_id = StringField(max_length=255)
     url = UrlField(max_length=3000)
     value = StringField(max_length=2000)
     style = StringField(options=[primary, danger])
     confirm = ObjectField(Confirm)
 
     def __init__(self, text, action_id, url=None, value=None, style=None, confirm=None):
-        super().__init__("button", text, action_id, url, value, style, confirm)
+        super().__init__("button", action_id, text, url, value, style, confirm)
 
 
-class DatePicker(Component):
-    type = StringField()
-    action_id = StringField(max_length=255)
+class DatePicker(Element):
     placeholder = TextField(plain=True, max_length=150)
     initial_date = DateField()
     confirm = ObjectField(Confirm)
@@ -49,10 +50,8 @@ class Image(Component):
         super().__init__("image", image_url, alt_text)
 
 
-class SelectBase(Component):
-    type = StringField()
+class SelectBase(Element):
     placeholder = TextField(plain=True, max_length=150)
-    action_id = StringField(max_length=255)
     confirm = ObjectField(Confirm)
 
 
@@ -79,8 +78,8 @@ class StaticSelect(StaticSelectBase):
 
         super().__init__(
             "static_select",
-            placeholder,
             action_id,
+            placeholder,
             confirm,
             options,
             option_groups,
@@ -107,8 +106,8 @@ class MultiStaticSelect(StaticSelectBase):
 
         super().__init__(
             "multi_static_select",
-            placeholder,
             action_id,
+            placeholder,
             confirm,
             options,
             option_groups,
@@ -134,8 +133,8 @@ class ExternalSelect(ExternalSelectBase):
     ):
         super().__init__(
             "external_select",
-            placeholder,
             action_id,
+            placeholder,
             confirm,
             min_query_length,
             initial_option,
@@ -157,8 +156,8 @@ class MultiExternalSelect(ExternalSelectBase):
     ):
         super().__init__(
             "multi_external_select",
-            placeholder,
             action_id,
+            placeholder,
             confirm,
             min_query_length,
             initial_options,
@@ -173,7 +172,7 @@ class UsersSelect(SelectBase):
         self, placeholder, action_id, initial_user=None, confirm=None,
     ):
         super().__init__(
-            "users_select", placeholder, action_id, confirm, initial_user,
+            "users_select", action_id, placeholder, confirm, initial_user,
         )
 
 
@@ -191,8 +190,8 @@ class MultiUsersSelect(SelectBase):
     ):
         super().__init__(
             "multi_users_select",
-            placeholder,
             action_id,
+            placeholder,
             confirm,
             initial_users,
             max_selected_items,
@@ -207,8 +206,8 @@ class ConversationsSelect(SelectBase):
     ):
         super().__init__(
             "conversations_select",
-            placeholder,
             action_id,
+            placeholder,
             confirm,
             initial_conversation,
         )
@@ -228,8 +227,8 @@ class MultiConversationsSelect(SelectBase):
     ):
         super().__init__(
             "multi_conversations_select",
-            placeholder,
             action_id,
+            placeholder,
             confirm,
             initial_conversations,
             max_selected_items,
@@ -244,8 +243,8 @@ class ChannelsSelect(SelectBase):
     ):
         super().__init__(
             "channels_select",
-            placeholder,
             action_id,
+            placeholder,
             confirm,
             initial_channel,
         )
@@ -265,8 +264,8 @@ class MultiChannelsSelect(SelectBase):
     ):
         super().__init__(
             "multi_channels_select",
-            placeholder,
             action_id,
+            placeholder,
             confirm,
             initial_channels,
             max_selected_items,
