@@ -166,6 +166,17 @@ class MultiExternalSelect(ExternalSelectBase):
         )
 
 
+class UsersSelect(SelectBase):
+    initial_user = StringField()
+
+    def __init__(
+        self, placeholder, action_id, initial_user=None, confirm=None,
+    ):
+        super().__init__(
+            "users_select", placeholder, action_id, confirm, initial_user,
+        )
+
+
 class MultiUsersSelect(SelectBase):
     initial_users = ArrayField(str)
     max_selected_items = IntegerField()

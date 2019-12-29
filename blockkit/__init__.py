@@ -10,4 +10,5 @@ from .elements import (
     MultiChannelsSelect,
     StaticSelect,
     ExternalSelect,
+    UsersSelect,
 )
