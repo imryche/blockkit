@@ -236,6 +236,21 @@ class MultiConversationsSelect(SelectBase):
         )
 
 
+class ChannelsSelect(SelectBase):
+    initial_channel = StringField()
+
+    def __init__(
+        self, placeholder, action_id, initial_channel=None, confirm=None,
+    ):
+        super().__init__(
+            "channels_select",
+            placeholder,
+            action_id,
+            confirm,
+            initial_channel,
+        )
+
+
 class MultiChannelsSelect(SelectBase):
     initial_channels = ArrayField(str)
     max_selected_items = IntegerField()

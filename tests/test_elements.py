@@ -13,6 +13,7 @@ from blockkit import (
     ExternalSelect,
     UsersSelect,
     ConversationsSelect,
+    ChannelsSelect,
 )
 from blockkit.validators import ValidationError
 
@@ -253,4 +254,23 @@ def test_builds_channels_multiselect(plain_text, values, confirm):
         "confirm": confirm.build(),
         "max_selected_items": 3,
         "initial_channels": initial_channels,
+    }
+
+
+def test_builds_channels_select(plain_text, values, confirm):
+    initial_channel = "C123456"
+
+    select = ChannelsSelect(
+        plain_text,
+        values.action_id,
+        confirm=confirm,
+        initial_channel=initial_channel,
+    )
+
+    assert select.build() == {
+        "type": "channels_select",
+        "placeholder": plain_text.build(),
+        "action_id": values.action_id,
+        "confirm": confirm.build(),
+        "initial_channel": initial_channel,
     }

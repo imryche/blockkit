@@ -12,4 +12,5 @@ from .elements import (
     ExternalSelect,
     UsersSelect,
     ConversationsSelect,
+    ChannelsSelect,
 )
