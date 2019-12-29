@@ -12,6 +12,7 @@ from blockkit import (
     StaticSelect,
     ExternalSelect,
     UsersSelect,
+    ConversationsSelect,
 )
 from blockkit.validators import ValidationError
 
@@ -182,10 +183,7 @@ def test_builds_users_select(plain_text, values, confirm):
     initial_user = "U123456"
 
     select = UsersSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        initial_user=initial_user,
+        plain_text, values.action_id, confirm=confirm, initial_user=initial_user,
     )
 
     assert select.build() == {
@@ -215,6 +213,25 @@ def test_builds_conversations_multiselect(plain_text, values, confirm):
         "confirm": confirm.build(),
         "max_selected_items": 3,
         "initial_conversations": initial_conversations,
+    }
+
+
+def test_builds_conversations_select(plain_text, values, confirm):
+    initial_conversation = "C123456"
+
+    select = ConversationsSelect(
+        plain_text,
+        values.action_id,
+        confirm=confirm,
+        initial_conversation=initial_conversation,
+    )
+
+    assert select.build() == {
+        "type": "conversations_select",
+        "placeholder": plain_text.build(),
+        "action_id": values.action_id,
+        "initial_conversation": initial_conversation,
+        "confirm": confirm.build(),
     }
 
 

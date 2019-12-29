@@ -199,6 +199,21 @@ class MultiUsersSelect(SelectBase):
         )
 
 
+class ConversationsSelect(SelectBase):
+    initial_conversation = StringField()
+
+    def __init__(
+        self, placeholder, action_id, initial_conversation=None, confirm=None,
+    ):
+        super().__init__(
+            "conversations_select",
+            placeholder,
+            action_id,
+            confirm,
+            initial_conversation,
+        )
+
+
 class MultiConversationsSelect(SelectBase):
     initial_conversations = ArrayField(str)
     max_selected_items = IntegerField()

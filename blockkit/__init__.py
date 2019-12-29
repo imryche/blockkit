@@ -11,4 +11,5 @@ from .elements import (
     StaticSelect,
     ExternalSelect,
     UsersSelect,
+    ConversationsSelect,
 )
