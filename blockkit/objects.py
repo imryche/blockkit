@@ -57,7 +57,7 @@ class Option(Component):
 
 class OptionGroup(Component):
     label = TextField(max_length=75, plain=True)
-    options = ArrayField([Option], max_items=100)
+    options = ArrayField(Option, max_items=100)
 
     def __init__(self, label, options):
         super().__init__(label, options)

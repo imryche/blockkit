@@ -57,8 +57,8 @@ class SelectBase(Component):
 
 
 class StaticSelectBase(SelectBase):
-    options = ArrayField([Option], max_items=100)
-    option_groups = ArrayField([OptionGroup], max_items=100)
+    options = ArrayField(Option, max_items=100)
+    option_groups = ArrayField(OptionGroup, max_items=100)
 
 
 class StaticSelect(StaticSelectBase):
@@ -89,7 +89,7 @@ class StaticSelect(StaticSelectBase):
 
 
 class MultiStaticSelect(StaticSelectBase):
-    initial_options = ArrayField([Option, OptionGroup], max_items=100)
+    initial_options = ArrayField(Option, OptionGroup, max_items=100)
     max_selected_items = IntegerField()
 
     def __init__(
@@ -122,7 +122,7 @@ class ExternalSelectBase(SelectBase):
 
 
 class MultiExternalSelect(ExternalSelectBase):
-    initial_options = ArrayField([Option, OptionGroup], max_items=100)
+    initial_options = ArrayField(Option, OptionGroup, max_items=100)
     max_selected_items = IntegerField()
 
     def __init__(
@@ -146,7 +146,7 @@ class MultiExternalSelect(ExternalSelectBase):
 
 
 class MultiUsersSelect(SelectBase):
-    initial_users = ArrayField([str])
+    initial_users = ArrayField(str)
     max_selected_items = IntegerField()
 
     def __init__(
@@ -168,7 +168,7 @@ class MultiUsersSelect(SelectBase):
 
 
 class MultiConversationsSelect(SelectBase):
-    initial_conversations = ArrayField([str])
+    initial_conversations = ArrayField(str)
     max_selected_items = IntegerField()
 
     def __init__(
@@ -190,7 +190,7 @@ class MultiConversationsSelect(SelectBase):
 
 
 class MultiChannelsSelect(SelectBase):
-    initial_channels = ArrayField([str])
+    initial_channels = ArrayField(str)
     max_selected_items = IntegerField()
 
     def __init__(

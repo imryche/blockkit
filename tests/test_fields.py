@@ -73,7 +73,7 @@ def test_plain_text_field_with_incorrect_type_raises_exception(values):
 
 def test_array_field_validates_input(values):
     texts = [PlainText(values.text) for _ in range(3)]
-    assert ArrayField().validate(texts)
+    assert ArrayField(PlainText).validate(texts)
 
 
 def test_array_field_with_incorrect_input_raises_exception():
@@ -83,17 +83,17 @@ def test_array_field_with_incorrect_input_raises_exception():
     images = [FakeImage() for _ in range(3)]
 
     with pytest.raises(ValidationError):
-        ArrayField([PlainText]).validate(images)
+        ArrayField(PlainText).validate(images)
 
 
 def test_array_field_with_exeeding_items_raises_exception(plain_text):
     with pytest.raises(ValidationError):
-        ArrayField([PlainText], max_items=5).validate([plain_text for _ in range(10)])
+        ArrayField(PlainText, max_items=5).validate([plain_text for _ in range(10)])
 
 
 def test_array_field_with_lacking_items_raises_exception(plain_text):
     with pytest.raises(ValidationError):
-        ArrayField([PlainText], min_items=2).validate([plain_text])
+        ArrayField(PlainText, min_items=2).validate([plain_text])
 
 
 def test_url_field_validates_input(values):

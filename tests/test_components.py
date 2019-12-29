@@ -32,8 +32,8 @@ def test_component_builds_fields(values):
         text = TextField()
 
     class FakeComponent(ParentFakeComponent):
-        elements = ArrayField([PlainText])
-        users = ArrayField([str])
+        elements = ArrayField(PlainText)
+        users = ArrayField(str)
 
     users = ["U123456", "U654321"]
     component = FakeComponent(

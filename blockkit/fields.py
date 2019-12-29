@@ -69,22 +69,22 @@ class TextField(Field):
 
 
 class ArrayField(Field):
-    def __init__(self, field_types=None, min_items=None, max_items=None):
+    def __init__(self, *field_types, min_items=None, max_items=None):
         self.field_types = field_types
         self.max_items = max_items
         self.min_items = min_items
 
-    def validate(self, value):
+    def validate(self, values):
         if self.field_types:
-            validate_types(self.field_types)(value)
+            validate_types(self.field_types)(values)
 
         if self.min_items:
-            validate_min_len(value, self.min_items)
+            validate_min_len(values, self.min_items)
 
         if self.max_items:
-            validate_max_len(value, self.max_items)
+            validate_max_len(values, self.max_items)
 
-        return value
+        return values
 
 
 class UrlField(Field):
