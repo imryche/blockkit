@@ -23,8 +23,6 @@ class ComponentMeta(type):
 
 
 class Component(metaclass=ComponentMeta):
-    _fields = {}
-
     def __init__(self, *args):
         if len(args) > len(self._fields):
             raise IndexError("Number of args exceeds number of fields")
