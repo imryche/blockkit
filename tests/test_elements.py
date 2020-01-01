@@ -14,6 +14,7 @@ from blockkit import (
     UsersSelect,
     ConversationsSelect,
     ChannelsSelect,
+    Overflow,
 )
 from blockkit.validators import ValidationError
 
@@ -273,4 +274,19 @@ def test_builds_channels_select(plain_text, values, confirm):
         "action_id": values.action_id,
         "confirm": confirm.build(),
         "initial_channel": initial_channel,
+    }
+
+
+def test_builds_overflow(values, option, confirm):
+    overflow = Overflow(
+        values.action_id,
+        [option for _ in range(2)],
+        confirm=confirm,
+    )
+
+    assert overflow.build() == {
+        "type": "overflow",
+        "action_id": values.action_id,
+        "options": [option.build() for _ in range(2)],
+        "confirm": confirm.build(),
     }

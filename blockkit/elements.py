@@ -242,11 +242,7 @@ class ChannelsSelect(SelectBase):
         self, placeholder, action_id, initial_channel=None, confirm=None,
     ):
         super().__init__(
-            "channels_select",
-            action_id,
-            placeholder,
-            confirm,
-            initial_channel,
+            "channels_select", action_id, placeholder, confirm, initial_channel,
         )
 
 
@@ -270,3 +266,11 @@ class MultiChannelsSelect(SelectBase):
             initial_channels,
             max_selected_items,
         )
+
+
+class Overflow(Element):
+    options = ArrayField(Option, min_items=2, max_items=5)
+    confirm = ObjectField(Confirm)
+
+    def __init__(self, action_id, options, confirm=None):
+        super().__init__("overflow", action_id, options, confirm)
