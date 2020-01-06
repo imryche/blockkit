@@ -51,12 +51,12 @@ class Image(Component):
         super().__init__("image", image_url, alt_text)
 
 
-class SelectBase(Element):
+class Select(Element):
     placeholder = TextField(plain=True, max_length=150)
     confirm = ObjectField(Confirm)
 
 
-class StaticSelectBase(SelectBase):
+class StaticSelectBase(Select):
     options = ArrayField(Option, max_items=100)
     option_groups = ArrayField(OptionGroup, max_items=100)
 
@@ -117,7 +117,7 @@ class MultiStaticSelect(StaticSelectBase):
         )
 
 
-class ExternalSelectBase(SelectBase):
+class ExternalSelectBase(Select):
     min_query_length = IntegerField()
 
 
@@ -166,7 +166,7 @@ class MultiExternalSelect(ExternalSelectBase):
         )
 
 
-class UsersSelect(SelectBase):
+class UsersSelect(Select):
     initial_user = StringField()
 
     def __init__(
@@ -177,7 +177,7 @@ class UsersSelect(SelectBase):
         )
 
 
-class MultiUsersSelect(SelectBase):
+class MultiUsersSelect(Select):
     initial_users = ArrayField(str)
     max_selected_items = IntegerField()
 
@@ -199,7 +199,7 @@ class MultiUsersSelect(SelectBase):
         )
 
 
-class ConversationsSelect(SelectBase):
+class ConversationsSelect(Select):
     initial_conversation = StringField()
 
     def __init__(
@@ -214,7 +214,7 @@ class ConversationsSelect(SelectBase):
         )
 
 
-class MultiConversationsSelect(SelectBase):
+class MultiConversationsSelect(Select):
     initial_conversations = ArrayField(str)
     max_selected_items = IntegerField()
 
@@ -236,7 +236,7 @@ class MultiConversationsSelect(SelectBase):
         )
 
 
-class ChannelsSelect(SelectBase):
+class ChannelsSelect(Select):
     initial_channel = StringField()
 
     def __init__(
@@ -247,7 +247,7 @@ class ChannelsSelect(SelectBase):
         )
 
 
-class MultiChannelsSelect(SelectBase):
+class MultiChannelsSelect(Select):
     initial_channels = ArrayField(str)
     max_selected_items = IntegerField()
 
