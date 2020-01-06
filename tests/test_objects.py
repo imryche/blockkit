@@ -27,10 +27,10 @@ def test_plain_text_with_verbatim_raises_exception(values):
         Text(values.text, type_=Text.plain, verbatim=True)
 
 
-def test_builds_confirm(plain_text, basic_text, values):
+def test_builds_confirm(plain_text, markdown_text, values):
     confirm = Confirm(
         plain_text,
-        basic_text,
+        markdown_text,
         Text(values.confirm_text, type_=Text.plain),
         Text(values.deny_text, type_=Text.plain),
     )

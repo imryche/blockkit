@@ -121,9 +121,9 @@ def test_object_field_validates_input(short_text):
     )
 
 
-def test_object_field_with_incorrect_input_raises_exception(basic_text):
+def test_object_field_with_incorrect_input_raises_exception(markdown_text):
     with pytest.raises(ValidationError):
-        ObjectField(Confirm).validate(basic_text)
+        ObjectField(Confirm).validate(markdown_text)
 
 
 def test_date_field_validates_input(values):

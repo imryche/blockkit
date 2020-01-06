@@ -32,7 +32,7 @@ def values():
 
 
 @pytest.fixture
-def basic_text(values):
+def markdown_text(values):
     return MarkdownText(values.text)
 
 
@@ -57,10 +57,10 @@ def button(plain_text, values):
 
 
 @pytest.fixture
-def confirm(values, plain_text, basic_text):
+def confirm(values, plain_text, markdown_text):
     return Confirm(
         plain_text,
-        basic_text,
+        markdown_text,
         PlainText(values.confirm_text),
         PlainText(values.deny_text),
     )
