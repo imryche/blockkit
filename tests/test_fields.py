@@ -42,6 +42,11 @@ def test_integer_field_with_incorrect_input_raises_exception():
         IntegerField().validate('one')
 
 
+def test_integer_field_with_exceeding_value_raises_exception():
+    with pytest.raises(ValidationError):
+        IntegerField(max_value=10).validate(11)
+
+
 def test_boolean_field_validates_input():
     assert BooleanField().validate(True) is True
 

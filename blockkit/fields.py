@@ -9,6 +9,7 @@ from .validators import (
     validate_url,
     validate_date,
     validate_min_len,
+    ValidationError,
 )
 
 
@@ -36,8 +37,14 @@ class StringField(Field):
 
 
 class IntegerField(Field):
+    def __init__(self, max_value=None):
+        self.max_value = max_value
+
     def validate(self, value):
         validate_type(int)(value)
+
+        if self.max_value and value > self.max_value:
+            raise ValidationError(f"{value} exeeds max value of {self.max_value}")
 
         return value
 
