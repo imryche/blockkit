@@ -15,6 +15,7 @@ from blockkit import (
     ConversationsSelect,
     ChannelsSelect,
     Overflow,
+    PlainTextInput,
 )
 from blockkit.validators import ValidationError
 
@@ -289,4 +290,29 @@ def test_builds_overflow(values, option, confirm):
         "action_id": values.action_id,
         "options": [option.build() for _ in range(2)],
         "confirm": confirm.build(),
+    }
+
+
+def test_builds_plain_input(values, plain_text):
+    min_length = 2
+    max_length = 10
+    multiline = False
+
+    text_input = PlainTextInput(
+        values.action_id,
+        placeholder=plain_text,
+        initial_value=values.value,
+        multiline=multiline,
+        min_length=min_length,
+        max_length=max_length
+    )
+
+    assert text_input.build() == {
+        "type": "plain_text_input",
+        "action_id": values.action_id,
+        "placeholder": plain_text.build(),
+        "initial_value": values.value,
+        "multiline": multiline,
+        "min_length": min_length,
+        "max_length": max_length,
     }

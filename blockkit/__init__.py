@@ -14,4 +14,5 @@ from .elements import (
     ConversationsSelect,
     ChannelsSelect,
     Overflow,
+    PlainTextInput,
 )

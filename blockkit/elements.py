@@ -6,6 +6,7 @@ from blockkit.fields import (
     StringField,
     TextField,
     UrlField,
+    BooleanField,
 )
 
 from . import Option, OptionGroup, Confirm
@@ -274,3 +275,30 @@ class Overflow(Element):
 
     def __init__(self, action_id, options, confirm=None):
         super().__init__("overflow", action_id, options, confirm)
+
+
+class PlainTextInput(Element):
+    placeholder = TextField(plain=True, max_length=150)
+    initial_value = StringField()
+    multiline = BooleanField()
+    min_length = IntegerField(max_value=3000)
+    max_length = IntegerField()
+
+    def __init__(
+        self,
+        action_id,
+        placeholder=None,
+        initial_value=None,
+        multiline=None,
+        min_length=None,
+        max_length=None,
+    ):
+        super().__init__(
+            "plain_text_input",
+            action_id,
+            placeholder,
+            initial_value,
+            multiline,
+            min_length,
+            max_length,
+        )
