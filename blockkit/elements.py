@@ -302,3 +302,12 @@ class PlainTextInput(Element):
             min_length,
             max_length,
         )
+
+
+class RadioButtons(Element):
+    options = ArrayField(Option)
+    initial_option = ObjectField(Option)
+    confirm = ObjectField(Confirm)
+
+    def __init__(self, action_id, options, initial_option=None, confirm=None):
+        super().__init__("radio_buttons", action_id, options, initial_option, confirm)

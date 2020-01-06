@@ -16,6 +16,7 @@ from blockkit import (
     ChannelsSelect,
     Overflow,
     PlainTextInput,
+    RadioButtons,
 )
 from blockkit.validators import ValidationError
 
@@ -315,4 +316,21 @@ def test_builds_plain_input(values, plain_text):
         "multiline": multiline,
         "min_length": min_length,
         "max_length": max_length,
+    }
+
+
+def test_builds_radio_buttons(values, option, confirm):
+    radio_buttons = RadioButtons(
+        values.action_id,
+        [option for _ in range(3)],
+        initial_option=option,
+        confirm=confirm,
+    )
+
+    assert radio_buttons.build() == {
+        "type": "radio_buttons",
+        "action_id": values.action_id,
+        "options": [option.build() for _ in range(3)],
+        "initial_option": option.build(),
+        "confirm": confirm.build(),
     }
