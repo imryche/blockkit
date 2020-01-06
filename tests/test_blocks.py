@@ -1,4 +1,4 @@
-from blockkit import Section, Divider, ImageBlock, Actions
+from blockkit import Section, Divider, ImageBlock, Actions, Context
 
 
 def test_builds_section(values, markdown_text, button):
@@ -53,5 +53,18 @@ def test_builds_actions(values, button):
     assert actions.build() == {
         "type": "actions",
         "elements": [button.build() for _ in range(4)],
+        "block_id": values.block_id,
+    }
+
+
+def test_builds_context(values, plain_text, image):
+    context = Context(
+        [plain_text, image],
+        values.block_id,
+    )
+
+    assert context.build() == {
+        "type": "context",
+        "elements": [plain_text.build(), image.build()],
         "block_id": values.block_id,
     }

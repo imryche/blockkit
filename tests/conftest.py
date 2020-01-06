@@ -2,7 +2,15 @@ from collections import namedtuple
 
 import pytest
 
-from blockkit import Button, Confirm, MarkdownText, Option, OptionGroup, PlainText
+from blockkit import (
+    Button,
+    Confirm,
+    Image,
+    MarkdownText,
+    Option,
+    OptionGroup,
+    PlainText,
+)
 
 TestValues = namedtuple(
     "TestValues",
@@ -49,6 +57,11 @@ def plain_text(values):
 @pytest.fixture
 def button(plain_text, values):
     return Button(plain_text, values.action_id)
+
+
+@pytest.fixture
+def image(values):
+    return Image(values.image_url, alt_text=values.text)
 
 
 @pytest.fixture

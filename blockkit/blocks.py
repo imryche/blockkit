@@ -1,6 +1,6 @@
 from . import Text
 from .components import Component
-from .elements import Element, SelectBase, Button, Overflow, DatePicker
+from .elements import Element, SelectBase, Button, Overflow, DatePicker, Image
 from .fields import ArrayField, ObjectField, StringField, TextField, UrlField
 
 
@@ -37,3 +37,10 @@ class Actions(Block):
 
     def __init__(self, elements, block_id=None):
         super().__init__("actions", block_id, elements)
+
+
+class Context(Block):
+    elements = ArrayField(Text, Image, max_items=10)
+
+    def __init__(self, elements, block_id=None):
+        super().__init__("context", block_id, elements)
