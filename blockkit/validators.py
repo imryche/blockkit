@@ -25,7 +25,7 @@ def validate_type(types):
 def validate_types(types):
     def validate(values):
         for value in values:
-            if type(value) not in types:
+            if not any(issubclass(type(value), t) for t in types):
                 raise ValidationError(
                     f'{value} should be an instance of {types}')
 
