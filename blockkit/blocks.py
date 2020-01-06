@@ -1,7 +1,7 @@
 from . import Text
 from .components import Component
 from .elements import Element
-from .fields import ArrayField, ObjectField, StringField, TextField
+from .fields import ArrayField, ObjectField, StringField, TextField, UrlField
 
 
 class Block(Component):
@@ -21,3 +21,12 @@ class Section(Block):
 class Divider(Block):
     def __init__(self, block_id=None):
         super().__init__("divider", block_id)
+
+
+class ImageBlock(Block):
+    image_url = UrlField(max_length=3000)
+    alt_text = StringField(max_length=2000)
+    title = TextField(plain=True, max_length=2000)
+
+    def __init__(self, image_url, alt_text, title=None, block_id=None):
+        super().__init__("image", block_id, image_url, alt_text, title)

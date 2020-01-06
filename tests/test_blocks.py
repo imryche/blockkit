@@ -1,4 +1,4 @@
-from blockkit import Section, Divider
+from blockkit import Section, Divider, ImageBlock
 
 
 def test_builds_section(values, markdown_text, button):
@@ -23,5 +23,22 @@ def test_builds_divider(values):
 
     assert divider.build() == {
         "type": "divider",
+        "block_id": values.block_id,
+    }
+
+
+def test_builds_image_block(values, plain_text):
+    image = ImageBlock(
+        values.image_url,
+        values.text,
+        title=plain_text,
+        block_id=values.block_id,
+    )
+
+    assert image.build() == {
+        "type": "image",
+        "image_url": values.image_url,
+        "alt_text": values.text,
+        "title": plain_text.build(),
         "block_id": values.block_id,
     }

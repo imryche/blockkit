@@ -17,4 +17,4 @@ from .elements import (
     PlainTextInput,
     RadioButtons,
 )
-from .blocks import Section, Divider
+from .blocks import Section, Divider, ImageBlock
