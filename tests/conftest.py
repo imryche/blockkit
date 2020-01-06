@@ -2,13 +2,13 @@ from collections import namedtuple
 
 import pytest
 
-from blockkit import Confirm, Option, OptionGroup, MarkdownText, PlainText
+from blockkit import Button, Confirm, MarkdownText, Option, OptionGroup, PlainText
 
 TestValues = namedtuple(
     "TestValues",
     (
         "title text short_text image_url alt_text url "
-        "action_id confirm_text deny_text value date"
+        "action_id block_id confirm_text deny_text value date"
     ),
 )
 
@@ -22,7 +22,8 @@ def values():
         image_url="http://placekitten.com/200/200",
         alt_text="There is a kitten",
         url="https://example.com",
-        action_id="test_action",
+        action_id="test_action_id",
+        block_id="text_block_id",
         confirm_text="Confirm",
         deny_text="Deny",
         value="value",
@@ -48,6 +49,11 @@ def plain_text(values):
 @pytest.fixture
 def basic_option(plain_text, values):
     return Option(plain_text, values.value)
+
+
+@pytest.fixture
+def button(plain_text, values):
+    return Button(plain_text, values.action_id)
 
 
 @pytest.fixture

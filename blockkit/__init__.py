@@ -17,3 +17,4 @@ from .elements import (
     PlainTextInput,
     RadioButtons,
 )
+from .blocks import Section
