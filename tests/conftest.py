@@ -47,11 +47,6 @@ def plain_text(values):
 
 
 @pytest.fixture
-def basic_option(plain_text, values):
-    return Option(plain_text, values.value)
-
-
-@pytest.fixture
 def button(plain_text, values):
     return Button(plain_text, values.action_id)
 

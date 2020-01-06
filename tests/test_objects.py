@@ -53,10 +53,10 @@ def test_builds_option(plain_text, values):
     }
 
 
-def test_builds_option_group(plain_text, basic_option, values):
-    option_group = OptionGroup(plain_text, [basic_option for _ in range(3)])
+def test_builds_option_group(plain_text, option, values):
+    option_group = OptionGroup(plain_text, [option for _ in range(3)])
 
     assert option_group.build() == {
         "label": {"type": Text.plain, "text": values.text},
-        "options": [basic_option.build() for _ in range(3)],
+        "options": [option.build() for _ in range(3)],
     }
