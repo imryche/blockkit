@@ -16,3 +16,8 @@ class Section(Block):
 
     def __init__(self, text, block_id=None, fields=None, accessory=None):
         super().__init__("section", block_id, text, fields, accessory)
+
+
+class Divider(Block):
+    def __init__(self, block_id=None):
+        super().__init__("divider", block_id)

@@ -1,4 +1,4 @@
-from blockkit import Section
+from blockkit import Section, Divider
 
 
 def test_builds_section(values, basic_text, button):
@@ -15,4 +15,13 @@ def test_builds_section(values, basic_text, button):
         "block_id": values.block_id,
         "fields": [basic_text.build() for _ in range(2)],
         "accessory": button.build(),
+    }
+
+
+def test_builds_divider(values):
+    divider = Divider(values.block_id)
+
+    assert divider.build() == {
+        "type": "divider",
+        "block_id": values.block_id,
     }
