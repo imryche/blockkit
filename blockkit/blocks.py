@@ -69,3 +69,11 @@ class Input(Block):
 
     def __init__(self, label, element, block_id=None, hint=None, optional=None):
         super().__init__("input", block_id, label, element, hint, optional)
+
+
+class File(Block):
+    external_id = StringField()
+    source = StringField()
+
+    def __init__(self, external_id, source="remote", block_id=None):
+        super().__init__("file", block_id, external_id, source)
