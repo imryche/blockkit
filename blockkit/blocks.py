@@ -1,7 +1,22 @@
 from . import Text
 from .components import Component
-from .elements import Element, Select, Button, Overflow, DatePicker, Image
-from .fields import ArrayField, ObjectField, StringField, TextField, UrlField
+from .elements import (
+    Button,
+    DatePicker,
+    Element,
+    Image,
+    Overflow,
+    PlainTextInput,
+    Select,
+)
+from .fields import (
+    ArrayField,
+    ObjectField,
+    StringField,
+    TextField,
+    UrlField,
+    BooleanField,
+)
 
 
 class Block(Component):
@@ -44,3 +59,13 @@ class Context(Block):
 
     def __init__(self, elements, block_id=None):
         super().__init__("context", block_id, elements)
+
+
+class Input(Block):
+    label = TextField(plain=True, max_length=2000)
+    element = ObjectField(PlainTextInput, Select, DatePicker)
+    hint = TextField(plain=True, max_length=2000)
+    optional = BooleanField()
+
+    def __init__(self, label, element, block_id=None, hint=None, optional=None):
+        super().__init__("input", block_id, label, element, hint, optional)

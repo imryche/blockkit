@@ -1,4 +1,12 @@
-from blockkit import Section, Divider, ImageBlock, Actions, Context
+from blockkit import (
+    Actions,
+    Context,
+    Divider,
+    ImageBlock,
+    Input,
+    PlainTextInput,
+    Section,
+)
 
 
 def test_builds_section(values, markdown_text, button):
@@ -29,10 +37,7 @@ def test_builds_divider(values):
 
 def test_builds_image_block(values, plain_text):
     image = ImageBlock(
-        values.image_url,
-        values.text,
-        title=plain_text,
-        block_id=values.block_id,
+        values.image_url, values.text, title=plain_text, block_id=values.block_id,
     )
 
     assert image.build() == {
@@ -45,10 +50,7 @@ def test_builds_image_block(values, plain_text):
 
 
 def test_builds_actions(values, button):
-    actions = Actions(
-        [button for _ in range(4)],
-        values.block_id,
-    )
+    actions = Actions([button for _ in range(4)], values.block_id,)
 
     assert actions.build() == {
         "type": "actions",
@@ -58,13 +60,32 @@ def test_builds_actions(values, button):
 
 
 def test_builds_context(values, plain_text, image):
-    context = Context(
-        [plain_text, image],
-        values.block_id,
-    )
+    context = Context([plain_text, image], values.block_id,)
 
     assert context.build() == {
         "type": "context",
         "elements": [plain_text.build(), image.build()],
         "block_id": values.block_id,
+    }
+
+
+def test_builds_input(values, plain_text):
+    optional = True
+    text_input = PlainTextInput(values.action_id)
+
+    input_ = Input(
+        plain_text,
+        text_input,
+        block_id=values.block_id,
+        hint=plain_text,
+        optional=optional,
+    )
+
+    assert input_.build() == {
+        "type": "input",
+        "label": plain_text.build(),
+        "element": text_input.build(),
+        "block_id": values.block_id,
+        "hint": plain_text.build(),
+        "optional": optional,
     }
