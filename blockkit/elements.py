@@ -75,7 +75,7 @@ class StaticSelect(StaticSelectBase):
         max_selected_items=None,
     ):
         if options and option_groups:
-            raise ValidationError("You can specify either options or option_groups")
+            raise ValidationError("You can specify either options or option_groups.")
 
         super().__init__(
             "static_select",
@@ -103,7 +103,7 @@ class MultiStaticSelect(StaticSelectBase):
         max_selected_items=None,
     ):
         if options and option_groups:
-            raise ValidationError("You can specify either options or option_groups")
+            raise ValidationError("You can specify either options or option_groups.")
 
         super().__init__(
             "multi_static_select",

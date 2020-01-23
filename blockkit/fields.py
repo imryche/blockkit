@@ -11,49 +11,49 @@ class ValidationError(Exception):
 def validate_type(value, *types):
     for type_ in types:
         if not isinstance(value, type_):
-            raise ValidationError(f"{value} should be an instance of {type_}")
+            raise ValidationError(f"{value} should be an instance of {type_}.")
 
     return value
 
 
 def validate_non_empty(value):
     if len(value) < 1:
-        raise ValidationError("This field can't be empty")
+        raise ValidationError("This field can't be empty.")
 
     return value
 
 
 def validate_options(value, options):
     if value not in options:
-        raise ValidationError(f"{value} shouel be one of the {options}")
+        raise ValidationError(f"{value} shouel be one of the {options}.")
 
     return value
 
 
 def validate_url(value):
     if not validators.url(value):
-        raise ValidationError(f"{value} is not correct url")
+        raise ValidationError(f"{value} is not correct url.")
 
     return value
 
 
 def validate_attr(value, attr, attr_value):
     if getattr(value, attr) != attr_value:
-        raise ValidationError(f"{value}.{attr} has incorrect value of {attr_value}")
+        raise ValidationError(f"{value}.{attr} has incorrect value of {attr_value}.")
 
     return value
 
 
 def validate_max_len(value, length):
     if len(value) > length:
-        raise ValidationError(f"{value} length is more than {length}")
+        raise ValidationError(f"{value} length is more than {length}.")
 
     return value
 
 
 def validate_min_len(value, length):
     if len(value) < length:
-        raise ValidationError(f"{value} length is less than {length}")
+        raise ValidationError(f"{value} length is less than {length}.")
 
     return value
 
@@ -62,7 +62,7 @@ def validate_date(value):
     try:
         datetime.strptime(value, "%Y-%m-%d")
     except ValueError:
-        raise ValidationError(f"{value} has incorrect date format")
+        raise ValidationError(f"{value} has incorrect date format.")
 
     return value
 
@@ -98,7 +98,7 @@ class IntegerField(Field):
         validate_type(value, int)
 
         if self.max_value and value > self.max_value:
-            raise ValidationError(f"{value} exeeds max value of {self.max_value}")
+            raise ValidationError(f"{value} exeeds max value of {self.max_value}.")
 
         return value
 
