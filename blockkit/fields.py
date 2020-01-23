@@ -1,16 +1,80 @@
 from abc import ABC, abstractmethod
 
-from .validators import (
-    validate_attr,
-    validate_max_len,
-    validate_options,
-    validate_type,
-    validate_types,
-    validate_url,
-    validate_date,
-    validate_min_len,
-    ValidationError,
-)
+from collections.abc import Sequence
+from datetime import datetime
+
+import validators.url
+
+
+class ValidationError(Exception):
+    pass
+
+
+def validate_type(value, *types):
+    for type_ in types:
+        if not isinstance(value, type_):
+            raise ValidationError(f"{value} should be an instance of {type_}")
+
+    return value
+
+
+def validate_types(values, types):
+    for value in values:
+        if not any(issubclass(type(value), t) for t in types):
+            raise ValidationError(f"{value} should be an instance of {types}")
+
+    return values
+
+
+def validate_non_empty(value):
+    if len(value) < 1:
+        raise ValidationError("This field can't be empty")
+
+    return value
+
+
+def validate_options(value, options):
+    if value not in options:
+        raise ValidationError(f"{value} shouel be one of the {options}")
+
+    return value
+
+
+def validate_url(value):
+    if not validators.url(value):
+        raise ValidationError(f"{value} is not correct url")
+
+    return value
+
+
+def validate_attr(value, attr, attr_value):
+    if getattr(value, attr) != attr_value:
+        raise ValidationError(f"{value}.{attr} has incorrect value of {attr_value}")
+
+    return value
+
+
+def validate_max_len(value, length):
+    if len(value) > length:
+        raise ValidationError(f"{value} length is more than {length}")
+
+    return value
+
+
+def validate_min_len(value, length):
+    if len(value) < length:
+        raise ValidationError(f"{value} length is less than {length}")
+
+    return value
+
+
+def validate_date(value):
+    try:
+        datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        raise ValidationError(f"{value} has incorrect date format")
+
+    return value
 
 
 class Field(ABC):
@@ -25,7 +89,7 @@ class StringField(Field):
         self.options = options or []
 
     def validate(self, value):
-        validate_type(str)(value)
+        validate_type(value, str)
 
         if self.max_length:
             validate_max_len(value, self.max_length)
@@ -41,7 +105,7 @@ class IntegerField(Field):
         self.max_value = max_value
 
     def validate(self, value):
-        validate_type(int)(value)
+        validate_type(value, int)
 
         if self.max_value and value > self.max_value:
             raise ValidationError(f"{value} exeeds max value of {self.max_value}")
@@ -51,7 +115,7 @@ class IntegerField(Field):
 
 class BooleanField(Field):
     def validate(self, value):
-        validate_type(bool)(value)
+        validate_type(value, bool)
 
         return value
 
@@ -64,13 +128,13 @@ class TextField(Field):
     def validate(self, value):
         from . import Text
 
-        validate_type(Text)(value)
+        validate_type(value, Text)
 
         if self.max_length:
             validate_max_len(value.text, self.max_length)
 
         if self.plain:
-            validate_attr("type", Text.plain)(value)
+            validate_attr(value, "type", Text.plain)
 
         return value
 
@@ -83,7 +147,7 @@ class ArrayField(Field):
 
     def validate(self, values):
         if self.field_types:
-            validate_types(self.field_types)(values)
+            validate_types(values, self.field_types)
 
         if self.min_items:
             validate_min_len(values, self.min_items)
@@ -112,7 +176,7 @@ class ObjectField(Field):
         self.field_types = field_types
 
     def validate(self, value):
-        validate_types(self.field_types)((value,))
+        validate_types([value], self.field_types)
 
         return value
 

@@ -1,7 +1,7 @@
 import pytest
 
 from blockkit import Confirm, Option, OptionGroup, Text, MarkdownText, PlainText
-from blockkit.validators import ValidationError
+from blockkit.fields import ValidationError
 
 
 def test_builds_markdown_text(values):

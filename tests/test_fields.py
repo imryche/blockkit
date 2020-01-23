@@ -10,8 +10,8 @@ from blockkit.fields import (
     UrlField,
     DateField,
     IntegerField,
+    ValidationError,
 )
-from blockkit.validators import ValidationError
 
 
 def test_string_field_validates_input():

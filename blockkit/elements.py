@@ -7,11 +7,11 @@ from blockkit.fields import (
     TextField,
     UrlField,
     BooleanField,
+    ValidationError,
 )
 
 from . import Option, OptionGroup, Confirm
 from .components import Component
-from .validators import ValidationError
 
 
 class Element(Component):

@@ -18,7 +18,7 @@ from blockkit import (
     PlainTextInput,
     RadioButtons,
 )
-from blockkit.validators import ValidationError
+from blockkit.fields import ValidationError
 
 
 def test_builds_button(values, plain_text, confirm):
