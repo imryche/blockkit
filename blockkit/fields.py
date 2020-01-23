@@ -16,14 +16,6 @@ def validate_type(value, *types):
     return value
 
 
-def validate_types(values, types):
-    for value in values:
-        if not any(issubclass(type(value), t) for t in types):
-            raise ValidationError(f"{value} should be an instance of {types}")
-
-    return values
-
-
 def validate_non_empty(value):
     if len(value) < 1:
         raise ValidationError("This field can't be empty")
@@ -145,7 +137,8 @@ class ArrayField(Field):
 
     def validate(self, values):
         if self.field_types:
-            validate_types(values, self.field_types)
+            for value in values:
+                validate_type(value, self.field_types)
 
         if self.min_items:
             validate_min_len(values, self.min_items)
@@ -174,7 +167,7 @@ class ObjectField(Field):
         self.field_types = field_types
 
     def validate(self, value):
-        validate_types([value], self.field_types)
+        validate_type(value, self.field_types)
 
         return value
 
