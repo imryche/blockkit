@@ -9,23 +9,24 @@ class ValidationError(Exception):
 
 
 def validate_type(value, *types):
+    pretty_types = [t.__name__ for t in types]
     for type_ in types:
         if not isinstance(value, type_):
-            raise ValidationError(f"{value} should be an instance of {type_}.")
+            raise ValidationError(f"{value} should be an instance one of either {pretty_types}.")
 
     return value
 
 
 def validate_non_empty(value):
     if len(value) < 1:
-        raise ValidationError("This field can't be empty.")
+        raise ValidationError("Can't be empty.")
 
     return value
 
 
 def validate_options(value, options):
     if value not in options:
-        raise ValidationError(f"{value} shouel be one of the {options}.")
+        raise ValidationError(f"{value} should be one of the {options}.")
 
     return value
 

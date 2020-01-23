@@ -23,12 +23,12 @@ class Text(Component):
 
         if type_ == self.markdown and emoji:
             raise ValidationError(
-                f"'emoji' field is usable only when type is {self.plain}."
+                f"'emoji' field isn't allowed when type is \"{self.plain}\"."
             )
 
         if type_ == self.plain and verbatim:
             raise ValidationError(
-                f"'verbatim' field is usable only when type is {self.markdown}."
+                f"'verbatim' field isn't allowd when type is \"{self.markdown}\"."
             )
 
 
