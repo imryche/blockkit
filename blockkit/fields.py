@@ -1,6 +1,4 @@
 from abc import ABC, abstractmethod
-
-from collections.abc import Sequence
 from datetime import datetime
 
 import validators.url
