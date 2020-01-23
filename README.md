@@ -4,7 +4,7 @@ A fast way to build Block Kit interfaces in Python
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install blockkit.
 
 ```bash
 pip install blockkit
