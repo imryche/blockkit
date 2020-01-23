@@ -1,6 +1,6 @@
 # blockkit-python
 
-Build Block Kit experiences in python faster.
+A fast way to build Block Kit interfaces in Python 
 
 ## Installation
 
