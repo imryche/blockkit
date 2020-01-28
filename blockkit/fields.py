@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+from collections.abc import Iterable
 
 import validators.url
 
@@ -8,13 +9,16 @@ class ValidationError(Exception):
     pass
 
 
-def validate_type(value, *types):
+def validate_type(values, *types):
     pretty_types = [t.__name__ for t in types]
-    for type_ in types:
-        if not isinstance(value, type_):
+    if not isinstance(values, Iterable):
+        values = [values]
+
+    for value in values:
+        if not any(isinstance(value, t) for t in types):
             raise ValidationError(f"{value} should be an instance one of either {pretty_types}.")
 
-    return value
+    return values
 
 
 def validate_non_empty(value):
@@ -139,7 +143,7 @@ class ArrayField(Field):
     def validate(self, values):
         if self.field_types:
             for value in values:
-                validate_type(value, self.field_types)
+                validate_type(value, *self.field_types)
 
         if self.min_items:
             validate_min_len(values, self.min_items)
@@ -168,7 +172,7 @@ class ObjectField(Field):
         self.field_types = field_types
 
     def validate(self, value):
-        validate_type(value, self.field_types)
+        validate_type(value, *self.field_types)
 
         return value
 
