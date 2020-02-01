@@ -35,9 +35,9 @@ message = Message(
         ),
         Actions(
             [
-                Button(PlainText("Approve"), style=Button.primary, action_id="click_me_123"),
-                Button(PlainText("Decline"), style=Button.danger, action_id="click_me_456"),
-                Button(PlainText("Discuss"), action_id="click_me_456"),
+                Button(PlainText("Approve"), style=Button.primary, action_id="approve"),
+                Button(PlainText("Decline"), style=Button.danger, action_id="decline"),
+                Button(PlainText("Discuss"), action_id="discuss"),
             ]
         ),
     ]
