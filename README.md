@@ -1,6 +1,6 @@
 # blockkit-python
 
-[![Build Status](https://travis-ci.com/oneor0/blockkit-python.svg?branch=master)](https://travis-ci.com/oneor0/blockkit-python)
+[![Build Status](https://travis-ci.com/oneor0/blockkit-slack.svg?branch=master)](https://travis-ci.com/oneor0/blockkit-slack)
 
 A fast way to build Block Kit interfaces in Python 
 
