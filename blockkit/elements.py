@@ -311,3 +311,12 @@ class RadioButtons(Element):
 
     def __init__(self, action_id, options, initial_option=None, confirm=None):
         super().__init__("radio_buttons", action_id, options, initial_option, confirm)
+
+
+class Checkboxes(Element):
+    options = ArrayField(Option)
+    initial_options = ArrayField(Option)
+    confirm = ObjectField(Confirm)
+
+    def __init__(self, action_id, options, initial_options=None, confirm=None):
+        super().__init__("checkboxes", action_id, options, initial_options, confirm)

@@ -16,6 +16,7 @@ from .elements import (
     Overflow,
     PlainTextInput,
     RadioButtons,
+    Checkboxes,
 )
 from .blocks import Section, Divider, ImageBlock, Actions, Context, Input, File
 from .messages import Message

@@ -17,6 +17,7 @@ from blockkit import (
     Overflow,
     PlainTextInput,
     RadioButtons,
+    Checkboxes,
 )
 from blockkit.fields import ValidationError
 
@@ -333,4 +334,21 @@ def test_builds_radio_buttons(values, option, confirm):
         "options": [option.build() for _ in range(3)],
         "initial_option": option.build(),
         "confirm": confirm.build(),
+    }
+
+
+def test_builds_checkboxes(values, option, confirm):
+    checkboxes = Checkboxes(
+        values.action_id,
+        [option for _ in range(3)],
+        initial_options=[option],
+        confirm=confirm
+    )
+
+    assert checkboxes.build() == {
+        "type": "checkboxes",
+        "action_id": values.action_id,
+        "options": [option.build() for _ in range(3)],
+        "initial_options": [option.build()],
+        "confirm": confirm.build()
     }
