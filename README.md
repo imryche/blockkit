@@ -1,4 +1,4 @@
-# blockkit-python
+# blockkit-slack
 
 [![Build Status](https://travis-ci.com/oneor0/blockkit-slack.svg?branch=master)](https://travis-ci.com/oneor0/blockkit-slack)
 
