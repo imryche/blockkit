@@ -19,4 +19,4 @@ from .elements import (
     Checkboxes,
 )
 from .blocks import Section, Divider, ImageBlock, Actions, Context, Input, File
-from .messages import Message
+from .surfaces import Message
