@@ -16,9 +16,9 @@ message = Message(
         ),
         Actions(
             [
-                Button("Approve", style=Button.primary, action_id="click_me_123"),
-                Button("Decline", style=Button.danger, action_id="click_me_456"),
-                Button("Discuss", action_id="click_me_456"),
+                Button("Approve", style=Button.primary, action_id="approve"),
+                Button("Decline", style=Button.danger, action_id="decline"),
+                Button("Discuss", action_id="discuss"),
             ]
         ),
     ]
