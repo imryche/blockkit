@@ -39,7 +39,7 @@ def test_integer_field_validates_input():
 
 def test_integer_field_with_incorrect_input_raises_exception():
     with pytest.raises(ValidationError):
-        IntegerField().validate('one')
+        IntegerField().validate("one")
 
 
 def test_integer_field_with_exceeding_value_raises_exception():
@@ -61,9 +61,10 @@ def test_text_field_validates_input(values):
     assert TextField().validate(text) == text
 
 
-def test_text_field_with_incorrect_input_raises_exception():
-    with pytest.raises(ValidationError):
-        TextField().validate("text")
+@pytest.mark.parametrize("plain", (True, False))
+def test_text_field_validates_str_input(plain, values):
+    text = "Hey there!"
+    assert TextField(plain=plain).validate(text) == PlainText(text, emoji=True)
 
 
 def test_text_field_with_exeeding_length_raises_exception():
@@ -132,4 +133,4 @@ def test_date_field_validates_input(values):
 
 def test_date_field_with_incorrect_input_raises_exception():
     with pytest.raises(ValidationError):
-        DateField().validate('2019-12-43')
+        DateField().validate("2019-12-43")

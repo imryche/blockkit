@@ -121,15 +121,18 @@ class TextField(Field):
         self.plain = plain
 
     def validate(self, value):
-        from . import Text
+        from . import Text, PlainText
+
+        if type(value) == str:
+            value = PlainText(value, emoji=True)
+
+        if self.plain:
+            validate_attr(value, "type", Text.plain)
 
         validate_type(value, Text)
 
         if self.max_length:
             validate_max_len(value.text, self.max_length)
-
-        if self.plain:
-            validate_attr(value, "type", Text.plain)
 
         return value
 

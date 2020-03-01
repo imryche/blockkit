@@ -42,6 +42,9 @@ class Component(metaclass=ComponentMeta):
         values = ", ".join(str(getattr(self, f)) for f in self._fields)
         return f"{self.__class__.__name__}({values})"
 
+    def __eq__(self, other):
+        return all(getattr(self, attr) == getattr(other, attr) for attr in self._fields)
+
     def build(self):
         result = {}
 
