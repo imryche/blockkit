@@ -52,3 +52,18 @@ class Modal(Component):
             notify_on_close,
             external_id,
         )
+
+
+class Home(Component):
+    type = StringField()
+    blocks = ArrayField(Block)
+    private_metadata = StringField(max_length=3000)
+    callback_id = StringField(max_length=255)
+    external_id = StringField()
+
+    def __init__(
+        self, blocks, private_metadata=None, callback_id=None, external_id=None,
+    ):
+        super().__init__(
+            "home", blocks, private_metadata, callback_id, external_id,
+        )

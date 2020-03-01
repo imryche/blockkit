@@ -1,4 +1,4 @@
-from blockkit import Section, Message, Modal
+from blockkit import Section, Message, Modal, Home
 
 
 def test_builds_message(values, markdown_text, button):
@@ -60,5 +60,27 @@ def test_builds_modal(values, modal_text, markdown_text, button):
         "callback_id": callback_id,
         "clear_on_close": clear_on_close,
         "notify_on_close": notify_on_close,
+        "external_id": external_id,
+    }
+
+
+def test_builds_home(values, markdown_text, button):
+    blocks = [Section(markdown_text, accessory=button)]
+    private_metadata = "foobar"
+    callback_id = "view_callback"
+    external_id = "external"
+
+    home = Home(
+        blocks,
+        private_metadata=private_metadata,
+        callback_id=callback_id,
+        external_id=external_id,
+    )
+
+    assert home.build() == {
+        "type": "home",
+        "blocks": [b.build() for b in blocks],
+        "private_metadata": private_metadata,
+        "callback_id": callback_id,
         "external_id": external_id,
     }
