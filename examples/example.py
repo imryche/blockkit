@@ -5,7 +5,6 @@ message = Message(
     blocks=[
         Section(MarkdownText("You have a new request")),
         Section(
-            MarkdownText("Which is"),
             fields=[
                 MarkdownText("*Type:*\nComputer (laptop)"),
                 MarkdownText("*When:*\nSubmitted Aut 10"),
