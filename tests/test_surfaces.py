@@ -1,4 +1,4 @@
-from blockkit import Section, Message
+from blockkit import Section, Message, Modal
 
 
 def test_builds_message(values, markdown_text, button):
@@ -27,4 +27,38 @@ def test_builds_message(values, markdown_text, button):
         "attachments": attachments,
         "thread_ts": thread_ts,
         "mrkdwn": mrkdwn,
+    }
+
+
+def test_builds_modal(values, modal_text, markdown_text, button):
+    blocks = [Section(markdown_text, accessory=button)]
+    private_metadata = "foobar"
+    callback_id = "view_callback"
+    clear_on_close = True
+    notify_on_close = False
+    external_id = "external"
+
+    modal = Modal(
+        modal_text,
+        blocks,
+        close=modal_text,
+        submit=modal_text,
+        private_metadata=private_metadata,
+        callback_id=callback_id,
+        clear_on_close=clear_on_close,
+        notify_on_close=notify_on_close,
+        external_id=external_id,
+    )
+
+    assert modal.build() == {
+        "type": "modal",
+        "title": modal_text.build(),
+        "blocks": [b.build() for b in blocks],
+        "close": modal_text.build(),
+        "submit": modal_text.build(),
+        "private_metadata": private_metadata,
+        "callback_id": callback_id,
+        "clear_on_close": clear_on_close,
+        "notify_on_close": notify_on_close,
+        "external_id": external_id,
     }

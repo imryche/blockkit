@@ -55,6 +55,11 @@ def plain_text(values):
 
 
 @pytest.fixture
+def modal_text(values):
+    return PlainText("Action")
+
+
+@pytest.fixture
 def button(plain_text, values):
     return Button(plain_text, values.action_id)
 
