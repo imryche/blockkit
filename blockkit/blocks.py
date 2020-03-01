@@ -11,11 +11,12 @@ from .elements import (
 )
 from .fields import (
     ArrayField,
+    BooleanField,
     ObjectField,
     StringField,
     TextField,
     UrlField,
-    BooleanField,
+    ValidationError,
 )
 
 
@@ -29,7 +30,10 @@ class Section(Block):
     fields = ArrayField(Text, max_items=10)
     accessory = ObjectField(Element)
 
-    def __init__(self, text, block_id=None, fields=None, accessory=None):
+    def __init__(self, text=None, block_id=None, fields=None, accessory=None):
+        if not any((text, fields)):
+            raise ValidationError("Provide either text or fields.")
+
         super().__init__("section", block_id, text, fields, accessory)
 
 

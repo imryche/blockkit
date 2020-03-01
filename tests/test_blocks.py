@@ -1,13 +1,16 @@
+import pytest
+
 from blockkit import (
     Actions,
     Context,
     Divider,
+    File,
     ImageBlock,
     Input,
     PlainTextInput,
     Section,
-    File,
 )
+from blockkit.fields import ValidationError
 
 
 def test_builds_section(values, markdown_text, button):
@@ -25,6 +28,11 @@ def test_builds_section(values, markdown_text, button):
         "fields": [markdown_text.build() for _ in range(2)],
         "accessory": button.build(),
     }
+
+
+def test_section_without_text_and_fields_raises_exception(values, button):
+    with pytest.raises(ValidationError):
+        Section(accessory=button)
 
 
 def test_builds_divider(values):
