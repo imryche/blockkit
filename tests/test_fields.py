@@ -1,6 +1,6 @@
 import pytest
 
-from blockkit import Confirm, PlainText, MarkdownText
+from blockkit import Confirm, PlainText, MarkdownText, Text
 from blockkit.fields import (
     ArrayField,
     BooleanField,
@@ -80,6 +80,11 @@ def test_plain_text_field_with_incorrect_type_raises_exception(values):
 def test_array_field_validates_input(values):
     texts = [PlainText(values.text) for _ in range(3)]
     assert ArrayField(PlainText).validate(texts)
+
+
+def test_array_field_validatates_strings(values):
+    texts = [values.text]
+    assert ArrayField(Text).validate(texts) == [PlainText(values.text, emoji=True)]
 
 
 def test_array_field_with_incorrect_input_raises_exception():

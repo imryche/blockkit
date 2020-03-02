@@ -16,7 +16,9 @@ def validate_type(values, *types):
 
     for value in values:
         if not any(isinstance(value, t) for t in types):
-            raise ValidationError(f"{value} should be an instance one of either {pretty_types}.")
+            raise ValidationError(
+                f"{value} should be an instance one of either {pretty_types}."
+            )
 
     return values
 
@@ -144,6 +146,11 @@ class ArrayField(Field):
         self.min_items = min_items
 
     def validate(self, values):
+        from . import PlainText
+
+        if str not in self.field_types:
+            values = [PlainText(v, emoji=True) if type(v) == str else v for v in values]
+
         if self.field_types:
             for value in values:
                 validate_type(value, *self.field_types)
