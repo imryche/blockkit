@@ -270,7 +270,7 @@ class MultiChannelsSelect(Select):
 
 
 class Overflow(Element):
-    options = ArrayField(Option, min_items=2, max_items=5)
+    options = ArrayField(Option, min_items=1, max_items=5)
     confirm = ObjectField(Confirm)
 
     def __init__(self, action_id, options, confirm=None):
