@@ -1,4 +1,7 @@
-from blockkit import Section, Message, Modal, Home
+import pytest
+
+from blockkit import Home, Message, Modal, Section, Input, PlainTextInput
+from blockkit.fields import ValidationError
 
 
 def test_builds_message(values, markdown_text, button):
@@ -62,6 +65,13 @@ def test_builds_modal(values, modal_text, markdown_text, button):
         "notify_on_close": notify_on_close,
         "external_id": external_id,
     }
+
+
+def test_modal_raises_exception_with_inputs_without_submit(values, modal_text):
+    with pytest.raises(ValidationError):
+        Modal(
+            modal_text, blocks=[Input(values.title, PlainTextInput(values.action_id))]
+        )
 
 
 def test_builds_home(values, markdown_text, button):

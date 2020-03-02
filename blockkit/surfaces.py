@@ -1,6 +1,6 @@
-from .blocks import Block
+from .blocks import Block, Input
 from .components import Component
-from .fields import StringField, ArrayField, BooleanField, TextField
+from .fields import ArrayField, BooleanField, StringField, TextField, ValidationError
 
 
 class Message(Component):
@@ -40,6 +40,9 @@ class Modal(Component):
         notify_on_close=None,
         external_id=None,
     ):
+        if any(isinstance(b, Input) for b in blocks):
+            raise ValidationError("You have to provide submit.")
+
         super().__init__(
             "modal",
             title,
