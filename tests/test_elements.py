@@ -38,6 +38,11 @@ def test_builds_button(values, plain_text, confirm):
     }
 
 
+def test_button_raises_exception_without_action_id_and_url(values, plain_text):
+    with pytest.raises(ValidationError):
+        Button(plain_text)
+
+
 def test_builds_datepicker(values, plain_text, confirm):
     datepicker = DatePicker(values.action_id, plain_text, values.date, confirm)
 

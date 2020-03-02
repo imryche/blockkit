@@ -29,7 +29,10 @@ class Button(Element):
     style = StringField(options=[primary, danger])
     confirm = ObjectField(Confirm)
 
-    def __init__(self, text, action_id, url=None, value=None, style=None, confirm=None):
+    def __init__(self, text, action_id=None, url=None, value=None, style=None, confirm=None):
+        if not any((action_id, url)):
+            raise ValidationError("You should provide either action_id or url")
+
         super().__init__("button", action_id, text, url, value, style, confirm)
 
 
