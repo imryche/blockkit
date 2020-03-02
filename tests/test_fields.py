@@ -111,6 +111,10 @@ def test_url_field_validates_input(values):
     assert UrlField().validate(values.url)
 
 
+def test_url_field_validates_deep_link(values):
+    assert UrlField().validate(values.deep_link)
+
+
 def test_url_field_with_exeeding_length_raises_exception():
     with pytest.raises(ValidationError):
         UrlField(max_length=5).validate("http://example.com")

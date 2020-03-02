@@ -1,6 +1,7 @@
+import re
 from abc import ABC, abstractmethod
-from datetime import datetime
 from collections.abc import Iterable
+from datetime import datetime
 
 import validators.url
 
@@ -38,7 +39,8 @@ def validate_options(value, options):
 
 
 def validate_url(value):
-    if not validators.url(value):
+    has_deep_link = re.match(r"^slack://[a-zA-Z0-9?&=-]+$", value)
+    if not has_deep_link and not validators.url(value):
         raise ValidationError(f"{value} is not correct url.")
 
     return value

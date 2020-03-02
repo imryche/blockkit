@@ -15,7 +15,7 @@ from blockkit import (
 TestValues = namedtuple(
     "TestValues",
     (
-        "title text short_text image_url alt_text url "
+        "title text short_text image_url alt_text url deep_link "
         "action_id block_id confirm_text deny_text value date"
     ),
 )
@@ -30,6 +30,7 @@ def values():
         image_url="http://placekitten.com/200/200",
         alt_text="There is a kitten",
         url="https://example.com",
+        deep_link="slack://user?team=T3Y4A0MNW&id=UF7CU4UKZ",
         action_id="test_action_id",
         block_id="text_block_id",
         confirm_text="Confirm",
