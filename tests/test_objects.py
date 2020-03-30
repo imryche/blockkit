@@ -1,6 +1,6 @@
 import pytest
 
-from blockkit import Confirm, Option, OptionGroup, Text, MarkdownText, PlainText
+from blockkit import Confirm, Option, OptionGroup, Text, MarkdownText, PlainText, Filter
 from blockkit.fields import ValidationError
 
 
@@ -60,3 +60,29 @@ def test_builds_option_group(plain_text, option, values):
         "label": {"type": Text.plain, "text": values.text},
         "options": [option.build() for _ in range(3)],
     }
+
+
+def test_builds_filter():
+    include = ["im", "mpim", "private", "public"]
+
+    filter_ = Filter(
+        include=include,
+        exclude_external_shared_channels=False,
+        exclude_bot_users=False,
+    )
+
+    assert filter_.build() == {
+        "include": include,
+        "exclude_external_shared_channels": False,
+        "exclude_bot_users": False,
+    }
+
+
+def test_filter_without_args_raises_exception():
+    with pytest.raises(ValidationError):
+        Filter()
+
+
+def test_filter_with_incorrect_include_raises_exception():
+    with pytest.raises(ValidationError):
+        Filter(include=["group"])

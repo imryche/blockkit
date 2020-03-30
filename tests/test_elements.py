@@ -205,7 +205,7 @@ def test_builds_users_select(plain_text, values, confirm):
     }
 
 
-def test_builds_conversations_multiselect(plain_text, values, confirm):
+def test_builds_conversations_multiselect(plain_text, values, confirm, filter_object):
     initial_conversations = ["C123456", "C654321"]
 
     multiselect = MultiConversationsSelect(
@@ -214,6 +214,7 @@ def test_builds_conversations_multiselect(plain_text, values, confirm):
         confirm=confirm,
         max_selected_items=3,
         initial_conversations=initial_conversations,
+        filter=filter_object,
     )
 
     assert multiselect.build() == {
@@ -223,10 +224,11 @@ def test_builds_conversations_multiselect(plain_text, values, confirm):
         "confirm": confirm.build(),
         "max_selected_items": 3,
         "initial_conversations": initial_conversations,
+        "filter": filter_object.build(),
     }
 
 
-def test_builds_conversations_select(plain_text, values, confirm):
+def test_builds_conversations_select(plain_text, values, confirm, filter_object):
     initial_conversation = "C123456"
 
     select = ConversationsSelect(
@@ -234,6 +236,7 @@ def test_builds_conversations_select(plain_text, values, confirm):
         values.action_id,
         confirm=confirm,
         initial_conversation=initial_conversation,
+        filter=filter_object,
     )
 
     assert select.build() == {
@@ -242,6 +245,7 @@ def test_builds_conversations_select(plain_text, values, confirm):
         "action_id": values.action_id,
         "initial_conversation": initial_conversation,
         "confirm": confirm.build(),
+        "filter": filter_object.build(),
     }
 
 

@@ -10,6 +10,7 @@ from blockkit import (
     Option,
     OptionGroup,
     PlainText,
+    Filter,
 )
 
 TestValues = namedtuple(
@@ -93,3 +94,12 @@ def option_group(values, plain_text, option):
 @pytest.fixture
 def required_option(request, option, option_group):
     return {"option": option, "option_group": option_group}[request.param]
+
+
+@pytest.fixture
+def filter_object():
+    return Filter(
+        include=["im", "mpim", "private", "public"],
+        exclude_external_shared_channels=False,
+        exclude_bot_users=True,
+    )

@@ -67,3 +67,25 @@ class OptionGroup(Component):
 
     def __init__(self, label, options):
         super().__init__(label, options)
+
+
+class Filter(Component):
+    include_options = ("im", "mpim", "private", "public")
+
+    include = ArrayField(str)
+    exclude_external_shared_channels = BooleanField()
+    exclude_bot_users = BooleanField()
+
+    def __init__(
+        self,
+        include=None,
+        exclude_external_shared_channels=None,
+        exclude_bot_users=False,
+    ):
+        if not any((include, exclude_external_shared_channels, exclude_bot_users)):
+            raise ValidationError("You should provide at least one argument.")
+
+        if set(include) - set(self.include_options):
+            raise ValidationError("Incorrect include options.")
+
+        super().__init__(include, exclude_external_shared_channels, exclude_bot_users)

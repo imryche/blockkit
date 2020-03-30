@@ -1,4 +1,4 @@
-from .objects import Confirm, MarkdownText, Option, OptionGroup, PlainText, Text
+from .objects import Confirm, MarkdownText, Option, OptionGroup, PlainText, Text, Filter
 from .elements import (
     Button,
     DatePicker,

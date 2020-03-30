@@ -10,7 +10,7 @@ from blockkit.fields import (
     ValidationError,
 )
 
-from . import Option, OptionGroup, Confirm
+from . import Option, OptionGroup, Confirm, Filter
 from .components import Component
 
 
@@ -29,7 +29,9 @@ class Button(Element):
     style = StringField(options=[primary, danger])
     confirm = ObjectField(Confirm)
 
-    def __init__(self, text, action_id=None, url=None, value=None, style=None, confirm=None):
+    def __init__(
+        self, text, action_id=None, url=None, value=None, style=None, confirm=None
+    ):
         if not any((action_id, url)):
             raise ValidationError("You should provide either action_id or url")
 
@@ -204,9 +206,15 @@ class MultiUsersSelect(Select):
 
 class ConversationsSelect(Select):
     initial_conversation = StringField()
+    filter = ObjectField(Filter)
 
     def __init__(
-        self, placeholder, action_id, initial_conversation=None, confirm=None,
+        self,
+        placeholder,
+        action_id,
+        initial_conversation=None,
+        confirm=None,
+        filter=None,
     ):
         super().__init__(
             "conversations_select",
@@ -214,12 +222,14 @@ class ConversationsSelect(Select):
             placeholder,
             confirm,
             initial_conversation,
+            filter,
         )
 
 
 class MultiConversationsSelect(Select):
     initial_conversations = ArrayField(str)
     max_selected_items = IntegerField()
+    filter = ObjectField(Filter)
 
     def __init__(
         self,
@@ -228,6 +238,7 @@ class MultiConversationsSelect(Select):
         initial_conversations=None,
         confirm=None,
         max_selected_items=None,
+        filter=None,
     ):
         super().__init__(
             "multi_conversations_select",
@@ -236,6 +247,7 @@ class MultiConversationsSelect(Select):
             confirm,
             initial_conversations,
             max_selected_items,
+            filter,
         )
 
 
