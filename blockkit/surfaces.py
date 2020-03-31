@@ -40,7 +40,7 @@ class Modal(Component):
         notify_on_close=None,
         external_id=None,
     ):
-        if any(isinstance(b, Input) for b in blocks):
+        if not submit and any(isinstance(b, Input) for b in blocks):
             raise ValidationError("You have to provide submit.")
 
         super().__init__(
