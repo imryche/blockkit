@@ -16,10 +16,13 @@ from .components import Component
 
 class Element(Component):
     type = StringField()
+
+
+class ActionableElement(Element):
     action_id = StringField(max_length=255)
 
 
-class Button(Element):
+class Button(ActionableElement):
     primary = "primary"
     danger = "danger"
 
@@ -38,7 +41,7 @@ class Button(Element):
         super().__init__("button", action_id, text, url, value, style, confirm)
 
 
-class DatePicker(Element):
+class DatePicker(ActionableElement):
     placeholder = TextField(plain=True, max_length=150)
     initial_date = DateField()
     confirm = ObjectField(Confirm)
@@ -47,7 +50,7 @@ class DatePicker(Element):
         super().__init__("datepicker", action_id, placeholder, initial_date, confirm)
 
 
-class Image(Component):
+class Image(Element):
     type = StringField()
     image_url = UrlField()
     alt_text = StringField()
@@ -56,7 +59,7 @@ class Image(Component):
         super().__init__("image", image_url, alt_text)
 
 
-class Select(Element):
+class Select(ActionableElement):
     placeholder = TextField(plain=True, max_length=150)
     confirm = ObjectField(Confirm)
 
@@ -284,7 +287,7 @@ class MultiChannelsSelect(Select):
         )
 
 
-class Overflow(Element):
+class Overflow(ActionableElement):
     options = ArrayField(Option, min_items=1, max_items=5)
     confirm = ObjectField(Confirm)
 
@@ -292,7 +295,7 @@ class Overflow(Element):
         super().__init__("overflow", action_id, options, confirm)
 
 
-class PlainTextInput(Element):
+class PlainTextInput(ActionableElement):
     placeholder = TextField(plain=True, max_length=150)
     initial_value = StringField()
     multiline = BooleanField()
@@ -319,7 +322,7 @@ class PlainTextInput(Element):
         )
 
 
-class RadioButtons(Element):
+class RadioButtons(ActionableElement):
     options = ArrayField(Option)
     initial_option = ObjectField(Option)
     confirm = ObjectField(Confirm)
@@ -328,7 +331,7 @@ class RadioButtons(Element):
         super().__init__("radio_buttons", action_id, options, initial_option, confirm)
 
 
-class Checkboxes(Element):
+class Checkboxes(ActionableElement):
     options = ArrayField(Option)
     initial_options = ArrayField(Option)
     confirm = ObjectField(Confirm)
