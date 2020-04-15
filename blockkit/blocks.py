@@ -2,6 +2,7 @@ from . import Text
 from .components import Component
 from .elements import (
     Button,
+    Checkboxes,
     DatePicker,
     Element,
     Image,
@@ -67,7 +68,7 @@ class Context(Block):
 
 class Input(Block):
     label = TextField(plain=True, max_length=2000)
-    element = ObjectField(PlainTextInput, Select, DatePicker)
+    element = ObjectField(PlainTextInput, Select, DatePicker, Checkboxes)
     hint = TextField(plain=True, max_length=2000)
     optional = BooleanField()
 
