@@ -56,9 +56,10 @@ class Option(Component):
     text = TextField(max_length=75, plain=True)
     value = StringField(max_length=75)
     url = UrlField(max_length=3000)
+    description = TextField(max_length=75, plain=True)
 
-    def __init__(self, text, value, url=None):
-        super().__init__(text, value, url)
+    def __init__(self, text, value, url=None, description=None):
+        super().__init__(text, value, url, description)
 
 
 class OptionGroup(Component):

@@ -44,14 +44,14 @@ def test_builds_confirm(plain_text, markdown_text, values):
 
 
 def test_builds_option(plain_text, values):
-    option = Option(plain_text, values.value, values.url)
+    option = Option(plain_text, values.value, values.url, plain_text)
 
     assert option.build() == {
         "text": {"type": Text.plain, "text": values.text},
         "value": values.value,
         "url": values.url,
+        "description": {"type": Text.plain, "text": values.text}
     }
-
 
 def test_builds_option_group(plain_text, option, values):
     option_group = OptionGroup(plain_text, [option for _ in range(3)])
