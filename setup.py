@@ -15,7 +15,7 @@ URL = 'https://github.com/oneor0/blockkit-python'
 EMAIL = 'oneor00@gmail.com'
 AUTHOR = 'Dmitry Chernyshov'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.5.2'
+VERSION = '0.6.0'
 
 REQUIRED = ['validators']
 EXTRAS = {}
