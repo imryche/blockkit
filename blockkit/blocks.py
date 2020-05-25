@@ -8,6 +8,7 @@ from .elements import (
     Image,
     Overflow,
     PlainTextInput,
+    RadioButtons,
     Select,
 )
 from .fields import (
@@ -68,7 +69,7 @@ class Context(Block):
 
 class Input(Block):
     label = TextField(plain=True, max_length=2000)
-    element = ObjectField(PlainTextInput, Select, DatePicker, Checkboxes)
+    element = ObjectField(PlainTextInput, Select, DatePicker, Checkboxes, RadioButtons)
     hint = TextField(plain=True, max_length=2000)
     optional = BooleanField()
 
