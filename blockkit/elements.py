@@ -209,6 +209,7 @@ class MultiUsersSelect(Select):
 
 class ConversationsSelect(Select):
     initial_conversation = StringField()
+    default_to_current_conversation = BooleanField()
     filter = ObjectField(Filter)
 
     def __init__(
@@ -216,6 +217,7 @@ class ConversationsSelect(Select):
         placeholder,
         action_id,
         initial_conversation=None,
+        default_to_current_conversation=None,
         confirm=None,
         filter=None,
     ):
@@ -225,12 +227,14 @@ class ConversationsSelect(Select):
             placeholder,
             confirm,
             initial_conversation,
+            default_to_current_conversation,
             filter,
         )
 
 
 class MultiConversationsSelect(Select):
     initial_conversations = ArrayField(str)
+    default_to_current_conversation = BooleanField()
     max_selected_items = IntegerField()
     filter = ObjectField(Filter)
 
@@ -239,6 +243,7 @@ class MultiConversationsSelect(Select):
         placeholder,
         action_id,
         initial_conversations=None,
+        default_to_current_conversation=None,
         confirm=None,
         max_selected_items=None,
         filter=None,
@@ -249,6 +254,7 @@ class MultiConversationsSelect(Select):
             placeholder,
             confirm,
             initial_conversations,
+            default_to_current_conversation,
             max_selected_items,
             filter,
         )
