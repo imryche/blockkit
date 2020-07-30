@@ -54,7 +54,9 @@ class ImageBlock(Block):
 
 
 class Actions(Block):
-    elements = ArrayField(Select, Button, Overflow, DatePicker, max_items=5)
+    elements = ArrayField(
+        Select, Button, Overflow, DatePicker, Checkboxes, RadioButtons, max_items=5
+    )
 
     def __init__(self, elements, block_id=None):
         super().__init__("actions", block_id, elements)
