@@ -1,6 +1,5 @@
 import pytest
-
-from blockkit import Home, Message, Modal, Section, Input, PlainTextInput
+from blockkit import Home, Input, Message, Modal, PlainTextInput, Section, WorkflowStep
 from blockkit.fields import ValidationError
 
 
@@ -72,6 +71,34 @@ def test_modal_raises_exception_with_inputs_without_submit(values, modal_text):
         Modal(
             modal_text, blocks=[Input(values.title, PlainTextInput(values.action_id))]
         )
+
+
+def test_builds_workflow_step(values):
+    blocks = [Input(values.text, PlainTextInput(values.action_id))]
+    private_metadata = "foobar"
+    callback_id = "view_callback"
+    clear_on_close = True
+    notify_on_close = False
+    external_id = "external"
+
+    workflow_step = WorkflowStep(
+        blocks,
+        private_metadata=private_metadata,
+        callback_id=callback_id,
+        clear_on_close=clear_on_close,
+        notify_on_close=notify_on_close,
+        external_id=external_id,
+    )
+
+    assert workflow_step.build() == {
+        "type": "workflow_step",
+        "blocks": [b.build() for b in blocks],
+        "private_metadata": private_metadata,
+        "callback_id": callback_id,
+        "clear_on_close": clear_on_close,
+        "notify_on_close": notify_on_close,
+        "external_id": external_id,
+    }
 
 
 def test_builds_home(values, markdown_text, button):

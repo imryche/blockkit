@@ -19,4 +19,4 @@ from .elements import (
     Checkboxes,
 )
 from .blocks import Section, Divider, ImageBlock, Actions, Context, Input, File
-from .surfaces import Message, Modal, Home
+from .surfaces import Message, Modal, Home, WorkflowStep

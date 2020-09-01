@@ -57,6 +57,35 @@ class Modal(Component):
         )
 
 
+class WorkflowStep(Component):
+    type = StringField()
+    blocks = ArrayField(Block)
+    private_metadata = StringField(max_length=3000)
+    callback_id = StringField(max_length=255)
+    clear_on_close = BooleanField()
+    notify_on_close = BooleanField()
+    external_id = StringField()
+
+    def __init__(
+        self,
+        blocks,
+        private_metadata=None,
+        callback_id=None,
+        clear_on_close=None,
+        notify_on_close=None,
+        external_id=None,
+    ):
+        super().__init__(
+            "workflow_step",
+            blocks,
+            private_metadata,
+            callback_id,
+            clear_on_close,
+            notify_on_close,
+            external_id,
+        )
+
+
 class Home(Component):
     type = StringField()
     blocks = ArrayField(Block)
