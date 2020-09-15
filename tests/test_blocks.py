@@ -1,10 +1,10 @@
 import pytest
-
 from blockkit import (
     Actions,
     Context,
     Divider,
     File,
+    Header,
     ImageBlock,
     Input,
     PlainTextInput,
@@ -46,7 +46,10 @@ def test_builds_divider(values):
 
 def test_builds_image_block(values, plain_text):
     image = ImageBlock(
-        values.image_url, values.text, title=plain_text, block_id=values.block_id,
+        values.image_url,
+        values.text,
+        title=plain_text,
+        block_id=values.block_id,
     )
 
     assert image.build() == {
@@ -59,7 +62,10 @@ def test_builds_image_block(values, plain_text):
 
 
 def test_builds_actions(values, button):
-    actions = Actions([button for _ in range(4)], values.block_id,)
+    actions = Actions(
+        [button for _ in range(4)],
+        values.block_id,
+    )
 
     assert actions.build() == {
         "type": "actions",
@@ -69,7 +75,10 @@ def test_builds_actions(values, button):
 
 
 def test_builds_context(values, plain_text, image):
-    context = Context([plain_text, image], values.block_id,)
+    context = Context(
+        [plain_text, image],
+        values.block_id,
+    )
 
     assert context.build() == {
         "type": "context",
@@ -104,11 +113,25 @@ def test_builds_file(values):
     external_id = "dfj345g"
     source = "remote"
 
-    file_ = File(external_id, source, values.block_id,)
+    file_ = File(
+        external_id,
+        source,
+        values.block_id,
+    )
 
     assert file_.build() == {
         "type": "file",
         "external_id": external_id,
         "source": source,
+        "block_id": values.block_id,
+    }
+
+
+def test_builds_header(values, plain_text):
+    header = Header(plain_text, values.block_id)
+
+    assert header.build() == {
+        "type": "header",
+        "text": plain_text.build(),
         "block_id": values.block_id,
     }

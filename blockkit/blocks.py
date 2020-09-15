@@ -85,3 +85,10 @@ class File(Block):
 
     def __init__(self, external_id, source="remote", block_id=None):
         super().__init__("file", block_id, external_id, source)
+
+
+class Header(Block):
+    text = TextField(plain=True, max_length=3000)
+
+    def __init__(self, text, block_id=None):
+        super().__init__("header", block_id, text)
