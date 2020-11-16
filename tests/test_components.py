@@ -18,7 +18,7 @@ def test_component_detects_all_fields():
     assert list(component._fields.keys()) == ["title", "text"]
 
 
-def test_component_with_exeeding_args_raises_exception():
+def test_component_with_exceeding_args_raises_exception():
     class FakeComponent(Component):
         title = StringField()
 
