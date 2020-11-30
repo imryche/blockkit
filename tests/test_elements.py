@@ -1,23 +1,22 @@
 import pytest
-
 from blockkit import (
     Button,
+    ChannelsSelect,
+    Checkboxes,
+    ConversationsSelect,
     DatePicker,
+    ExternalSelect,
     Image,
+    MultiChannelsSelect,
+    MultiConversationsSelect,
     MultiExternalSelect,
     MultiStaticSelect,
     MultiUsersSelect,
-    MultiConversationsSelect,
-    MultiChannelsSelect,
-    StaticSelect,
-    ExternalSelect,
-    UsersSelect,
-    ConversationsSelect,
-    ChannelsSelect,
     Overflow,
     PlainTextInput,
     RadioButtons,
-    Checkboxes,
+    StaticSelect,
+    UsersSelect,
 )
 from blockkit.fields import ValidationError
 
@@ -193,7 +192,10 @@ def test_builds_users_select(plain_text, values, confirm):
     initial_user = "U123456"
 
     select = UsersSelect(
-        plain_text, values.action_id, confirm=confirm, initial_user=initial_user,
+        plain_text,
+        values.action_id,
+        confirm=confirm,
+        initial_user=initial_user,
     )
 
     assert select.build() == {
@@ -304,7 +306,7 @@ def test_builds_overflow(values, option, confirm):
     }
 
 
-def test_builds_plain_input(values, plain_text):
+def test_builds_plain_input(values, plain_text, dispatch_action_config):
     min_length = 2
     max_length = 10
     multiline = False
@@ -315,7 +317,8 @@ def test_builds_plain_input(values, plain_text):
         initial_value=values.value,
         multiline=multiline,
         min_length=min_length,
-        max_length=max_length
+        max_length=max_length,
+        dispatch_action_config=dispatch_action_config,
     )
 
     assert text_input.build() == {
@@ -326,6 +329,7 @@ def test_builds_plain_input(values, plain_text):
         "multiline": multiline,
         "min_length": min_length,
         "max_length": max_length,
+        "dispatch_action_config": dispatch_action_config.build(),
     }
 
 
@@ -351,7 +355,7 @@ def test_builds_checkboxes(values, option, confirm):
         values.action_id,
         [option for _ in range(3)],
         initial_options=[option],
-        confirm=confirm
+        confirm=confirm,
     )
 
     assert checkboxes.build() == {
@@ -359,5 +363,5 @@ def test_builds_checkboxes(values, option, confirm):
         "action_id": values.action_id,
         "options": [option.build() for _ in range(3)],
         "initial_options": [option.build()],
-        "confirm": confirm.build()
+        "confirm": confirm.build(),
     }

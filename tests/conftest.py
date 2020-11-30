@@ -1,16 +1,16 @@
 from collections import namedtuple
 
 import pytest
-
 from blockkit import (
     Button,
     Confirm,
+    DispatchActionConfig,
+    Filter,
     Image,
     MarkdownText,
     Option,
     OptionGroup,
     PlainText,
-    Filter,
 )
 
 TestValues = namedtuple(
@@ -102,4 +102,11 @@ def filter_object():
         include=["im", "mpim", "private", "public"],
         exclude_external_shared_channels=False,
         exclude_bot_users=True,
+    )
+
+
+@pytest.fixture()
+def dispatch_action_config():
+    return DispatchActionConfig(
+        [DispatchActionConfig.enter_pressed, DispatchActionConfig.char_entered]
     )

@@ -1,16 +1,16 @@
 from blockkit.fields import (
     ArrayField,
-    ObjectField,
+    BooleanField,
     DateField,
     IntegerField,
+    ObjectField,
     StringField,
     TextField,
     UrlField,
-    BooleanField,
     ValidationError,
 )
 
-from . import Option, OptionGroup, Confirm, Filter
+from . import Confirm, DispatchActionConfig, Filter, Option, OptionGroup
 from .components import Component
 
 
@@ -178,10 +178,18 @@ class UsersSelect(Select):
     initial_user = StringField()
 
     def __init__(
-        self, placeholder, action_id, initial_user=None, confirm=None,
+        self,
+        placeholder,
+        action_id,
+        initial_user=None,
+        confirm=None,
     ):
         super().__init__(
-            "users_select", action_id, placeholder, confirm, initial_user,
+            "users_select",
+            action_id,
+            placeholder,
+            confirm,
+            initial_user,
         )
 
 
@@ -264,10 +272,18 @@ class ChannelsSelect(Select):
     initial_channel = StringField()
 
     def __init__(
-        self, placeholder, action_id, initial_channel=None, confirm=None,
+        self,
+        placeholder,
+        action_id,
+        initial_channel=None,
+        confirm=None,
     ):
         super().__init__(
-            "channels_select", action_id, placeholder, confirm, initial_channel,
+            "channels_select",
+            action_id,
+            placeholder,
+            confirm,
+            initial_channel,
         )
 
 
@@ -307,6 +323,7 @@ class PlainTextInput(ActionableElement):
     multiline = BooleanField()
     min_length = IntegerField(max_value=3000)
     max_length = IntegerField()
+    dispatch_action_config = ObjectField(DispatchActionConfig)
 
     def __init__(
         self,
@@ -316,6 +333,7 @@ class PlainTextInput(ActionableElement):
         multiline=None,
         min_length=None,
         max_length=None,
+        dispatch_action_config=None,
     ):
         super().__init__(
             "plain_text_input",
@@ -325,6 +343,7 @@ class PlainTextInput(ActionableElement):
             multiline,
             min_length,
             max_length,
+            dispatch_action_config,
         )
 
 
