@@ -90,3 +90,19 @@ class Filter(Component):
             raise ValidationError("Incorrect include options.")
 
         super().__init__(include, exclude_external_shared_channels, exclude_bot_users)
+
+
+class DispatchActionConfig(Component):
+    enter_pressed = "on_enter_pressed"
+    char_entered = "on_character_entered"
+    _triggers = [enter_pressed, char_entered]
+
+    trigger_actions_on = ArrayField(str, min_items=1, max_items=2)
+
+    def __init__(self, trigger_actions_on):
+        if not set(trigger_actions_on) <= set(self._triggers):
+            raise ValidationError(
+                f"trigger_actions_on should be a subset of {self._triggers}."
+            )
+
+        super().__init__(trigger_actions_on)

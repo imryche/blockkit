@@ -1,4 +1,13 @@
-from .objects import Confirm, MarkdownText, Option, OptionGroup, PlainText, Text, Filter  # noqa
+from .objects import (  # noqa
+    Confirm,
+    MarkdownText,
+    Option,
+    OptionGroup,
+    PlainText,
+    Text,
+    Filter,
+    DispatchActionConfig,
+)
 from .elements import (  # noqa
     Button,
     DatePicker,
@@ -18,5 +27,14 @@ from .elements import (  # noqa
     RadioButtons,
     Checkboxes,
 )
-from .blocks import Section, Divider, ImageBlock, Actions, Context, Input, File, Header  # noqa
+from .blocks import (  # noqa
+    Section,
+    Divider,
+    ImageBlock,
+    Actions,
+    Context,
+    Input,
+    File,
+    Header,
+)
 from .surfaces import Message, Modal, Home, WorkflowStep  # noqa

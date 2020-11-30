@@ -1,6 +1,14 @@
 import pytest
-
-from blockkit import Confirm, Option, OptionGroup, Text, MarkdownText, PlainText, Filter
+from blockkit import (
+    Confirm,
+    DispatchActionConfig,
+    Filter,
+    MarkdownText,
+    Option,
+    OptionGroup,
+    PlainText,
+    Text,
+)
 from blockkit.fields import ValidationError
 
 
@@ -50,8 +58,9 @@ def test_builds_option(plain_text, values):
         "text": {"type": Text.plain, "text": values.text},
         "value": values.value,
         "url": values.url,
-        "description": {"type": Text.plain, "text": values.text}
+        "description": {"type": Text.plain, "text": values.text},
     }
+
 
 def test_builds_option_group(plain_text, option, values):
     option_group = OptionGroup(plain_text, [option for _ in range(3)])
@@ -86,3 +95,31 @@ def test_filter_without_args_raises_exception():
 def test_filter_with_incorrect_include_raises_exception():
     with pytest.raises(ValidationError):
         Filter(include=["group"])
+
+
+def test_builds_dispatch_action_config():
+    triggers = ["on_enter_pressed", "on_character_entered"]
+    config = DispatchActionConfig(trigger_actions_on=triggers)
+
+    assert config.build() == {"trigger_actions_on": triggers}
+
+
+def test_dispatch_action_config_raises_exception_on_incorrect_triggers():
+    with pytest.raises(ValidationError):
+        DispatchActionConfig(trigger_actions_on=["on_something_happened"])
+
+
+def test_dispatch_action_config_raises_exception_on_empty_triggers():
+    with pytest.raises(ValidationError):
+        DispatchActionConfig(trigger_actions_on=[])
+
+
+def test_dispatch_action_config_raises_exception_on_too_many_triggers():
+    with pytest.raises(ValidationError):
+        DispatchActionConfig(
+            trigger_actions_on=[
+                "on_enter_pressed",
+                "on_enter_pressed",
+                "on_enter_pressed",
+            ]
+        )
