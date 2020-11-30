@@ -89,11 +89,13 @@ def test_builds_context(values, plain_text, image):
 
 def test_builds_input(values, plain_text):
     optional = True
+    dispatch_action = True
     text_input = PlainTextInput(values.action_id)
 
     input_ = Input(
         plain_text,
         text_input,
+        dispatch_action=dispatch_action,
         block_id=values.block_id,
         hint=plain_text,
         optional=optional,
@@ -103,6 +105,7 @@ def test_builds_input(values, plain_text):
         "type": "input",
         "label": plain_text.build(),
         "element": text_input.build(),
+        "dispatch_action": dispatch_action,
         "block_id": values.block_id,
         "hint": plain_text.build(),
         "optional": optional,

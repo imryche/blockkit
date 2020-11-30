@@ -72,11 +72,22 @@ class Context(Block):
 class Input(Block):
     label = TextField(plain=True, max_length=2000)
     element = ObjectField(PlainTextInput, Select, DatePicker, Checkboxes, RadioButtons)
+    dispatch_action = BooleanField()
     hint = TextField(plain=True, max_length=2000)
     optional = BooleanField()
 
-    def __init__(self, label, element, block_id=None, hint=None, optional=None):
-        super().__init__("input", block_id, label, element, hint, optional)
+    def __init__(
+        self,
+        label,
+        element,
+        dispatch_action=None,
+        block_id=None,
+        hint=None,
+        optional=None,
+    ):
+        super().__init__(
+            "input", block_id, label, element, dispatch_action, hint, optional
+        )
 
 
 class File(Block):
