@@ -1,6 +1,6 @@
 # blockkit
 
-[![Build Status](https://travis-ci.com/oneor0/blockkit-slack.svg?branch=master)](https://travis-ci.com/oneor0/blockkit-slack)
+[![Build Status](https://travis-ci.com/oneor0/blockkit.svg?branch=master)](https://travis-ci.com/oneor0/blockkit)
 [![PyPI version](https://badge.fury.io/py/blockkit.svg)](https://badge.fury.io/py/blockkit)
 [![Downloads](https://pepy.tech/badge/blockkit)](https://pepy.tech/project/blockkit)
 
