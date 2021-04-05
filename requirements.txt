@@ -1,2 +1,2 @@
-pytest==6.2.2
+pytest==6.2.3
 validators==0.18.2
