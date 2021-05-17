@@ -4,7 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/blockkit.svg)](https://badge.fury.io/py/blockkit)
 [![Downloads](https://pepy.tech/badge/blockkit)](https://pepy.tech/project/blockkit)
 
-[![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)
+<a href="https://www.buymeacoffee.com/imryche" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 A fast way to build Block Kit interfaces in Python
 
