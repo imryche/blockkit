@@ -4,7 +4,9 @@
 [![PyPI version](https://badge.fury.io/py/blockkit.svg)](https://badge.fury.io/py/blockkit)
 [![Downloads](https://pepy.tech/badge/blockkit)](https://pepy.tech/project/blockkit)
 
-A fast way to build Block Kit interfaces in Python 
+[![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)
+
+A fast way to build Block Kit interfaces in Python
 
 ## Installation
 
