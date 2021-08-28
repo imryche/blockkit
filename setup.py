@@ -15,9 +15,9 @@ URL = 'https://github.com/imryche/blockkit'
 EMAIL = 'imryche13@gmail.com'
 AUTHOR = 'Dmitry Chernyshov'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.10.0'
+VERSION = '0.10.1'
 
-REQUIRED = ['validators']
+REQUIRED = ['validators', 'black']
 EXTRAS = {}
 
 here = os.path.abspath(os.path.dirname(__file__))
