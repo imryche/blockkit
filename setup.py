@@ -11,11 +11,11 @@ from setuptools import find_packages, setup, Command
 # Package meta-data.
 NAME = 'blockkit'
 DESCRIPTION = 'A fast way to build Block Kit interfaces in Python.'
-URL = 'https://github.com/oneor0/blockkit-python'
-EMAIL = 'oneor00@gmail.com'
+URL = 'https://github.com/imryche/blockkit'
+EMAIL = 'imryche13@gmail.com'
 AUTHOR = 'Dmitry Chernyshov'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.9.1'
+VERSION = '0.10.0'
 
 REQUIRED = ['validators']
 EXTRAS = {}
