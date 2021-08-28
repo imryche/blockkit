@@ -18,8 +18,6 @@ def create_block_kit_builder_url(block_kit_like_object):
     except Exception as e:
         raise e from None
     final_url = block_kit_builder_url + block_dump
-    final_url_safe = quote(final_url, safe='/:?=&#')
+    final_url_safe = quote(final_url, safe="/:?=&#")
     msg = "Block kit builder example/validation:  \n\t" + final_url_safe
     print(msg)
-
-

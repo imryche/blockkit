@@ -1,5 +1,3 @@
-import re
-
 from black import FileMode, format_str
 
 from blockkit.blocks import (

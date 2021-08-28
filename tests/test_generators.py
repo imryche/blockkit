@@ -1,5 +1,4 @@
 import pytest
-from blockkit import *
 from blockkit.generators import generate
 
 cases = []
