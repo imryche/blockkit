@@ -1,5 +1,5 @@
 import pytest
-from blockkit.generators import generate
+from blockkit.generators import generate, CodeGenerationError
 
 cases = []
 
@@ -952,3 +952,19 @@ cases.append(escape_case)
 def test_generate(payload, expected_code):
     code = generate(payload)
     assert code == expected_code
+
+
+def test_raises_exception_on_incorrect_blocks():
+    payload = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "markdown",
+                    "text": "This is a mrkdwn section block :ghost: *this is bold*",
+                },
+            }
+        ]
+    }
+    with pytest.raises(CodeGenerationError):
+        generate(payload)

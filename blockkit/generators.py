@@ -39,6 +39,11 @@ from blockkit.objects import (
 )
 from blockkit.surfaces import Home, Message, Modal
 
+
+class CodeGenerationError(Exception):
+    pass
+
+
 components = {
     "section": Section,
     "plain_text": PlainText,
@@ -119,7 +124,12 @@ def generate(payload, component=None):
         if "type" not in payload:
             component = Message
         else:
-            component = components[payload["type"]]
+            try:
+                component = components[payload["type"]]
+            except KeyError:
+                raise CodeGenerationError(
+                    f"Can't generate component of type {payload['type']}."
+                )
 
     class_name = component.__name__
     kwargs = ", ".join(kwargs)
