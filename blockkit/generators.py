@@ -75,7 +75,17 @@ components = {
 }
 
 
-def generate(payload, component=None):
+def generate(payload):
+    code = _generate(payload)
+    eval_components(code)
+    return code
+
+
+def generate_pretty(payload):
+    return format_str(generate(payload), mode=FileMode())
+
+
+def _generate(payload, component=None):
     kwargs = []
     for name, value in payload.items():
         if name == "type":
@@ -97,21 +107,21 @@ def generate(payload, component=None):
                 subcomponent = Confirm
             elif name == "accessory" and value.get("type") == "image":
                 subcomponent = Image
-            kwarg = f"{name}=" + generate(value, subcomponent)
+            kwarg = f"{name}=" + _generate(value, subcomponent)
         elif type(value) == list:
             if name == "options":
-                items = [generate(v, Option) for v in value]
+                items = [_generate(v, Option) for v in value]
             elif name == "option_groups":
-                items = [generate(v, OptionGroup) for v in value]
+                items = [_generate(v, OptionGroup) for v in value]
             elif name in ("include", "trigger_actions_on"):
                 items = [f'"{v}"' for v in value]
             elif name == "elements":
                 items = [
-                    generate(v, Image) if v.get("type") == "image" else generate(v)
+                    _generate(v, Image) if v.get("type") == "image" else _generate(v)
                     for v in value
                 ]
             else:
-                items = [generate(v) for v in value]
+                items = [_generate(v) for v in value]
 
             items = ", ".join(items)
             kwarg = f"{name}=[{items}]"
@@ -138,5 +148,26 @@ def generate(payload, component=None):
     return f"{class_name}({kwargs})"
 
 
-def generate_pretty(payload):
-    return format_str(generate(payload), mode=FileMode())
+allowed_names = {c.__name__: c for c in components.values()}
+allowed_names.update(
+    {
+        c.__name__: c
+        for c in (
+            Message,
+            Filter,
+            DispatchActionConfig,
+            Confirm,
+            Image,
+            Option,
+            OptionGroup,
+        )
+    }
+)
+
+
+def eval_components(code):
+    compiled_code = compile(code, "<string>", "eval")
+    for name in compiled_code.co_names:
+        if name not in allowed_names:
+            raise NameError(f"Use of {name} not allowed")
+    return eval(code, {"__builtins__": {}}, allowed_names)

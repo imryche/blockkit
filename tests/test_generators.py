@@ -1,6 +1,6 @@
 import pytest
-from blockkit.generators import generate, CodeGenerationError
 from blockkit.fields import ValidationError
+from blockkit.generators import CodeGenerationError, eval_components, generate
 
 cases = []
 
@@ -545,10 +545,13 @@ section_checkboxes_case = (
                     "type": "checkboxes",
                     "options": [
                         {
-                            "text": {"type": "mrkdwn", "text": "*this is mrkdwn text*"},
+                            "text": {
+                                "type": "plain_text",
+                                "text": "this is plain text",
+                            },
                             "description": {
-                                "type": "mrkdwn",
-                                "text": "*this is mrkdwn text*",
+                                "type": "plain_text",
+                                "text": "this is plain text",
                             },
                             "value": "value-0",
                         }
@@ -558,7 +561,7 @@ section_checkboxes_case = (
             }
         ]
     },
-    'Message(blocks=[Section(text=MarkdownText(text="This is a section block with checkboxes."), accessory=Checkboxes(options=[Option(text=MarkdownText(text="*this is mrkdwn text*"), description=MarkdownText(text="*this is mrkdwn text*"), value="value-0")], action_id="checkboxes-action"))])',  # noqa
+    'Message(blocks=[Section(text=MarkdownText(text="This is a section block with checkboxes."), accessory=Checkboxes(options=[Option(text=PlainText(text="this is plain text"), description=PlainText(text="this is plain text"), value="value-0")], action_id="checkboxes-action"))])',  # noqa
 )
 cases.append(section_checkboxes_case)
 
@@ -986,3 +989,10 @@ def test_raises_exception_on_empty_accessory():
     }
     with pytest.raises(CodeGenerationError):
         generate(payload)
+
+
+def test_raises_exception_on_validation():
+    with pytest.raises(ValidationError):
+        eval_components(
+            'Message(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji="True"))])'  # noqa
+        )
