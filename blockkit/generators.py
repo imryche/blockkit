@@ -121,14 +121,15 @@ def generate(payload, component=None):
         kwargs.append(kwarg)
 
     if not component:
-        if "type" not in payload:
+        if "blocks" in payload and "type" not in payload:
             component = Message
         else:
+            type_ = payload.get("type")
             try:
-                component = components[payload["type"]]
+                component = components[type_]
             except KeyError:
                 raise CodeGenerationError(
-                    f"Can't generate component of type {payload['type']}."
+                    f'Can\'t _generate component of type "{type_}."'
                 )
 
     class_name = component.__name__
