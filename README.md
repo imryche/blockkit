@@ -4,17 +4,23 @@
 [![PyPI version](https://badge.fury.io/py/blockkit.svg)](https://badge.fury.io/py/blockkit)
 [![Downloads](https://pepy.tech/badge/blockkit)](https://pepy.tech/project/blockkit)
 
-A fast way to build Block Kit interfaces in Python
+Blockkit is a Python library for building UI interfaces for Slack apps. It allows you to compose the interface from Python classes, so you type less, and your code becomes more maintainable.
+
+Blockkit performs validation at runtime and provides user-friendly errors when data is invalid.
 
 ## Installation
-
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install blockkit.
 
 ```bash
 pip install blockkit
 ```
 
 ## Usage
+
+Start with one of the `Home`, `Modal`, or `Message` surface classes and follow the structure as you would follow it in JSON.
+
+The library supports all types of [surfaces](https://api.slack.com/surfaces), [blocks](https://api.slack.com/block-kit), [block elements](https://api.slack.com/block-kit), and [composition objects](https://api.slack.com/block-kit) Slack provides.
+
+Once UI is ready, call the `build()` method to render components to dictionary:
 
 ```python
 from blockkit import Message, Section, Actions, MarkdownText, Button
