@@ -30,6 +30,62 @@ Section(text=MarkdownText(text="hello world")).build()
 {"type": "section", "text": {"text": "hello world", "type": "mrkdwn"}}
 ```
 
+Here's the list of types of components and corresponding classes:
+
+### Surfaces
+
+| type  | class   |
+|-------+---------|
+| home  | Home    |
+| modal | Modal   |
+| -     | Message |
+
+### Blocks
+
+| type    | class      |
+|---------+------------|
+| actions | Actions    |
+| context | Context    |
+| divider | Divider    |
+| header  | Header     |
+| image   | ImageBlock |
+| input   | Input      |
+| section | Section    |
+
+### Block elements
+
+| type                       | class                    |
+|----------------------------+--------------------------|
+| button                     | Button                   |
+| checkboxes                 | Checkboxes               |
+| datepicker                 | DatePicker               |
+| type                       | Image                    |
+| multi_static_select        | MultiStaticSelect        |
+| multi_users_select         | MultiUsersSelect         |
+| multi_channels_select      | MultiChannelsSelect      |
+| multi_conversations_select | MultiConversationsSelect |
+| multi_external_select      | MultiExternalSelect      |
+| overflow                   | Overflow                 |
+| plain_text_input           | PlainTextInput           |
+| radio_buttons              | RadioButtons             |
+| static_select              | StaticSelect             |
+| users_select               | UsersSelect              |
+| channels_select            | ChannelsSelect           |
+| conversations_select       | ConversationsSelect      |
+| external_select            | ExternalSelect           |
+
+### Composition objects
+
+| type       | class                |
+|------------+----------------------|
+| plain_text | PlainText            |
+| mrkdwn     | MarkdownText         |
+| -          | Confirm              |
+| -          | Option               |
+| -          | OptionGroup          |
+| -          | Filter               |
+| -          | DispatchActionConfig |
+
 ## Viewing Blocks in Block UI Builder
 Visualize in the [Slack's Block Kit Builder](https://app.slack.com/block-kit-builder/#):
 ```python
