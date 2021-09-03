@@ -23,32 +23,11 @@ The library supports all types of [surfaces](https://api.slack.com/surfaces), [b
 Once UI is ready, call the `build()` method to render components to dictionary:
 
 ```python
-from blockkit import Message, Section, Actions, MarkdownText, Button
+from blockkit import Section, MarkdownText
 
+Section(text=MarkdownText(text="hello world")).build()
 
-message = Message(
-    blocks=[
-        Section(MarkdownText("You have a new request")),
-        Section(
-            fields=[
-                MarkdownText("*Type:*\nComputer (laptop)"),
-                MarkdownText("*When:*\nSubmitted Aut 10"),
-                MarkdownText("*Last Update:*\nMar 10, 2015 (3 years, 5 months)"),
-                MarkdownText("*Reason:*\nAll vowel keys aren't working."),
-                MarkdownText("*Specs:*\nCheetah Pro 15 - Fast, really fast"),
-            ],
-        ),
-        Actions(
-            [
-                Button("Approve", style=Button.primary, action_id="approve"),
-                Button("Decline", style=Button.danger, action_id="decline"),
-                Button("Discuss", action_id="discuss"),
-            ]
-        ),
-    ]
-)
-
-message = message.build()
+{"type": "section", "text": {"text": "hello world", "type": "mrkdwn"}}
 ```
 
 ## Viewing Blocks in Block UI Builder
