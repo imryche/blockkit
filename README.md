@@ -35,15 +35,15 @@ Here's the list of types of components and corresponding classes:
 ### Surfaces
 
 | type  | class   |
-|-------+---------|
+|-------|---------|
 | home  | Home    |
 | modal | Modal   |
-| -     | Message |
+|       | Message |
 
 ### Blocks
 
 | type    | class      |
-|---------+------------|
+|---------|------------|
 | actions | Actions    |
 | context | Context    |
 | divider | Divider    |
@@ -55,7 +55,7 @@ Here's the list of types of components and corresponding classes:
 ### Block elements
 
 | type                       | class                    |
-|----------------------------+--------------------------|
+|----------------------------|--------------------------|
 | button                     | Button                   |
 | checkboxes                 | Checkboxes               |
 | datepicker                 | DatePicker               |
@@ -77,14 +77,14 @@ Here's the list of types of components and corresponding classes:
 ### Composition objects
 
 | type       | class                |
-|------------+----------------------|
+|------------|----------------------|
 | plain_text | PlainText            |
 | mrkdwn     | MarkdownText         |
-| -          | Confirm              |
-| -          | Option               |
-| -          | OptionGroup          |
-| -          | Filter               |
-| -          | DispatchActionConfig |
+|            | Confirm              |
+|            | Option               |
+|            | OptionGroup          |
+|            | Filter               |
+|            | DispatchActionConfig |
 
 ## Viewing Blocks in Block UI Builder
 Visualize in the [Slack's Block Kit Builder](https://app.slack.com/block-kit-builder/#):
