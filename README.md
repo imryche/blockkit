@@ -10,6 +10,10 @@ Blockkit is a Python library for building UI interfaces for Slack apps. It allow
 
 Blockkit performs validation at runtime and provides user-friendly errors when data is invalid.
 
+## Try it
+
+![Screenshot](https://github.com/imryche/blockkit/raw/master/images/generator.png)
+
 ## Installation
 
 ```bash
