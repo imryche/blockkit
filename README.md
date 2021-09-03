@@ -34,7 +34,7 @@ Here's the list of types of components and corresponding classes:
 
 ### Surfaces
 
-| type  | class   |
+| Type  | Class   |
 |-------|---------|
 | home  | Home    |
 | modal | Modal   |
@@ -42,7 +42,7 @@ Here's the list of types of components and corresponding classes:
 
 ### Blocks
 
-| type    | class      |
+| Type    | Class      |
 |---------|------------|
 | actions | Actions    |
 | context | Context    |
@@ -54,7 +54,7 @@ Here's the list of types of components and corresponding classes:
 
 ### Block elements
 
-| type                       | class                    |
+| Type                       | Class                    |
 |----------------------------|--------------------------|
 | button                     | Button                   |
 | checkboxes                 | Checkboxes               |
@@ -76,7 +76,7 @@ Here's the list of types of components and corresponding classes:
 
 ### Composition objects
 
-| type       | class                |
+| Type       | Class                |
 |------------|----------------------|
 | plain_text | PlainText            |
 | mrkdwn     | MarkdownText         |
