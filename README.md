@@ -1,5 +1,7 @@
 ![Screenshot](https://github.com/imryche/blockkit/raw/master/images/logo.png)
 
+---
+
 [![Build Status](https://travis-ci.com/imryche/blockkit.svg?branch=master)](https://travis-ci.com/imryche/blockkit)
 [![PyPI version](https://badge.fury.io/py/blockkit.svg)](https://badge.fury.io/py/blockkit)
 [![Downloads](https://pepy.tech/badge/blockkit)](https://pepy.tech/project/blockkit)
