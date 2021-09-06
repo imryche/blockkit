@@ -10,7 +10,9 @@ Blockkit is a Python library for building UI interfaces for Slack apps. It allow
 
 Blockkit performs validation at runtime and provides user-friendly errors when data is invalid.
 
-## Try it
+## Generate
+
+You don't even need to write code yourself. Go to [blockkit-generator.com](https://blockkit-generator.com) paste your JSON payload from [Block Kit Builder](https://api.slack.com/tools/block-kit-builder) and get corresponding Python code!
 
 ![Screenshot](https://github.com/imryche/blockkit/raw/master/images/generator.png)
 
@@ -41,7 +43,7 @@ Here's the list of types of components and corresponding classes:
 ### Surfaces
 
 | Type  | Class   |
-|-------|---------|
+| ----- | ------- |
 | home  | Home    |
 | modal | Modal   |
 |       | Message |
@@ -49,7 +51,7 @@ Here's the list of types of components and corresponding classes:
 ### Blocks
 
 | Type    | Class      |
-|---------|------------|
+| ------- | ---------- |
 | actions | Actions    |
 | context | Context    |
 | divider | Divider    |
@@ -61,7 +63,7 @@ Here's the list of types of components and corresponding classes:
 ### Block elements
 
 | Type                       | Class                    |
-|----------------------------|--------------------------|
+| -------------------------- | ------------------------ |
 | button                     | Button                   |
 | checkboxes                 | Checkboxes               |
 | datepicker                 | DatePicker               |
@@ -83,7 +85,7 @@ Here's the list of types of components and corresponding classes:
 ### Composition objects
 
 | Type       | Class                |
-|------------|----------------------|
+| ---------- | -------------------- |
 | plain_text | PlainText            |
 | mrkdwn     | MarkdownText         |
 |            | Confirm              |
@@ -93,9 +95,11 @@ Here's the list of types of components and corresponding classes:
 |            | DispatchActionConfig |
 
 ## Contributing
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
