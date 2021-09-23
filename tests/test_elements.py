@@ -416,6 +416,44 @@ def test_external_select_negative_min_query_length_raises_exception():
         ExternalSelect(placeholder=PlainText(text="placeholder"), min_query_length=-1)
 
 
+def test_builds_users_select():
+    assert UsersSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        initial_user="U123456",
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+    ).build() == {
+        "type": "users_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "initial_user": "U123456",
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+    }
+
+
+def test_users_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        UsersSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_users_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        UsersSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+        )
+
+
 @pytest.mark.skip
 @pytest.mark.parametrize(
     "required_option, field",
@@ -498,26 +536,6 @@ def test_builds_users_multiselect(plain_text, values, confirm):
         "confirm": confirm.build(),
         "max_selected_items": 3,
         "initial_users": initial_users,
-    }
-
-
-@pytest.mark.skip
-def test_builds_users_select(plain_text, values, confirm):
-    initial_user = "U123456"
-
-    select = UsersSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        initial_user=initial_user,
-    )
-
-    assert select.build() == {
-        "type": "users_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        "initial_user": initial_user,
-        "confirm": confirm.build(),
     }
 
 

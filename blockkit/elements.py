@@ -256,6 +256,26 @@ class ExternalSelect(NewExternalSelectBase):
         )
 
 
+class UsersSelect(NewSelect):
+    type: str = "users_select"
+    initial_user: Optional[str] = None
+
+    def __init__(
+        self,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        initial_user: Optional[str] = None,
+        confirm: Optional[Confirm] = None,
+    ):
+        super().__init__(
+            placeholder=placeholder,
+            action_id=action_id,
+            initial_user=initial_user,
+            confirm=confirm,
+        )
+
+
 class MultiStaticSelect(StaticSelectBase):
     initial_options = ArrayField(Option, OptionGroup, max_items=100)
     max_selected_items = IntegerField()
@@ -306,25 +326,6 @@ class MultiExternalSelect(ExternalSelectBase):
             min_query_length,
             initial_options,
             max_selected_items,
-        )
-
-
-class UsersSelect(Select):
-    initial_user = StringField()
-
-    def __init__(
-        self,
-        placeholder,
-        action_id,
-        initial_user=None,
-        confirm=None,
-    ):
-        super().__init__(
-            "users_select",
-            action_id,
-            placeholder,
-            confirm,
-            initial_user,
         )
 
 
