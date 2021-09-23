@@ -18,52 +18,400 @@ from blockkit import (
     StaticSelect,
     UsersSelect,
 )
-from blockkit.fields import ValidationError
+from blockkit.objects import Confirm, MarkdownText, Option, OptionGroup, PlainText
+from pydantic import ValidationError
 
 
-def test_builds_button(values, plain_text, confirm):
-    button = Button(
-        plain_text, values.action_id, values.url, values.value, Button.primary, confirm
-    )
-
-    assert button.build() == {
+def test_builds_button():
+    assert Button(
+        text=PlainText(text="text"),
+        action_id="action_id",
+        url="https://example.com",
+        value="value",
+        style="primary",
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+    ).build() == {
         "type": "button",
-        "text": plain_text.build(),
-        "action_id": values.action_id,
-        "url": values.url,
-        "value": values.value,
-        "style": Button.primary,
-        "confirm": confirm.build(),
+        "text": {"type": "plain_text", "text": "text"},
+        "action_id": "action_id",
+        "url": "https://example.com",
+        "value": "value",
+        "style": "primary",
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
     }
 
 
-def test_button_raises_exception_without_action_id_and_url(values, plain_text):
+def test_button_excessive_text_raises_exception():
     with pytest.raises(ValidationError):
-        Button(plain_text)
+        Button(text=PlainText(text="t" * 76))
 
 
-def test_builds_datepicker(values, plain_text, confirm):
-    datepicker = DatePicker(values.action_id, plain_text, values.date, confirm)
+def test_button_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Button(text=PlainText(text="text"), action_id="a" * 256)
 
-    assert datepicker.build() == {
+
+def test_button_excessive_url_raises_exception():
+    with pytest.raises(ValidationError):
+        url = "https://example.com/"
+        Button(
+            text=PlainText(text="text"),
+            url=url + "u" * (3001 - len(url)),
+        )
+
+
+def test_button_excessive_value_raises_exception():
+    with pytest.raises(ValidationError):
+        Button(text=PlainText(text="text"), value="v" * 2001)
+
+
+def test_button_invalid_style_raises_exception():
+    with pytest.raises(ValidationError):
+        Button(text=PlainText(text="text"), style="secondary")
+
+
+def test_builds_checkboxes():
+    assert Checkboxes(
+        action_id="action_id",
+        options=[
+            Option(text=PlainText(text="option 1"), value="value_1"),
+            Option(text=PlainText(text="option 2"), value="value_2"),
+        ],
+        initial_options=[Option(text=PlainText(text="option 1"), value="value_1")],
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+    ).build() == {
+        "type": "checkboxes",
+        "action_id": "action_id",
+        "options": [
+            {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
+            {"text": {"type": "plain_text", "text": "option 2"}, "value": "value_2"},
+        ],
+        "initial_options": [
+            {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
+        ],
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+    }
+
+
+def test_checkboxes_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Checkboxes(
+            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            action_id="a" * 256,
+        )
+
+
+def test_checkboxes_empty_options_raise_exception():
+    with pytest.raises(ValidationError):
+        Checkboxes(options=[])
+
+
+def test_checkboxes_excessive_options_raise_exception():
+    with pytest.raises(ValidationError):
+        Checkboxes(
+            options=[
+                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                for o in range(11)
+            ]
+        )
+
+
+def test_checkboxes_empty_initial_options_raise_exception():
+    with pytest.raises(ValidationError):
+        Checkboxes(
+            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            initial_options=[],
+        )
+
+
+def test_checkboxes_initial_options_arent_within_options_raise_exception():
+    with pytest.raises(ValidationError):
+        Checkboxes(
+            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
+            initial_options=[
+                Option(text=PlainText(text=f"option 2"), value=f"value_2")
+            ],
+        )
+
+
+def test_builds_datepicker():
+    assert DatePicker(
+        action_id="action_id",
+        placeholder=PlainText(text="placeholder"),
+        initial_date="2021-09-14",
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+    ).build() == {
         "type": "datepicker",
-        "action_id": values.action_id,
-        "placeholder": plain_text.build(),
-        "initial_date": values.date,
-        "confirm": confirm.build(),
+        "action_id": "action_id",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "initial_date": "2021-09-14",
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
     }
 
 
-def test_builds_image(values):
-    image = Image(values.image_url, values.alt_text)
+def test_datepicker_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        DatePicker(action_id="a" * 256)
 
-    assert image.build() == {
+
+def test_datepicker_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        DatePicker(placeholder=PlainText(text="p" * 151))
+
+
+def test_datepicker_invalid_initial_date_raises_exception():
+    with pytest.raises(ValidationError):
+        DatePicker(initial_date="YEAR-MON-DAY")
+
+
+def test_builds_image():
+    assert Image(
+        image_url="http://placekitten.com/100/100", alt_text="kitten"
+    ).build() == {
         "type": "image",
-        "image_url": values.image_url,
-        "alt_text": values.alt_text,
+        "image_url": "http://placekitten.com/100/100",
+        "alt_text": "kitten",
     }
 
 
+def test_builds_static_select_with_options():
+    assert StaticSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        options=[
+            Option(text=PlainText(text="option 1"), value="value_1"),
+            Option(text=PlainText(text="option 2"), value="value_2"),
+        ],
+        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+    ).build() == {
+        "type": "static_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "options": [
+            {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
+            {"text": {"type": "plain_text", "text": "option 2"}, "value": "value_2"},
+        ],
+        "initial_option": {
+            "text": {"type": "plain_text", "text": "option 1"},
+            "value": "value_1",
+        },
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+    }
+
+
+def test_builds_static_select_with_option_groups():
+    assert StaticSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        option_groups=[
+            OptionGroup(
+                label=PlainText(text="group 1"),
+                options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            ),
+            OptionGroup(
+                label=PlainText(text="group 2"),
+                options=[Option(text=PlainText(text="option 2"), value="value_2")],
+            ),
+        ],
+        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
+    ).build() == {
+        "type": "static_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "option_groups": [
+            {
+                "label": {"type": "plain_text", "text": "group 1"},
+                "options": [
+                    {
+                        "text": {"type": "plain_text", "text": "option 1"},
+                        "value": "value_1",
+                    }
+                ],
+            },
+            {
+                "label": {"type": "plain_text", "text": "group 2"},
+                "options": [
+                    {
+                        "text": {"type": "plain_text", "text": "option 2"},
+                        "value": "value_2",
+                    }
+                ],
+            },
+        ],
+        "initial_option": {
+            "text": {"type": "plain_text", "text": "option 1"},
+            "value": "value_1",
+        },
+    }
+
+
+def test_static_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        StaticSelect(
+            placeholder=PlainText(text="p" * 151),
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+            ],
+        )
+
+
+def test_static_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        StaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+            ],
+        )
+
+
+def test_static_select_empty_options_raise_exception():
+    with pytest.raises(ValidationError):
+        StaticSelect(placeholder=PlainText(text="placeholder"), options=[])
+
+
+def test_static_select_excessive_options_raise_exception():
+    with pytest.raises(ValidationError):
+        StaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            options=[
+                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                for o in range(101)
+            ],
+        )
+
+
+def test_static_select_empty_option_groups_raise_exception():
+    with pytest.raises(ValidationError):
+        StaticSelect(placeholder=PlainText(text="placeholder"), option_groups=[])
+
+
+def test_static_select_excessive_option_groups_raise_exception():
+    with pytest.raises(ValidationError):
+        StaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            option_groups=[
+                OptionGroup(
+                    label=PlainText(text=f"group {o}"),
+                    options=[
+                        Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                    ],
+                )
+                for o in range(101)
+            ],
+        )
+
+
+def test_static_select_initial_option_isnt_within_options():
+    with pytest.raises(ValidationError):
+        StaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
+            initial_option=Option(text=PlainText(text=f"option 2"), value=f"value_2"),
+        )
+
+
+def test_static_select_initial_option_isnt_within_option_groups():
+    with pytest.raises(ValidationError):
+        StaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="action_id",
+            option_groups=[
+                OptionGroup(
+                    label=PlainText(text="group 1"),
+                    options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                ),
+            ],
+            initial_option=Option(text=PlainText(text="option 2"), value="value_2"),
+        )
+
+
+def test_builds_external_select():
+    assert ExternalSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
+        min_query_length=2,
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+    ).build() == {
+        "type": "external_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "initial_option": {
+            "text": {"type": "plain_text", "text": "option 1"},
+            "value": "value_1",
+        },
+        "min_query_length": 2,
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+    }
+
+
+def test_external_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        ExternalSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+        )
+
+
+def test_external_select_negative_min_query_length_raises_exception():
+    with pytest.raises(ValidationError):
+        ExternalSelect(placeholder=PlainText(text="placeholder"), min_query_length=-1)
+
+
+@pytest.mark.skip
 @pytest.mark.parametrize(
     "required_option, field",
     [("option_group", "option_groups"), ("option", "options")],
@@ -76,7 +424,7 @@ def test_builds_static_multiselect(required_option, field, plain_text, values, c
         confirm=confirm,
         max_selected_items=3,
         initial_options=[required_option],
-        **{field: [required_option for _ in range(3)]}
+        **{field: [required_option for _ in range(3)]},
     )
 
     assert multiselect.build() == {
@@ -90,30 +438,7 @@ def test_builds_static_multiselect(required_option, field, plain_text, values, c
     }
 
 
-@pytest.mark.parametrize(
-    "required_option, field",
-    [("option_group", "option_groups"), ("option", "options")],
-    indirect=["required_option"],
-)
-def test_builds_static_select(required_option, field, plain_text, values, confirm):
-    select = StaticSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        initial_option=required_option,
-        **{field: [required_option for _ in range(3)]}
-    )
-
-    assert select.build() == {
-        "type": "static_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        field: [required_option.build() for _ in range(3)],
-        "initial_option": required_option.build(),
-        "confirm": confirm.build(),
-    }
-
-
+@pytest.mark.skip
 @pytest.mark.parametrize("select_class", [StaticSelect, MultiStaticSelect])
 def test_static_multiselect_with_options_and_option_groups_raises_exception(
     select_class, plain_text, values, option, option_group, confirm
@@ -127,6 +452,7 @@ def test_static_multiselect_with_options_and_option_groups_raises_exception(
         )
 
 
+@pytest.mark.skip
 def test_builds_external_multiselect(option, plain_text, values, confirm):
     multiselect = MultiExternalSelect(
         plain_text,
@@ -148,25 +474,7 @@ def test_builds_external_multiselect(option, plain_text, values, confirm):
     }
 
 
-def test_builds_external_select(option, plain_text, values, confirm):
-    select = ExternalSelect(
-        plain_text,
-        values.action_id,
-        initial_option=option,
-        min_query_length=2,
-        confirm=confirm,
-    )
-
-    assert select.build() == {
-        "type": "external_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        "initial_option": option.build(),
-        "min_query_length": 2,
-        "confirm": confirm.build(),
-    }
-
-
+@pytest.mark.skip
 def test_builds_users_multiselect(plain_text, values, confirm):
     initial_users = ["U123456", "U654321"]
 
@@ -188,6 +496,7 @@ def test_builds_users_multiselect(plain_text, values, confirm):
     }
 
 
+@pytest.mark.skip
 def test_builds_users_select(plain_text, values, confirm):
     initial_user = "U123456"
 
@@ -207,6 +516,7 @@ def test_builds_users_select(plain_text, values, confirm):
     }
 
 
+@pytest.mark.skip
 def test_builds_conversations_multiselect(plain_text, values, confirm, filter_object):
     initial_conversations = ["C123456", "C654321"]
 
@@ -230,6 +540,7 @@ def test_builds_conversations_multiselect(plain_text, values, confirm, filter_ob
     }
 
 
+@pytest.mark.skip
 def test_builds_conversations_select(plain_text, values, confirm, filter_object):
     initial_conversation = "C123456"
 
@@ -251,6 +562,7 @@ def test_builds_conversations_select(plain_text, values, confirm, filter_object)
     }
 
 
+@pytest.mark.skip
 def test_builds_channels_multiselect(plain_text, values, confirm):
     initial_channels = ["C123456", "C654321"]
 
@@ -272,6 +584,7 @@ def test_builds_channels_multiselect(plain_text, values, confirm):
     }
 
 
+@pytest.mark.skip
 def test_builds_channels_select(plain_text, values, confirm):
     initial_channel = "C123456"
 
@@ -291,6 +604,7 @@ def test_builds_channels_select(plain_text, values, confirm):
     }
 
 
+@pytest.mark.skip
 def test_builds_overflow(values, option, confirm):
     overflow = Overflow(
         values.action_id,
@@ -306,6 +620,7 @@ def test_builds_overflow(values, option, confirm):
     }
 
 
+@pytest.mark.skip
 def test_builds_plain_input(values, plain_text, dispatch_action_config):
     min_length = 2
     max_length = 10
@@ -333,6 +648,7 @@ def test_builds_plain_input(values, plain_text, dispatch_action_config):
     }
 
 
+@pytest.mark.skip
 def test_builds_radio_buttons(values, option, confirm):
     radio_buttons = RadioButtons(
         values.action_id,
@@ -346,22 +662,5 @@ def test_builds_radio_buttons(values, option, confirm):
         "action_id": values.action_id,
         "options": [option.build() for _ in range(3)],
         "initial_option": option.build(),
-        "confirm": confirm.build(),
-    }
-
-
-def test_builds_checkboxes(values, option, confirm):
-    checkboxes = Checkboxes(
-        values.action_id,
-        [option for _ in range(3)],
-        initial_options=[option],
-        confirm=confirm,
-    )
-
-    assert checkboxes.build() == {
-        "type": "checkboxes",
-        "action_id": values.action_id,
-        "options": [option.build() for _ in range(3)],
-        "initial_options": [option.build()],
         "confirm": confirm.build(),
     }

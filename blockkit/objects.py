@@ -1,108 +1,144 @@
-from .components import Component
-from .fields import (
-    ArrayField,
-    BooleanField,
-    StringField,
-    TextField,
-    UrlField,
-    ValidationError,
+from typing import List, Optional, Union
+
+from pydantic.class_validators import root_validator
+from pydantic.networks import AnyUrl
+
+from blockkit.components import NewComponent
+from blockkit.validators import (
+    validate_choices,
+    validate_list_choices,
+    validate_list_size,
+    validate_string_length,
+    validate_text_length,
+    validator,
+    validators,
 )
 
 
-class Text(Component):
-    markdown = "mrkdwn"
-    plain = "plain_text"
-
-    text = StringField()
-    type = StringField(options=[markdown, plain])
-    emoji = BooleanField()
-    verbatim = BooleanField()
-
-    def __init__(self, text, type_, emoji=None, verbatim=None):
-        super().__init__(text, type_, emoji, verbatim)
-
-        if type_ == self.markdown and emoji:
-            raise ValidationError(
-                f"'emoji' field isn't allowed when type is \"{self.plain}\"."
-            )
-
-        if type_ == self.plain and verbatim:
-            raise ValidationError(
-                f"'verbatim' field isn't allowd when type is \"{self.markdown}\"."
-            )
+class Text:
+    pass
 
 
-class MarkdownText(Text):
-    def __init__(self, text, verbatim=None):
-        super().__init__(text, self.markdown, None, verbatim)
+class MarkdownText(NewComponent):
+    type: str = "mrkdwn"
+    text: str
+    verbatim: Optional[bool] = None
+
+    def __init__(self, *, text: str, verbatim: Optional[bool] = None):
+        super().__init__(text=text, verbatim=verbatim)
 
 
-class PlainText(Text):
-    def __init__(self, text, emoji=None):
-        super().__init__(text, self.plain, emoji, None)
+class PlainText(NewComponent):
+    type: str = "plain_text"
+    text: str
+    emoji: Optional[bool] = None
+
+    def __init__(self, *, text: str, emoji: Optional[bool] = None):
+        super().__init__(text=text, emoji=emoji)
 
 
-class Confirm(Component):
-    title = TextField(max_length=100, plain=True)
-    text = TextField(max_length=300)
-    confirm = TextField(max_length=30, plain=True)
-    deny = TextField(max_length=30, plain=True)
-
-    def __init__(self, title, text, confirm, deny):
-        super().__init__(title, text, confirm, deny)
-
-
-class Option(Component):
-    text = TextField(max_length=75, plain=True)
-    value = StringField(max_length=75)
-    url = UrlField(max_length=3000)
-    description = TextField(max_length=75, plain=True)
-
-    def __init__(self, text, value, url=None, description=None):
-        super().__init__(text, value, url, description)
-
-
-class OptionGroup(Component):
-    label = TextField(max_length=75, plain=True)
-    options = ArrayField(Option, max_items=100)
-
-    def __init__(self, label, options):
-        super().__init__(label, options)
-
-
-class Filter(Component):
-    include_options = ("im", "mpim", "private", "public")
-
-    include = ArrayField(str)
-    exclude_external_shared_channels = BooleanField()
-    exclude_bot_users = BooleanField()
+class Confirm(NewComponent):
+    title: PlainText
+    text: Union[PlainText, MarkdownText]
+    confirm: PlainText
+    deny: PlainText
+    style: Optional[str] = None
 
     def __init__(
         self,
-        include=None,
-        exclude_external_shared_channels=None,
-        exclude_bot_users=False,
+        *,
+        title: PlainText,
+        text: Union[PlainText, MarkdownText],
+        confirm: PlainText,
+        deny: PlainText,
+        style: Optional[str] = None,
     ):
-        if not any((include, exclude_external_shared_channels, exclude_bot_users)):
-            raise ValidationError("You should provide at least one argument.")
+        super().__init__(
+            title=title, text=text, confirm=confirm, deny=deny, style=style
+        )
 
-        if set(include) - set(self.include_options):
-            raise ValidationError("Incorrect include options.")
+    _validate_title = validator("title", validate_text_length, max_len=100)
+    _validate_text = validator("text", validate_text_length, max_len=300)
+    _validate_confirm = validator("confirm", validate_text_length, max_len=30)
+    _validate_deny = validator("deny", validate_text_length, max_len=30)
+    _validate_style = validator(
+        "style", validate_choices, choices=("primary", "danger")
+    )
 
-        super().__init__(include, exclude_external_shared_channels, exclude_bot_users)
+
+class Option(NewComponent):
+    text: Union[PlainText, MarkdownText]
+    value: str
+    description: Optional[PlainText] = None
+    url: Optional[AnyUrl] = None
+
+    def __init__(
+        self,
+        *,
+        text: Union[PlainText, MarkdownText],
+        value: str,
+        description: Optional[PlainText] = None,
+        url: Optional[AnyUrl] = None,
+    ):
+        super().__init__(text=text, value=value, description=description, url=url)
+
+    _validate_text = validator("text", validate_text_length, max_len=75)
+    _validate_value = validator("value", validate_string_length, max_len=75)
+    _validate_description = validator("description", validate_text_length, max_len=75)
+    _validate_url = validator("url", validate_string_length, max_len=3000)
 
 
-class DispatchActionConfig(Component):
-    enter_pressed = "on_enter_pressed"
-    char_entered = "on_character_entered"
-    _triggers = [enter_pressed, char_entered]
+class OptionGroup(NewComponent):
+    label: PlainText
+    options: List[Option]
 
-    trigger_actions_on = ArrayField(str, min_items=1, max_items=2)
+    def __init__(self, *, label: PlainText, options: List[Option]):
+        super().__init__(label=label, options=options)
 
-    def __init__(self, trigger_actions_on):
-        if not set(trigger_actions_on) <= set(self._triggers):
-            raise ValidationError(
-                f"trigger_actions_on should be a subset of {self._triggers}."
-            )
+    _validate_label = validator("label", validate_text_length, max_len=75)
+    _validate_options = validator("options", validate_list_size, min_len=1, max_len=100)
 
-        super().__init__(trigger_actions_on)
+
+class DispatchActionConfig(NewComponent):
+    trigger_actions_on: List[str]
+
+    def __init__(self, *, trigger_actions_on: List[str]):
+        super().__init__(trigger_actions_on=trigger_actions_on)
+
+    _validate_trigger_actions_on = validators(
+        "trigger_actions_on",
+        (validate_list_size, dict(min_len=1, max_len=2)),
+        (
+            validate_list_choices,
+            dict(choices=("on_enter_pressed", "on_character_entered")),
+        ),
+    )
+
+
+class Filter(NewComponent):
+    include: Optional[List[str]] = None
+    exclude_external_shared_channels: Optional[bool] = None
+    exclude_bot_users: Optional[bool] = None
+
+    def __init__(
+        self,
+        *,
+        include: Optional[List[str]] = None,
+        exclude_external_shared_channels: Optional[bool] = None,
+        exclude_bot_users: Optional[bool] = None,
+    ):
+        super().__init__(
+            include=include,
+            exclude_external_shared_channels=exclude_external_shared_channels,
+            exclude_bot_users=exclude_bot_users,
+        )
+
+    _validate_include = validator(
+        "include", validate_list_choices, choices=("im", "mpim", "private", "public")
+    )
+
+    @root_validator
+    def _validate_at_least_one(cls, values):
+        if not any(values.values()):
+            raise ValueError("You should provide at least one argument.")
+        return values

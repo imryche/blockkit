@@ -1,5 +1,7 @@
 from collections import OrderedDict
 
+from pydantic import BaseModel
+
 from .fields import Field
 
 
@@ -64,3 +66,8 @@ class Component(metaclass=ComponentMeta):
             result[name] = value
 
         return result
+
+
+class NewComponent(BaseModel):
+    def build(self) -> dict:
+        return self.dict(exclude_none=True)

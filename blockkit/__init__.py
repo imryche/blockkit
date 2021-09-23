@@ -3,8 +3,8 @@ from .objects import (  # noqa
     MarkdownText,
     Option,
     OptionGroup,
-    PlainText,
     Text,
+    PlainText,
     Filter,
     DispatchActionConfig,
 )

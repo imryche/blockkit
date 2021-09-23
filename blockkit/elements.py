@@ -1,13 +1,30 @@
+import itertools
+from datetime import date
+from typing import List, Optional
+
+from pydantic import root_validator
+from pydantic.networks import AnyUrl, HttpUrl
+
+from blockkit.components import NewComponent
 from blockkit.fields import (
     ArrayField,
     BooleanField,
-    DateField,
     IntegerField,
     ObjectField,
     StringField,
     TextField,
     UrlField,
     ValidationError,
+)
+from blockkit.objects import PlainText
+from blockkit.validators import (
+    validate_choices,
+    validate_date,
+    validate_int_range,
+    validate_list_size,
+    validate_string_length,
+    validate_text_length,
+    validator,
 )
 
 from . import Confirm, DispatchActionConfig, Filter, Option, OptionGroup
@@ -22,41 +39,117 @@ class ActionableElement(Element):
     action_id = StringField(max_length=255)
 
 
-class Button(ActionableElement):
-    primary = "primary"
-    danger = "danger"
+class ActionableComponent(NewComponent):
+    action_id: Optional[str] = None
 
-    text = TextField(plain=True, max_length=75)
-    url = UrlField(max_length=3000)
-    value = StringField(max_length=2000)
-    style = StringField(options=[primary, danger])
-    confirm = ObjectField(Confirm)
+    _validate_action_id = validator("action_id", validate_string_length, max_len=255)
+
+
+class Button(ActionableComponent):
+    type: str = "button"
+    text: PlainText
+    url: Optional[AnyUrl] = None
+    value: Optional[str] = None
+    style: Optional[str] = None
+    confirm: Optional[Confirm] = None
 
     def __init__(
-        self, text, action_id=None, url=None, value=None, style=None, confirm=None
+        self,
+        *,
+        text: PlainText,
+        action_id: Optional[str] = None,
+        url: Optional[AnyUrl] = None,
+        value: Optional[str] = None,
+        style: Optional[str] = None,
+        confirm: Optional[Confirm] = None,
     ):
-        if not any((action_id, url)):
-            raise ValidationError("You should provide either action_id or url")
+        super().__init__(
+            text=text,
+            action_id=action_id,
+            url=url,
+            value=value,
+            style=style,
+            confirm=confirm,
+        )
 
-        super().__init__("button", action_id, text, url, value, style, confirm)
+    _validate_text = validator("text", validate_text_length, max_len=75)
+    _validate_url = validator("url", validate_string_length, max_len=3000)
+    _validate_value = validator("value", validate_string_length, max_len=2000)
+    _validate_style = validator(
+        "style", validate_choices, choices=("primary", "danger")
+    )
 
 
-class DatePicker(ActionableElement):
-    placeholder = TextField(plain=True, max_length=150)
-    initial_date = DateField()
-    confirm = ObjectField(Confirm)
+class Checkboxes(ActionableComponent):
+    type: str = "checkboxes"
+    options: List[Option]
+    initial_options: Optional[List[Option]] = None
+    confirm: Optional[Confirm] = None
 
-    def __init__(self, action_id, placeholder=None, initial_date=None, confirm=None):
-        super().__init__("datepicker", action_id, placeholder, initial_date, confirm)
+    def __init__(
+        self,
+        *,
+        options: List[Option],
+        action_id: Optional[str] = None,
+        initial_options: Optional[List[Option]] = None,
+        confirm: Optional[Confirm] = None,
+    ):
+        super().__init__(
+            options=options,
+            action_id=action_id,
+            initial_options=initial_options,
+            confirm=confirm,
+        )
+
+    _validate_options = validator("options", validate_list_size, min_len=1, max_len=10)
+    _validate_initial_options = validator(
+        "initial_options", validate_list_size, min_len=1, max_len=10
+    )
+
+    @root_validator
+    def _validate_initial_within_options(cls, values):
+        initial_options = values.get("initial_options")
+        options = values.get("options")
+
+        if initial_options is not None:
+            for initial_option in initial_options:
+                if initial_option not in options:
+                    raise ValueError(f"Option {initial_option} isn't within {options}")
+        return values
 
 
-class Image(Element):
-    type = StringField()
-    image_url = UrlField()
-    alt_text = StringField()
+class DatePicker(ActionableComponent):
+    type: str = "datepicker"
+    placeholder: Optional[PlainText] = None
+    initial_date: Optional[date] = None
+    confirm: Optional[Confirm] = None
 
-    def __init__(self, image_url, alt_text):
-        super().__init__("image", image_url, alt_text)
+    def __init__(
+        self,
+        *,
+        action_id: Optional[str] = None,
+        placeholder: Optional[PlainText] = None,
+        initial_date: Optional[date] = None,
+        confirm: Optional[Confirm] = None,
+    ):
+        super().__init__(
+            action_id=action_id,
+            placeholder=placeholder,
+            initial_date=initial_date,
+            confirm=confirm,
+        )
+
+    _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
+    _validate_initial_date = validator("initial_date", validate_date)
+
+
+class Image(NewComponent):
+    type: str = "image"
+    image_url: HttpUrl
+    alt_text: str
+
+    def __init__(self, *, image_url: HttpUrl, alt_text: str):
+        super().__init__(image_url=image_url, alt_text=alt_text)
 
 
 class Select(ActionableElement):
@@ -69,30 +162,97 @@ class StaticSelectBase(Select):
     option_groups = ArrayField(OptionGroup, max_items=100)
 
 
-class StaticSelect(StaticSelectBase):
-    initial_option = ObjectField(Option, OptionGroup)
+class NewSelect(ActionableComponent):
+    placeholder: PlainText
+    confirm: Optional[Confirm] = None
+
+    _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
+
+
+class NewStaticSelectBase(NewSelect):
+    options: Optional[List[Option]] = None
+    option_groups: Optional[List[OptionGroup]] = None
+
+    _validate_options = validator("options", validate_list_size, min_len=1, max_len=100)
+    _validate_option_groups = validator(
+        "option_groups", validate_list_size, min_len=1, max_len=100
+    )
+
+
+class StaticSelect(NewStaticSelectBase):
+    type: str = "static_select"
+    initial_option: Optional[Option] = None
 
     def __init__(
         self,
-        placeholder,
-        action_id,
-        options=None,
-        option_groups=None,
-        initial_option=None,
-        confirm=None,
-        max_selected_items=None,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        options: Optional[List[Option]] = None,
+        option_groups: Optional[List[OptionGroup]] = None,
+        initial_option: Optional[Option] = None,
+        confirm: Optional[Confirm] = None,
     ):
-        if options and option_groups:
-            raise ValidationError("You can specify either options or option_groups.")
-
         super().__init__(
-            "static_select",
-            action_id,
-            placeholder,
-            confirm,
-            options,
-            option_groups,
-            initial_option,
+            placeholder=placeholder,
+            action_id=action_id,
+            options=options,
+            option_groups=option_groups,
+            initial_option=initial_option,
+            confirm=confirm,
+        )
+
+    @root_validator
+    def _validate_initial_within_options(cls, values):
+        initial_option = values.get("initial_option")
+        options = values.get("options")
+        option_groups = values.get("option_groups")
+
+        if None not in (initial_option, options) and initial_option not in options:
+            raise ValueError(f"Option {initial_option} isn't within {options}")
+
+        if None not in (initial_option, option_groups):
+            if initial_option not in itertools.chain(
+                *[og.options for og in option_groups]
+            ):
+                raise ValueError(
+                    f"Option {initial_option} isn't within {option_groups}"
+                )
+
+        return values
+
+
+class ExternalSelectBase(Select):
+    min_query_length = IntegerField()
+
+
+class NewExternalSelectBase(NewSelect):
+    min_query_length: Optional[int] = None
+
+    _validate_min_query_length = validator(
+        "min_query_length", validate_int_range, min_value=0, max_value=999
+    )
+
+
+class ExternalSelect(NewExternalSelectBase):
+    type: str = "external_select"
+    initial_option: Optional[Option] = None
+
+    def __init__(
+        self,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        initial_option: Optional[Option] = None,
+        min_query_length: Optional[int] = None,
+        confirm: Optional[Confirm] = None,
+    ):
+        super().__init__(
+            placeholder=placeholder,
+            action_id=action_id,
+            initial_option=initial_option,
+            min_query_length=min_query_length,
+            confirm=confirm,
         )
 
 
@@ -122,31 +282,6 @@ class MultiStaticSelect(StaticSelectBase):
             option_groups,
             initial_options,
             max_selected_items,
-        )
-
-
-class ExternalSelectBase(Select):
-    min_query_length = IntegerField()
-
-
-class ExternalSelect(ExternalSelectBase):
-    initial_option = ObjectField(Option, OptionGroup)
-
-    def __init__(
-        self,
-        placeholder,
-        action_id,
-        initial_option=None,
-        min_query_length=None,
-        confirm=None,
-    ):
-        super().__init__(
-            "external_select",
-            action_id,
-            placeholder,
-            confirm,
-            min_query_length,
-            initial_option,
         )
 
 
@@ -354,12 +489,3 @@ class RadioButtons(ActionableElement):
 
     def __init__(self, action_id, options, initial_option=None, confirm=None):
         super().__init__("radio_buttons", action_id, options, initial_option, confirm)
-
-
-class Checkboxes(ActionableElement):
-    options = ArrayField(Option)
-    initial_options = ArrayField(Option)
-    confirm = ObjectField(Confirm)
-
-    def __init__(self, action_id, options, initial_options=None, confirm=None):
-        super().__init__("checkboxes", action_id, options, initial_options, confirm)
