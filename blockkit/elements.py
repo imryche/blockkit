@@ -208,7 +208,7 @@ class StaticSelect(NewStaticSelectBase):
         options = values.get("options")
         option_groups = values.get("option_groups")
 
-        if options and option_groups:
+        if not any((options, option_groups)) or options and option_groups:
             raise ValueError("You must provide either options or option_groups")
 
         if None not in (initial_option, options) and initial_option not in options:

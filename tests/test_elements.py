@@ -293,6 +293,11 @@ def test_builds_static_select_with_option_groups():
     }
 
 
+def test_static_select_without_options_and_option_groups_raises_exception():
+    with pytest.raises(ValidationError):
+        StaticSelect(placeholder=PlainText(text="placeholder"))
+
+
 def test_static_select_with_options_and_option_groups_raises_exception():
     with pytest.raises(ValidationError):
         StaticSelect(
