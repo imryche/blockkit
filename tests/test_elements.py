@@ -293,6 +293,26 @@ def test_builds_static_select_with_option_groups():
     }
 
 
+def test_static_select_with_options_and_option_groups_raises_exception():
+    with pytest.raises(ValidationError):
+        StaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+            ],
+            option_groups=[
+                OptionGroup(
+                    label=PlainText(text="group 1"),
+                    options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                ),
+                OptionGroup(
+                    label=PlainText(text="group 2"),
+                    options=[Option(text=PlainText(text="option 2"), value="value_2")],
+                ),
+            ],
+        )
+
+
 def test_static_select_excessive_placeholder_raises_exception():
     with pytest.raises(ValidationError):
         StaticSelect(

@@ -203,10 +203,13 @@ class StaticSelect(NewStaticSelectBase):
         )
 
     @root_validator
-    def _validate_initial_within_options(cls, values):
+    def _validate_values(cls, values):
         initial_option = values.get("initial_option")
         options = values.get("options")
         option_groups = values.get("option_groups")
+
+        if options and option_groups:
+            raise ValueError("You must provide either options or option_groups")
 
         if None not in (initial_option, options) and initial_option not in options:
             raise ValueError(f"Option {initial_option} isn't within {options}")
