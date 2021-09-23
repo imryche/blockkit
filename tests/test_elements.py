@@ -398,6 +398,11 @@ def test_builds_external_select():
     }
 
 
+def test_external_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        ExternalSelect(placeholder=PlainText(text="p" * 151))
+
+
 def test_external_select_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         ExternalSelect(
