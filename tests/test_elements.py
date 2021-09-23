@@ -505,6 +505,46 @@ def test_conversations_select_excessive_action_id_raises_exception():
         )
 
 
+def test_builds_channels_select():
+    assert ChannelsSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        initial_channel="CSK3A8P2M",
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+        response_url_enabled=True,
+    ).build() == {
+        "type": "channels_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "initial_channel": "CSK3A8P2M",
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+        "response_url_enabled": True,
+    }
+
+
+def test_channels_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        ChannelsSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_channels_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        ChannelsSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+        )
+
+
 @pytest.mark.skip
 @pytest.mark.parametrize(
     "required_option, field",
@@ -633,26 +673,6 @@ def test_builds_channels_multiselect(plain_text, values, confirm):
         "confirm": confirm.build(),
         "max_selected_items": 3,
         "initial_channels": initial_channels,
-    }
-
-
-@pytest.mark.skip
-def test_builds_channels_select(plain_text, values, confirm):
-    initial_channel = "C123456"
-
-    select = ChannelsSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        initial_channel=initial_channel,
-    )
-
-    assert select.build() == {
-        "type": "channels_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        "confirm": confirm.build(),
-        "initial_channel": initial_channel,
     }
 
 

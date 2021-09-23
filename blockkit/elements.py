@@ -305,6 +305,29 @@ class ConversationsSelect(NewSelect):
         )
 
 
+class ChannelsSelect(NewSelect):
+    type: str = "channels_select"
+    initial_channel: Optional[str] = None
+    response_url_enabled: Optional[bool] = None
+
+    def __init__(
+        self,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        initial_channel: Optional[str] = None,
+        confirm: Optional[Confirm] = None,
+        response_url_enabled: Optional[bool] = None,
+    ):
+        super().__init__(
+            placeholder=placeholder,
+            action_id=action_id,
+            initial_channel=initial_channel,
+            confirm=confirm,
+            response_url_enabled=response_url_enabled,
+        )
+
+
 class MultiStaticSelect(StaticSelectBase):
     initial_options = ArrayField(Option, OptionGroup, max_items=100)
     max_selected_items = IntegerField()
@@ -405,25 +428,6 @@ class MultiConversationsSelect(Select):
             default_to_current_conversation,
             max_selected_items,
             filter,
-        )
-
-
-class ChannelsSelect(Select):
-    initial_channel = StringField()
-
-    def __init__(
-        self,
-        placeholder,
-        action_id,
-        initial_channel=None,
-        confirm=None,
-    ):
-        super().__init__(
-            "channels_select",
-            action_id,
-            placeholder,
-            confirm,
-            initial_channel,
         )
 
 
