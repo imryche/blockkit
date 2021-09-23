@@ -18,7 +18,14 @@ from blockkit import (
     StaticSelect,
     UsersSelect,
 )
-from blockkit.objects import Confirm, MarkdownText, Option, OptionGroup, PlainText
+from blockkit.objects import (
+    Confirm,
+    Filter,
+    MarkdownText,
+    Option,
+    OptionGroup,
+    PlainText,
+)
 from pydantic import ValidationError
 
 
@@ -420,7 +427,7 @@ def test_builds_users_select():
     assert UsersSelect(
         placeholder=PlainText(text="placeholder"),
         action_id="action_id",
-        initial_user="U123456",
+        initial_user="U01P9A6F9HC",
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),
@@ -431,7 +438,7 @@ def test_builds_users_select():
         "type": "users_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
         "action_id": "action_id",
-        "initial_user": "U123456",
+        "initial_user": "U01P9A6F9HC",
         "confirm": {
             "title": {"type": "plain_text", "text": "title"},
             "text": {"type": "mrkdwn", "text": "text"},
@@ -449,6 +456,50 @@ def test_users_select_excessive_placeholder_raises_exception():
 def test_users_select_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         UsersSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+        )
+
+
+def test_builds_conversations_select():
+    assert ConversationsSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        initial_conversation="U01P9A6F9HC",
+        default_to_current_conversation=True,
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+        response_url_enabled=True,
+        filter=Filter(include=["public"]),
+    ).build() == {
+        "type": "conversations_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "initial_conversation": "U01P9A6F9HC",
+        "default_to_current_conversation": True,
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+        "response_url_enabled": True,
+        "filter": {"include": ["public"]},
+    }
+
+
+def test_conversations_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        ConversationsSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_conversations_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        ConversationsSelect(
             placeholder=PlainText(text="placeholder"),
             action_id="a" * 256,
         )
@@ -559,28 +610,6 @@ def test_builds_conversations_multiselect(plain_text, values, confirm, filter_ob
         "confirm": confirm.build(),
         "max_selected_items": 3,
         "initial_conversations": initial_conversations,
-        "filter": filter_object.build(),
-    }
-
-
-@pytest.mark.skip
-def test_builds_conversations_select(plain_text, values, confirm, filter_object):
-    initial_conversation = "C123456"
-
-    select = ConversationsSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        initial_conversation=initial_conversation,
-        filter=filter_object,
-    )
-
-    assert select.build() == {
-        "type": "conversations_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        "initial_conversation": initial_conversation,
-        "confirm": confirm.build(),
         "filter": filter_object.build(),
     }
 

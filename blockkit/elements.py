@@ -276,6 +276,35 @@ class UsersSelect(NewSelect):
         )
 
 
+class ConversationsSelect(NewSelect):
+    type: str = "conversations_select"
+    initial_conversation: Optional[str] = None
+    default_to_current_conversation: Optional[bool] = None
+    response_url_enabled: Optional[bool] = None
+    filter: Optional[Filter] = None
+
+    def __init__(
+        self,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        initial_conversation: Optional[str] = None,
+        default_to_current_conversation: Optional[bool] = None,
+        confirm: Optional[Confirm] = None,
+        response_url_enabled: Optional[bool] = None,
+        filter: Optional[Filter] = None,
+    ):
+        super().__init__(
+            placeholder=placeholder,
+            action_id=action_id,
+            initial_conversation=initial_conversation,
+            default_to_current_conversation=default_to_current_conversation,
+            confirm=confirm,
+            response_url_enabled=response_url_enabled,
+            filter=filter,
+        )
+
+
 class MultiStaticSelect(StaticSelectBase):
     initial_options = ArrayField(Option, OptionGroup, max_items=100)
     max_selected_items = IntegerField()
@@ -348,31 +377,6 @@ class MultiUsersSelect(Select):
             confirm,
             initial_users,
             max_selected_items,
-        )
-
-
-class ConversationsSelect(Select):
-    initial_conversation = StringField()
-    default_to_current_conversation = BooleanField()
-    filter = ObjectField(Filter)
-
-    def __init__(
-        self,
-        placeholder,
-        action_id,
-        initial_conversation=None,
-        default_to_current_conversation=None,
-        confirm=None,
-        filter=None,
-    ):
-        super().__init__(
-            "conversations_select",
-            action_id,
-            placeholder,
-            confirm,
-            initial_conversation,
-            default_to_current_conversation,
-            filter,
         )
 
 
