@@ -256,10 +256,6 @@ def test_builds_static_select_with_option_groups():
                 label=PlainText(text="group 1"),
                 options=[Option(text=PlainText(text="option 1"), value="value_1")],
             ),
-            OptionGroup(
-                label=PlainText(text="group 2"),
-                options=[Option(text=PlainText(text="option 2"), value="value_2")],
-            ),
         ],
         initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
     ).build() == {
@@ -273,15 +269,6 @@ def test_builds_static_select_with_option_groups():
                     {
                         "text": {"type": "plain_text", "text": "option 1"},
                         "value": "value_1",
-                    }
-                ],
-            },
-            {
-                "label": {"type": "plain_text", "text": "group 2"},
-                "options": [
-                    {
-                        "text": {"type": "plain_text", "text": "option 2"},
-                        "value": "value_2",
                     }
                 ],
             },
@@ -397,6 +384,195 @@ def test_static_select_initial_option_isnt_within_option_groups():
                 ),
             ],
             initial_option=Option(text=PlainText(text="option 2"), value="value_2"),
+        )
+
+
+def test_builds_multi_static_select_with_options():
+    assert MultiStaticSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        options=[
+            Option(text=PlainText(text="option 1"), value="value_1"),
+            Option(text=PlainText(text="option 2"), value="value_2"),
+        ],
+        initial_options=[Option(text=PlainText(text="option 1"), value="value_1")],
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+        max_selected_items=5,
+    ).build() == {
+        "type": "multi_static_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "options": [
+            {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
+            {"text": {"type": "plain_text", "text": "option 2"}, "value": "value_2"},
+        ],
+        "initial_options": [
+            {
+                "text": {"type": "plain_text", "text": "option 1"},
+                "value": "value_1",
+            }
+        ],
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+        "max_selected_items": 5,
+    }
+
+
+def test_builds_multi_static_select_with_option_groups():
+    assert MultiStaticSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        option_groups=[
+            OptionGroup(
+                label=PlainText(text="group 1"),
+                options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            ),
+        ],
+        initial_options=[Option(text=PlainText(text="option 1"), value="value_1")],
+    ).build() == {
+        "type": "multi_static_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "option_groups": [
+            {
+                "label": {"type": "plain_text", "text": "group 1"},
+                "options": [
+                    {
+                        "text": {"type": "plain_text", "text": "option 1"},
+                        "value": "value_1",
+                    }
+                ],
+            }
+        ],
+        "initial_options": [
+            {
+                "text": {"type": "plain_text", "text": "option 1"},
+                "value": "value_1",
+            }
+        ],
+    }
+
+
+def test_multi_static_select_without_options_and_option_groups_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(placeholder=PlainText(text="placeholder"))
+
+
+def test_multi_static_select_with_options_and_option_groups_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+            ],
+            option_groups=[
+                OptionGroup(
+                    label=PlainText(text="group 1"),
+                    options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                )
+            ],
+        )
+
+
+def test_multi_static_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(
+            placeholder=PlainText(text="p" * 151),
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+            ],
+        )
+
+
+def test_multi_static_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+            ],
+        )
+
+
+def test_multi_static_select_empty_options_raise_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(placeholder=PlainText(text="placeholder"), options=[])
+
+
+def test_multi_static_select_excessive_options_raise_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            options=[
+                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                for o in range(101)
+            ],
+        )
+
+
+def test_multi_static_select_empty_option_groups_raise_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(placeholder=PlainText(text="placeholder"), option_groups=[])
+
+
+def test_multi_static_select_excessive_option_groups_raise_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            option_groups=[
+                OptionGroup(
+                    label=PlainText(text=f"group {o}"),
+                    options=[
+                        Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                    ],
+                )
+                for o in range(101)
+            ],
+        )
+
+
+def test_multi_static_select_initial_options_arent_within_options():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
+            initial_options=[
+                Option(text=PlainText(text=f"option 2"), value=f"value_2")
+            ],
+        )
+
+
+def test_multi_static_select_initial_options_arent_within_option_groups():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="action_id",
+            option_groups=[
+                OptionGroup(
+                    label=PlainText(text="group 1"),
+                    options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                ),
+            ],
+            initial_options=[Option(text=PlainText(text="option 2"), value="value_2")],
+        )
+
+
+def test_multi_static_select_zero_max_selected_items_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
+            max_selected_items=0
         )
 
 
@@ -568,33 +744,6 @@ def test_channels_select_excessive_action_id_raises_exception():
             placeholder=PlainText(text="placeholder"),
             action_id="a" * 256,
         )
-
-
-@pytest.mark.skip
-@pytest.mark.parametrize(
-    "required_option, field",
-    [("option_group", "option_groups"), ("option", "options")],
-    indirect=["required_option"],
-)
-def test_builds_static_multiselect(required_option, field, plain_text, values, confirm):
-    multiselect = MultiStaticSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        max_selected_items=3,
-        initial_options=[required_option],
-        **{field: [required_option for _ in range(3)]},
-    )
-
-    assert multiselect.build() == {
-        "type": "multi_static_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        "confirm": confirm.build(),
-        "max_selected_items": 3,
-        "initial_options": [required_option.build()],
-        field: [required_option.build() for _ in range(3)],
-    }
 
 
 @pytest.mark.skip

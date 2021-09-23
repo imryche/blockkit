@@ -225,6 +225,61 @@ class StaticSelect(NewStaticSelectBase):
         return values
 
 
+class MultiStaticSelect(NewStaticSelectBase):
+    type: str = "multi_static_select"
+    initial_options: Optional[List[Option]] = None
+    max_selected_items: Optional[int] = None
+
+    def __init__(
+        self,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        options: Optional[List[Option]] = None,
+        option_groups: Optional[List[OptionGroup]] = None,
+        initial_options: Optional[Option] = None,
+        confirm: Optional[Confirm] = None,
+        max_selected_items: Optional[int] = None,
+    ):
+        super().__init__(
+            placeholder=placeholder,
+            action_id=action_id,
+            options=options,
+            option_groups=option_groups,
+            initial_options=initial_options,
+            confirm=confirm,
+            max_selected_items=max_selected_items,
+        )
+
+    @root_validator
+    def _validate_values(cls, values):
+        initial_options = values.get("initial_options")
+        options = values.get("options")
+        option_groups = values.get("option_groups")
+
+        if not any((options, option_groups)) or options and option_groups:
+            raise ValueError("You must provide either options or option_groups")
+
+        if None not in (initial_options, options):
+            for initial_option in initial_options:
+                if initial_option not in options:
+                    raise ValueError(f"Option {initial_option} isn't within {options}")
+
+        if None not in (initial_options, option_groups):
+            groups_options = itertools.chain(*[og.options for og in option_groups])
+            for initial_option in initial_options:
+                if initial_option not in groups_options:
+                    raise ValueError(
+                        f"Option {initial_option} isn't within {option_groups}"
+                    )
+
+        return values
+
+    _validate_max_selected_items = validator(
+        "max_selected_items", validate_int_range, min_value=1, max_value=999
+    )
+
+
 class ExternalSelectBase(Select):
     min_query_length = IntegerField()
 
@@ -328,35 +383,6 @@ class ChannelsSelect(NewSelect):
             initial_channel=initial_channel,
             confirm=confirm,
             response_url_enabled=response_url_enabled,
-        )
-
-
-class MultiStaticSelect(StaticSelectBase):
-    initial_options = ArrayField(Option, OptionGroup, max_items=100)
-    max_selected_items = IntegerField()
-
-    def __init__(
-        self,
-        placeholder,
-        action_id,
-        options=None,
-        option_groups=None,
-        initial_options=None,
-        confirm=None,
-        max_selected_items=None,
-    ):
-        if options and option_groups:
-            raise ValidationError("You can specify either options or option_groups.")
-
-        super().__init__(
-            "multi_static_select",
-            action_id,
-            placeholder,
-            confirm,
-            options,
-            option_groups,
-            initial_options,
-            max_selected_items,
         )
 
 

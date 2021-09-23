@@ -15,7 +15,7 @@ def validators(field, *validator_funcs):
 
 
 def validate_int_range(v, *, min_value, max_value):
-    if not min_value <= v <= max_value:
+    if v is not None and not min_value <= v <= max_value:
         raise ValueError(f"Should be between {min_value} and {max_value}")
     return v
 
