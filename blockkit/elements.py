@@ -14,7 +14,7 @@ from blockkit.fields import (
     StringField,
     TextField,
     UrlField,
-    ValidationError
+    ValidationError,
 )
 from blockkit.objects import PlainText
 from blockkit.validators import (
@@ -24,7 +24,7 @@ from blockkit.validators import (
     validate_list_size,
     validate_string_length,
     validate_text_length,
-    validator
+    validator,
 )
 
 from . import Confirm, DispatchActionConfig, Filter, Option, OptionGroup
@@ -280,10 +280,6 @@ class MultiStaticSelect(NewStaticSelectBase):
     )
 
 
-class ExternalSelectBase(Select):
-    min_query_length = IntegerField()
-
-
 class NewExternalSelectBase(NewSelect):
     min_query_length: Optional[int] = None
 
@@ -314,7 +310,6 @@ class ExternalSelect(NewExternalSelectBase):
         )
 
 
-
 class MultiExternalSelect(NewExternalSelectBase):
     type: str = "multi_external_select"
     initial_options: Optional[List[Option]] = None
@@ -336,7 +331,7 @@ class MultiExternalSelect(NewExternalSelectBase):
             min_query_length=min_query_length,
             initial_options=initial_options,
             confirm=confirm,
-            max_selected_items=max_selected_items
+            max_selected_items=max_selected_items,
         )
 
     _validate_max_selected_items = validator(
@@ -362,6 +357,33 @@ class UsersSelect(NewSelect):
             initial_user=initial_user,
             confirm=confirm,
         )
+
+
+class MultiUsersSelect(NewSelect):
+    type: str = "multi_users_select"
+    initial_users: Optional[List[str]] = None
+    max_selected_items: Optional[int] = None
+
+    def __init__(
+        self,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        initial_users: Optional[str] = None,
+        confirm: Optional[Confirm] = None,
+        max_selected_items: Optional[int] = None,
+    ):
+        super().__init__(
+            placeholder=placeholder,
+            action_id=action_id,
+            initial_users=initial_users,
+            confirm=confirm,
+            max_selected_items=max_selected_items,
+        )
+
+    _validate_max_selected_items = validator(
+        "max_selected_items", validate_int_range, min_value=1, max_value=999
+    )
 
 
 class ConversationsSelect(NewSelect):
@@ -413,28 +435,6 @@ class ChannelsSelect(NewSelect):
             initial_channel=initial_channel,
             confirm=confirm,
             response_url_enabled=response_url_enabled,
-        )
-
-
-class MultiUsersSelect(Select):
-    initial_users = ArrayField(str)
-    max_selected_items = IntegerField()
-
-    def __init__(
-        self,
-        placeholder,
-        action_id,
-        initial_users=None,
-        confirm=None,
-        max_selected_items=None,
-    ):
-        super().__init__(
-            "multi_users_select",
-            action_id,
-            placeholder,
-            confirm,
-            initial_users,
-            max_selected_items,
         )
 
 

@@ -677,6 +677,7 @@ def test_multi_external_select_negative_min_query_length_raises_exception():
             placeholder=PlainText(text="placeholder"), min_query_length=-1
         )
 
+
 def test_multi_external_select_zero_max_selected_items_raises_exception():
     with pytest.raises(ValidationError):
         MultiExternalSelect(
@@ -719,6 +720,53 @@ def test_users_select_excessive_action_id_raises_exception():
         UsersSelect(
             placeholder=PlainText(text="placeholder"),
             action_id="a" * 256,
+        )
+
+
+def test_builds_multi_users_select():
+    assert MultiUsersSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        initial_users=["U01P9A6F9HC", "U02P8A6F9HD"],
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+        max_selected_items=5,
+    ).build() == {
+        "type": "multi_users_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "initial_users": ["U01P9A6F9HC", "U02P8A6F9HD"],
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+        "max_selected_items": 5,
+    }
+
+
+def test_multi_users_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiUsersSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_multi_users_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiUsersSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+        )
+
+
+def test_multi_users_select_zero_max_selected_items_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiUsersSelect(
+            placeholder=PlainText(text="placeholder"), max_selected_items=0
         )
 
 
@@ -818,28 +866,6 @@ def test_static_multiselect_with_options_and_option_groups_raises_exception(
             options=[option for _ in range(2)],
             option_groups=[option_group for _ in range(2)],
         )
-
-
-@pytest.mark.skip
-def test_builds_users_multiselect(plain_text, values, confirm):
-    initial_users = ["U123456", "U654321"]
-
-    multiselect = MultiUsersSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        max_selected_items=3,
-        initial_users=initial_users,
-    )
-
-    assert multiselect.build() == {
-        "type": "multi_users_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        "confirm": confirm.build(),
-        "max_selected_items": 3,
-        "initial_users": initial_users,
-    }
 
 
 @pytest.mark.skip
