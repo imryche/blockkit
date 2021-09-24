@@ -415,6 +415,39 @@ class ConversationsSelect(NewSelect):
         )
 
 
+class MultiConversationsSelect(NewSelect):
+    type: str = "multi_conversations_select"
+    initial_conversations: Optional[List[str]] = None
+    default_to_current_conversation: Optional[bool] = None
+    max_selected_items: Optional[int] = None
+    filter: Optional[Filter] = None
+
+    def __init__(
+        self,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        initial_conversations: Optional[List[str]] = None,
+        default_to_current_conversation: Optional[bool] = None,
+        confirm: Optional[Confirm] = None,
+        max_selected_items: Optional[int] = None,
+        filter: Optional[Filter] = None,
+    ):
+        super().__init__(
+            placeholder=placeholder,
+            action_id=action_id,
+            initial_conversations=initial_conversations,
+            default_to_current_conversation=default_to_current_conversation,
+            confirm=confirm,
+            max_selected_items=max_selected_items,
+            filter=filter,
+        )
+
+    _validate_max_selected_items = validator(
+        "max_selected_items", validate_int_range, min_value=1, max_value=999
+    )
+
+
 class ChannelsSelect(NewSelect):
     type: str = "channels_select"
     initial_channel: Optional[str] = None
@@ -435,34 +468,6 @@ class ChannelsSelect(NewSelect):
             initial_channel=initial_channel,
             confirm=confirm,
             response_url_enabled=response_url_enabled,
-        )
-
-
-class MultiConversationsSelect(Select):
-    initial_conversations = ArrayField(str)
-    default_to_current_conversation = BooleanField()
-    max_selected_items = IntegerField()
-    filter = ObjectField(Filter)
-
-    def __init__(
-        self,
-        placeholder,
-        action_id,
-        initial_conversations=None,
-        default_to_current_conversation=None,
-        confirm=None,
-        max_selected_items=None,
-        filter=None,
-    ):
-        super().__init__(
-            "multi_conversations_select",
-            action_id,
-            placeholder,
-            confirm,
-            initial_conversations,
-            default_to_current_conversation,
-            max_selected_items,
-            filter,
         )
 
 

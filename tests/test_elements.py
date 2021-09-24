@@ -814,6 +814,57 @@ def test_conversations_select_excessive_action_id_raises_exception():
         )
 
 
+def test_builds_multi_conversations_select():
+    assert MultiConversationsSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        initial_conversations=["U01P9A6F9HC", "U02P8A6F9HD"],
+        default_to_current_conversation=True,
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+        max_selected_items=5,
+        filter=Filter(include=["public"]),
+    ).build() == {
+        "type": "multi_conversations_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "initial_conversations": ["U01P9A6F9HC", "U02P8A6F9HD"],
+        "default_to_current_conversation": True,
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+        "max_selected_items": 5,
+        "filter": {"include": ["public"]},
+    }
+
+
+def test_multi_conversations_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiConversationsSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_multi_conversations_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiConversationsSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+        )
+
+
+def test_multi_conversations_select_zero_max_selected_items_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiConversationsSelect(
+            placeholder=PlainText(text="placeholder"), max_selected_items=0
+        )
+
+
 def test_builds_channels_select():
     assert ChannelsSelect(
         placeholder=PlainText(text="placeholder"),
