@@ -906,44 +906,6 @@ def test_channels_select_excessive_action_id_raises_exception():
 
 
 @pytest.mark.skip
-@pytest.mark.parametrize("select_class", [StaticSelect, MultiStaticSelect])
-def test_static_multiselect_with_options_and_option_groups_raises_exception(
-    select_class, plain_text, values, option, option_group, confirm
-):
-    with pytest.raises(ValidationError):
-        select_class(
-            plain_text,
-            values.action_id,
-            options=[option for _ in range(2)],
-            option_groups=[option_group for _ in range(2)],
-        )
-
-
-@pytest.mark.skip
-def test_builds_conversations_multiselect(plain_text, values, confirm, filter_object):
-    initial_conversations = ["C123456", "C654321"]
-
-    multiselect = MultiConversationsSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        max_selected_items=3,
-        initial_conversations=initial_conversations,
-        filter=filter_object,
-    )
-
-    assert multiselect.build() == {
-        "type": "multi_conversations_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        "confirm": confirm.build(),
-        "max_selected_items": 3,
-        "initial_conversations": initial_conversations,
-        "filter": filter_object.build(),
-    }
-
-
-@pytest.mark.skip
 def test_builds_channels_multiselect(plain_text, values, confirm):
     initial_channels = ["C123456", "C654321"]
 
