@@ -952,20 +952,59 @@ def test_multi_channels_select_zero_max_selected_items_raises_exception():
         )
 
 
-@pytest.mark.skip
-def test_builds_overflow(values, option, confirm):
-    overflow = Overflow(
-        values.action_id,
-        [option for _ in range(2)],
-        confirm=confirm,
-    )
-
-    assert overflow.build() == {
+def test_builds_overflow():
+    assert Overflow(
+        action_id="action_id",
+        options=[
+            Option(text=PlainText(text="option 1"), value="value_1"),
+            Option(text=PlainText(text="option 2"), value="value_2"),
+        ],
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+    ).build() == {
         "type": "overflow",
-        "action_id": values.action_id,
-        "options": [option.build() for _ in range(2)],
-        "confirm": confirm.build(),
+        "action_id": "action_id",
+        "options": [
+            {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
+            {"text": {"type": "plain_text", "text": "option 2"}, "value": "value_2"},
+        ],
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
     }
+
+
+def test_overflow_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Overflow(
+            action_id="a" * 256,
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+                Option(text=PlainText(text="option 2"), value="value_2"),
+            ],
+        )
+
+
+def test_overflow_lacking_options_raise_exception():
+    with pytest.raises(ValidationError):
+        Overflow(options=[Option(text=PlainText(text="option 1"), value="value_1")])
+
+
+def test_overflow_excessive_options_raise_exception():
+    with pytest.raises(ValidationError):
+        Overflow(
+            options=[
+                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                for o in range(6)
+            ]
+        )
 
 
 @pytest.mark.skip

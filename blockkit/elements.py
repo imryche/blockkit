@@ -157,11 +157,6 @@ class Select(ActionableElement):
     confirm = ObjectField(Confirm)
 
 
-class StaticSelectBase(Select):
-    options = ArrayField(Option, max_items=100)
-    option_groups = ArrayField(OptionGroup, max_items=100)
-
-
 class NewSelect(ActionableComponent):
     placeholder: PlainText
     confirm: Optional[Confirm] = None
@@ -498,12 +493,21 @@ class MultiChannelsSelect(NewSelect):
     )
 
 
-class Overflow(ActionableElement):
-    options = ArrayField(Option, min_items=1, max_items=5)
-    confirm = ObjectField(Confirm)
+class Overflow(ActionableComponent):
+    type: str = "overflow"
+    options: List[Option]
+    confirm: Optional[Confirm] = None
 
-    def __init__(self, action_id, options, confirm=None):
-        super().__init__("overflow", action_id, options, confirm)
+    def __init__(
+        self,
+        *,
+        action_id: Optional[str] = None,
+        options: List[Option],
+        confirm: Optional[Confirm] = None,
+    ):
+        super().__init__(action_id=action_id, options=options, confirm=confirm)
+
+    _validate_options = validator("options", validate_list_size, min_len=2, max_len=5)
 
 
 class PlainTextInput(ActionableElement):
