@@ -471,26 +471,31 @@ class ChannelsSelect(NewSelect):
         )
 
 
-class MultiChannelsSelect(Select):
-    initial_channels = ArrayField(str)
-    max_selected_items = IntegerField()
+class MultiChannelsSelect(NewSelect):
+    type: str = "multi_channels_select"
+    initial_channels: Optional[List[str]] = None
+    max_selected_items: Optional[int] = None
 
     def __init__(
         self,
-        placeholder,
-        action_id,
-        initial_channels=None,
-        confirm=None,
-        max_selected_items=None,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        initial_channels: Optional[str] = None,
+        confirm: Optional[Confirm] = None,
+        max_selected_items: Optional[int] = None,
     ):
         super().__init__(
-            "multi_channels_select",
-            action_id,
-            placeholder,
-            confirm,
-            initial_channels,
-            max_selected_items,
+            placeholder=placeholder,
+            action_id=action_id,
+            initial_channels=initial_channels,
+            confirm=confirm,
+            max_selected_items=max_selected_items,
         )
+
+    _validate_max_selected_items = validator(
+        "max_selected_items", validate_int_range, min_value=1, max_value=999
+    )
 
 
 class Overflow(ActionableElement):

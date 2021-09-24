@@ -905,26 +905,51 @@ def test_channels_select_excessive_action_id_raises_exception():
         )
 
 
-@pytest.mark.skip
-def test_builds_channels_multiselect(plain_text, values, confirm):
-    initial_channels = ["C123456", "C654321"]
-
-    multiselect = MultiChannelsSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        max_selected_items=3,
-        initial_channels=initial_channels,
-    )
-
-    assert multiselect.build() == {
+def test_builds_multi_channels_select():
+    assert MultiChannelsSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        initial_channels=["CSK3A8P2M", "CSM4A0P2M"],
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+        max_selected_items=5,
+    ).build() == {
         "type": "multi_channels_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        "confirm": confirm.build(),
-        "max_selected_items": 3,
-        "initial_channels": initial_channels,
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "initial_channels": ["CSK3A8P2M", "CSM4A0P2M"],
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+        "max_selected_items": 5,
     }
+
+
+def test_multi_channels_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiChannelsSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_multi_channels_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiChannelsSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+        )
+
+
+def test_multi_channels_select_zero_max_selected_items_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiChannelsSelect(
+            placeholder=PlainText(text="placeholder"), max_selected_items=0
+        )
 
 
 @pytest.mark.skip
