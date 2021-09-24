@@ -14,7 +14,7 @@ from blockkit.fields import (
     StringField,
     TextField,
     UrlField,
-    ValidationError,
+    ValidationError
 )
 from blockkit.objects import PlainText
 from blockkit.validators import (
@@ -24,7 +24,7 @@ from blockkit.validators import (
     validate_list_size,
     validate_string_length,
     validate_text_length,
-    validator,
+    validator
 )
 
 from . import Confirm, DispatchActionConfig, Filter, Option, OptionGroup
@@ -314,6 +314,36 @@ class ExternalSelect(NewExternalSelectBase):
         )
 
 
+
+class MultiExternalSelect(NewExternalSelectBase):
+    type: str = "multi_external_select"
+    initial_options: Optional[List[Option]] = None
+    max_selected_items: Optional[int] = None
+
+    def __init__(
+        self,
+        *,
+        placeholder: PlainText,
+        action_id: Optional[str] = None,
+        min_query_length: Optional[int] = None,
+        initial_options: Optional[List[Option]] = None,
+        confirm: Optional[Confirm] = None,
+        max_selected_items: Optional[int] = None,
+    ):
+        super().__init__(
+            placeholder=placeholder,
+            action_id=action_id,
+            min_query_length=min_query_length,
+            initial_options=initial_options,
+            confirm=confirm,
+            max_selected_items=max_selected_items
+        )
+
+    _validate_max_selected_items = validator(
+        "max_selected_items", validate_int_range, min_value=1, max_value=999
+    )
+
+
 class UsersSelect(NewSelect):
     type: str = "users_select"
     initial_user: Optional[str] = None
@@ -383,30 +413,6 @@ class ChannelsSelect(NewSelect):
             initial_channel=initial_channel,
             confirm=confirm,
             response_url_enabled=response_url_enabled,
-        )
-
-
-class MultiExternalSelect(ExternalSelectBase):
-    initial_options = ArrayField(Option, OptionGroup, max_items=100)
-    max_selected_items = IntegerField()
-
-    def __init__(
-        self,
-        placeholder,
-        action_id,
-        min_query_length=None,
-        initial_options=None,
-        confirm=None,
-        max_selected_items=None,
-    ):
-        super().__init__(
-            "multi_external_select",
-            action_id,
-            placeholder,
-            confirm,
-            min_query_length,
-            initial_options,
-            max_selected_items,
         )
 
 

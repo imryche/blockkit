@@ -572,7 +572,7 @@ def test_multi_static_select_zero_max_selected_items_raises_exception():
         MultiStaticSelect(
             placeholder=PlainText(text="placeholder"),
             options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
-            max_selected_items=0
+            max_selected_items=0,
         )
 
 
@@ -580,8 +580,8 @@ def test_builds_external_select():
     assert ExternalSelect(
         placeholder=PlainText(text="placeholder"),
         action_id="action_id",
-        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
         min_query_length=2,
+        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),
@@ -592,11 +592,11 @@ def test_builds_external_select():
         "type": "external_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
         "action_id": "action_id",
+        "min_query_length": 2,
         "initial_option": {
             "text": {"type": "plain_text", "text": "option 1"},
             "value": "value_1",
         },
-        "min_query_length": 2,
         "confirm": {
             "title": {"type": "plain_text", "text": "title"},
             "text": {"type": "mrkdwn", "text": "text"},
@@ -622,6 +622,66 @@ def test_external_select_excessive_action_id_raises_exception():
 def test_external_select_negative_min_query_length_raises_exception():
     with pytest.raises(ValidationError):
         ExternalSelect(placeholder=PlainText(text="placeholder"), min_query_length=-1)
+
+
+def test_builds_multi_external_select():
+    assert MultiExternalSelect(
+        placeholder=PlainText(text="placeholder"),
+        action_id="action_id",
+        min_query_length=2,
+        initial_options=[Option(text=PlainText(text="option 1"), value="value_1")],
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+        max_selected_items=5,
+    ).build() == {
+        "type": "multi_external_select",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "action_id": "action_id",
+        "min_query_length": 2,
+        "initial_options": [
+            {
+                "text": {"type": "plain_text", "text": "option 1"},
+                "value": "value_1",
+            }
+        ],
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+        "max_selected_items": 5,
+    }
+
+
+def test_multi_external_select_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiExternalSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_multi_external_select_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiExternalSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="a" * 256,
+        )
+
+
+def test_multi_external_select_negative_min_query_length_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiExternalSelect(
+            placeholder=PlainText(text="placeholder"), min_query_length=-1
+        )
+
+def test_multi_external_select_zero_max_selected_items_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiExternalSelect(
+            placeholder=PlainText(text="placeholder"), max_selected_items=0
+        )
 
 
 def test_builds_users_select():
@@ -758,28 +818,6 @@ def test_static_multiselect_with_options_and_option_groups_raises_exception(
             options=[option for _ in range(2)],
             option_groups=[option_group for _ in range(2)],
         )
-
-
-@pytest.mark.skip
-def test_builds_external_multiselect(option, plain_text, values, confirm):
-    multiselect = MultiExternalSelect(
-        plain_text,
-        values.action_id,
-        confirm=confirm,
-        max_selected_items=3,
-        initial_options=[option],
-        min_query_length=2,
-    )
-
-    assert multiselect.build() == {
-        "type": "multi_external_select",
-        "placeholder": plain_text.build(),
-        "action_id": values.action_id,
-        "confirm": confirm.build(),
-        "max_selected_items": 3,
-        "initial_options": [option.build()],
-        "min_query_length": 2,
-    }
 
 
 @pytest.mark.skip
