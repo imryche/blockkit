@@ -1,6 +1,7 @@
 from typing import List, Optional, Union
 
 from blockkit.components import NewComponent
+from blockkit.objects import MarkdownText, PlainText
 from blockkit.validators import validate_list_size, validate_string_length, validator
 
 from . import Text
@@ -79,6 +80,23 @@ class Actions(NewBlock):
     _validate_elements = validator("elements", validate_list_size, min_len=1, max_len=5)
 
 
+class Context(NewBlock):
+    type: str = "context"
+    elements: List[Union[Image, PlainText, MarkdownText]]
+
+    def __init__(
+        self,
+        *,
+        elements: List[Union[Image, PlainText, MarkdownText]],
+        block_id: Optional[str] = None
+    ):
+        super().__init__(elements=elements, block_id=block_id)
+
+    _validate_elements = validator(
+        "elements", validate_list_size, min_len=1, max_len=10
+    )
+
+
 class Section(Block):
     text = TextField(max_length=3000)
     fields = ArrayField(Text, max_items=10)
@@ -103,13 +121,6 @@ class ImageBlock(Block):
 
     def __init__(self, image_url, alt_text, title=None, block_id=None):
         super().__init__("image", block_id, image_url, alt_text, title)
-
-
-class Context(Block):
-    elements = ArrayField(Text, Image, max_items=10)
-
-    def __init__(self, elements, block_id=None):
-        super().__init__("context", block_id, elements)
 
 
 class Input(Block):

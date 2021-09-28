@@ -13,6 +13,7 @@ from blockkit import (
     UsersSelect,
 )
 from blockkit.elements import Button, Image
+from blockkit.objects import MarkdownText
 from pydantic import ValidationError
 
 
@@ -66,6 +67,45 @@ def test_actions_excessive_elements_raise_exception():
         )
 
 
+def test_builds_context():
+    assert Context(
+        elements=[
+            Image(image_url="http://placekitten.com/100/100", alt_text="kitten"),
+            MarkdownText(text="*markdown* text"),
+        ],
+        block_id="block_id",
+    ).build() == {
+        "type": "context",
+        "elements": [
+            {
+                "type": "image",
+                "image_url": "http://placekitten.com/100/100",
+                "alt_text": "kitten",
+            },
+            {"type": "mrkdwn", "text": "*markdown* text"},
+        ],
+        "block_id": "block_id",
+    }
+
+
+def test_context_excessive_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Context(
+            elements=[MarkdownText(text="*markdown* text")],
+            block_id="b" * 256,
+        )
+
+
+def test_context_empty_elements_raise_exception():
+    with pytest.raises(ValidationError):
+        Context(elements=[])
+
+
+def test_context_excessive_elements_raise_exception():
+    with pytest.raises(ValidationError):
+        Context(elements=[MarkdownText(text="*markdown* text") for _ in range(11)])
+
+
 @pytest.mark.skip
 def test_builds_section(values, markdown_text, button):
     section = Section(
@@ -114,20 +154,6 @@ def test_builds_image_block(values, plain_text):
         "image_url": values.image_url,
         "alt_text": values.text,
         "title": plain_text.build(),
-        "block_id": values.block_id,
-    }
-
-
-@pytest.mark.skip
-def test_builds_context(values, plain_text, image):
-    context = Context(
-        [plain_text, image],
-        values.block_id,
-    )
-
-    assert context.build() == {
-        "type": "context",
-        "elements": [plain_text.build(), image.build()],
         "block_id": values.block_id,
     }
 
