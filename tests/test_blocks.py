@@ -174,6 +174,48 @@ def test_image_block_excessive_alt_text_raises_exception():
         )
 
 
+def test_builds_input():
+    assert Input(
+        label=PlainText(text="label"),
+        element=PlainTextInput(action_id="action_id"),
+        dispatch_action=True,
+        block_id="block_id",
+        hint=PlainText(text="hint"),
+        optional=True,
+    ).build() == {
+        "type": "input",
+        "label": {"type": "plain_text", "text": "label"},
+        "element": {"type": "plain_text_input", "action_id": "action_id"},
+        "dispatch_action": True,
+        "block_id": "block_id",
+        "hint": {"type": "plain_text", "text": "hint"},
+        "optional": True,
+    }
+
+def test_input_excessive_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Input(
+            label=PlainText(text="label"),
+            element=PlainTextInput(action_id="action_id"),
+            block_id="b" * 256,
+        )
+
+def test_input_excessive_label_raises_exception():
+    with pytest.raises(ValidationError):
+        Input(
+            label=PlainText(text="l" * 2001),
+            element=PlainTextInput(action_id="action_id"),
+        )
+
+def test_input_excessive_hint_raises_exception():
+    with pytest.raises(ValidationError):
+        Input(
+            label=PlainText(text="label"),
+            element=PlainTextInput(action_id="action_id"),
+            hint=PlainText(text="h" * 2001),
+        )
+
+
 @pytest.mark.skip
 def test_builds_section(values, markdown_text, button):
     section = Section(
@@ -196,29 +238,3 @@ def test_builds_section(values, markdown_text, button):
 def test_section_without_text_and_fields_raises_exception(values, button):
     with pytest.raises(ValidationError):
         Section(accessory=button)
-
-
-@pytest.mark.skip
-def test_builds_input(values, plain_text):
-    optional = True
-    dispatch_action = True
-    text_input = PlainTextInput(values.action_id)
-
-    input_ = Input(
-        plain_text,
-        text_input,
-        dispatch_action=dispatch_action,
-        block_id=values.block_id,
-        hint=plain_text,
-        optional=optional,
-    )
-
-    assert input_.build() == {
-        "type": "input",
-        "label": plain_text.build(),
-        "element": text_input.build(),
-        "dispatch_action": dispatch_action,
-        "block_id": values.block_id,
-        "hint": plain_text.build(),
-        "optional": optional,
-    }

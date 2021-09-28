@@ -51,7 +51,7 @@ class Block(Component):
     block_id = StringField(max_length=255)
 
 
-Element = Union[
+ActionElement = Union[
     Button,
     Checkboxes,
     DatePicker,
@@ -79,9 +79,11 @@ class NewBlock(NewComponent):
 
 class Actions(NewBlock):
     type: str = "actions"
-    elements: List[Element]
+    elements: List[ActionElement]
 
-    def __init__(self, *, elements: List[Element], block_id: Optional[str] = None):
+    def __init__(
+        self, *, elements: List[ActionElement], block_id: Optional[str] = None
+    ):
         super().__init__(elements=elements, block_id=block_id)
 
     _validate_elements = validator("elements", validate_list_size, min_len=1, max_len=5)
@@ -95,7 +97,7 @@ class Context(NewBlock):
         self,
         *,
         elements: List[Union[Image, PlainText, MarkdownText]],
-        block_id: Optional[str] = None
+        block_id: Optional[str] = None,
     ):
         super().__init__(elements=elements, block_id=block_id)
 
@@ -133,7 +135,7 @@ class ImageBlock(NewBlock):
         image_url: HttpUrl,
         alt_text: PlainText,
         title: Optional[PlainText] = None,
-        block_id: Optional[str] = None
+        block_id: Optional[str] = None,
     ):
         super().__init__(
             image_url=image_url, alt_text=alt_text, title=title, block_id=block_id
@@ -141,6 +143,55 @@ class ImageBlock(NewBlock):
 
     _validate_alt_text = validator("alt_text", validate_text_length, max_len=2000)
     _validate_title = validator("title", validate_text_length, max_len=2000)
+
+
+InputElement = Union[
+    PlainTextInput,
+    Checkboxes,
+    RadioButtons,
+    StaticSelect,
+    MultiStaticSelect,
+    ExternalSelect,
+    MultiExternalSelect,
+    UsersSelect,
+    MultiUsersSelect,
+    ConversationsSelect,
+    MultiConversationsSelect,
+    ChannelsSelect,
+    MultiChannelsSelect,
+    DatePicker,
+]
+
+
+class Input(NewBlock):
+    type: str = "input"
+    label: PlainText
+    element: InputElement
+    dispatch_action: Optional[bool] = None
+    hint: Optional[PlainText] = None
+    optional: Optional[bool] = None
+
+    def __init__(
+        self,
+        *,
+        label: PlainText,
+        element: InputElement,
+        block_id: Optional[str] = None,
+        dispatch_action: Optional[bool] = None,
+        hint: Optional[PlainText] = None,
+        optional: Optional[bool] = None,
+    ):
+        super().__init__(
+            label=label,
+            element=element,
+            block_id=block_id,
+            dispatch_action=dispatch_action,
+            hint=hint,
+            optional=optional,
+        )
+
+    _validate_label = validator("label", validate_text_length, max_len=2000)
+    _validate_hint = validator("hint", validate_text_length, max_len=2000)
 
 
 class Section(Block):
@@ -153,24 +204,3 @@ class Section(Block):
             raise ValidationError("Provide either text or fields.")
 
         super().__init__("section", block_id, text, fields, accessory)
-
-
-class Input(Block):
-    label = TextField(plain=True, max_length=2000)
-    element = ObjectField(PlainTextInput, Select, DatePicker, Checkboxes, RadioButtons)
-    dispatch_action = BooleanField()
-    hint = TextField(plain=True, max_length=2000)
-    optional = BooleanField()
-
-    def __init__(
-        self,
-        label,
-        element,
-        dispatch_action=None,
-        block_id=None,
-        hint=None,
-        optional=None,
-    ):
-        super().__init__(
-            "input", block_id, label, element, dispatch_action, hint, optional
-        )
