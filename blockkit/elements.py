@@ -510,35 +510,39 @@ class Overflow(ActionableComponent):
     _validate_options = validator("options", validate_list_size, min_len=2, max_len=5)
 
 
-class PlainTextInput(ActionableElement):
-    placeholder = TextField(plain=True, max_length=150)
-    initial_value = StringField()
-    multiline = BooleanField()
-    min_length = IntegerField(max_value=3000)
-    max_length = IntegerField()
-    dispatch_action_config = ObjectField(DispatchActionConfig)
+class PlainTextInput(ActionableComponent):
+    type: str = "plain_text_input"
+    placeholder: Optional[PlainText] = None
+    initial_value: Optional[str] = None
+    multiline: Optional[bool] = None
+    min_length: Optional[int] = None
+    max_length: Optional[int] = None
+    dispatch_action_config: Optional[DispatchActionConfig] = None
 
     def __init__(
         self,
-        action_id,
-        placeholder=None,
-        initial_value=None,
-        multiline=None,
-        min_length=None,
-        max_length=None,
-        dispatch_action_config=None,
+        *,
+        action_id: Optional[str] = None,
+        placeholder: Optional[PlainText] = None,
+        initial_value: Optional[str] = None,
+        multiline: Optional[bool] = None,
+        min_length: Optional[int] = None,
+        max_length: Optional[int] = None,
+        dispatch_action_config: Optional[DispatchActionConfig] = None,
     ):
         super().__init__(
-            "plain_text_input",
-            action_id,
-            placeholder,
-            initial_value,
-            multiline,
-            min_length,
-            max_length,
-            dispatch_action_config,
+            action_id=action_id,
+            placeholder=placeholder,
+            initial_value=initial_value,
+            multiline=multiline,
+            min_length=min_length,
+            max_length=max_length,
+            dispatch_action_config=dispatch_action_config,
         )
 
+    _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
+    _validate_min_length = validator("min_length", validate_int_range, min_value=0, max_value=3000)
+    _validate_max_length = validator("max_length", validate_int_range, min_value=0, max_value=3000)
 
 class RadioButtons(ActionableElement):
     options = ArrayField(Option)

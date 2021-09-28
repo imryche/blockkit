@@ -20,6 +20,7 @@ from blockkit import (
 )
 from blockkit.objects import (
     Confirm,
+    DispatchActionConfig,
     Filter,
     MarkdownText,
     Option,
@@ -1007,32 +1008,57 @@ def test_overflow_excessive_options_raise_exception():
         )
 
 
-@pytest.mark.skip
-def test_builds_plain_input(values, plain_text, dispatch_action_config):
-    min_length = 2
-    max_length = 10
-    multiline = False
-
-    text_input = PlainTextInput(
-        values.action_id,
-        placeholder=plain_text,
-        initial_value=values.value,
-        multiline=multiline,
-        min_length=min_length,
-        max_length=max_length,
-        dispatch_action_config=dispatch_action_config,
-    )
-
-    assert text_input.build() == {
+def test_builds_plain_text_input():
+    assert PlainTextInput(
+        action_id="action_id",
+        placeholder=PlainText(text="placeholder"),
+        initial_value="initial value",
+        multiline=True,
+        min_length=5,
+        max_length=500,
+        dispatch_action_config=DispatchActionConfig(
+            trigger_actions_on=["on_character_entered"]
+        ),
+    ).build() == {
         "type": "plain_text_input",
-        "action_id": values.action_id,
-        "placeholder": plain_text.build(),
-        "initial_value": values.value,
-        "multiline": multiline,
-        "min_length": min_length,
-        "max_length": max_length,
-        "dispatch_action_config": dispatch_action_config.build(),
+        "action_id": "action_id",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "initial_value": "initial value",
+        "multiline": True,
+        "min_length": 5,
+        "max_length": 500,
+        "dispatch_action_config": {"trigger_actions_on": ["on_character_entered"]},
     }
+
+
+def test_plain_text_input_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        PlainTextInput(action_id="a" * 256)
+
+
+def test_plain_text_input_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        PlainTextInput(placeholder=PlainText(text="p" * 151))
+
+
+def test_plain_text_input_negative_min_length_raises_exception():
+    with pytest.raises(ValidationError):
+        PlainTextInput(min_length=-1)
+
+
+def test_plain_text_input_excessive_min_length_raises_exception():
+    with pytest.raises(ValidationError):
+        PlainTextInput(min_length=3001)
+
+
+def test_plain_text_input_negative_max_length_raises_exception():
+    with pytest.raises(ValidationError):
+        PlainTextInput(max_length=-1)
+
+
+def test_plain_text_input_excessive_max_length_raises_exception():
+    with pytest.raises(ValidationError):
+        PlainTextInput(max_length=3001)
 
 
 @pytest.mark.skip
