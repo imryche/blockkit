@@ -143,6 +143,8 @@ class Image(NewComponent):
     def __init__(self, *, image_url: HttpUrl, alt_text: str):
         super().__init__(image_url=image_url, alt_text=alt_text)
 
+    _validate_alt_text = validator("alt_text", validate_string_length, max_len=2000)
+
 
 class Select(ActionableElement):
     placeholder = TextField(plain=True, max_length=150)

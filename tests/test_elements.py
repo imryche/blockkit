@@ -213,6 +213,11 @@ def test_builds_image():
     }
 
 
+def test_image_excessive_alt_text_raises_exception():
+    with pytest.raises(ValidationError):
+        Image(image_url="http://placekitten.com/100/100", alt_text="k" * 2001)
+
+
 def test_builds_static_select_with_options():
     assert StaticSelect(
         placeholder=PlainText(text="placeholder"),
