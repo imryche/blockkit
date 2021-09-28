@@ -133,6 +133,47 @@ def test_header_excessive_text_raises_exception():
         Header(text=PlainText(text="t" * 151))
 
 
+def test_builds_image_block():
+    assert ImageBlock(
+        image_url="http://placekitten.com/300/200",
+        alt_text=PlainText(text="kitten"),
+        title=PlainText(text="kitten"),
+        block_id="block_id",
+    ).build() == {
+        "type": "image",
+        "image_url": "http://placekitten.com/300/200",
+        "alt_text": {"type": "plain_text", "text": "kitten"},
+        "title": {"type": "plain_text", "text": "kitten"},
+        "block_id": "block_id",
+    }
+
+
+def test_image_block_excessive_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        ImageBlock(
+            image_url="http://placekitten.com/300/200",
+            alt_text=PlainText(text="kitten"),
+            block_id="b" * 256,
+        )
+
+
+def test_image_block_excessive_alt_text_raises_exception():
+    with pytest.raises(ValidationError):
+        ImageBlock(
+            image_url="http://placekitten.com/300/200",
+            alt_text=PlainText(text="k" * 2001),
+        )
+
+
+def test_image_block_excessive_alt_text_raises_exception():
+    with pytest.raises(ValidationError):
+        ImageBlock(
+            image_url="http://placekitten.com/300/200",
+            alt_text=PlainText(text="kitten"),
+            title=PlainText(text="k" * 2001),
+        )
+
+
 @pytest.mark.skip
 def test_builds_section(values, markdown_text, button):
     section = Section(
@@ -155,24 +196,6 @@ def test_builds_section(values, markdown_text, button):
 def test_section_without_text_and_fields_raises_exception(values, button):
     with pytest.raises(ValidationError):
         Section(accessory=button)
-
-
-@pytest.mark.skip
-def test_builds_image_block(values, plain_text):
-    image = ImageBlock(
-        values.image_url,
-        values.text,
-        title=plain_text,
-        block_id=values.block_id,
-    )
-
-    assert image.build() == {
-        "type": "image",
-        "image_url": values.image_url,
-        "alt_text": values.text,
-        "title": plain_text.build(),
-        "block_id": values.block_id,
-    }
 
 
 @pytest.mark.skip

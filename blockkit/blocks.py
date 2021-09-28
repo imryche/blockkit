@@ -1,8 +1,15 @@
 from typing import List, Optional, Union
 
+from pydantic.networks import HttpUrl
+
 from blockkit.components import NewComponent
 from blockkit.objects import MarkdownText, PlainText
-from blockkit.validators import validate_list_size, validate_string_length, validate_text_length, validator
+from blockkit.validators import (
+    validate_list_size,
+    validate_string_length,
+    validate_text_length,
+    validator,
+)
 
 from . import Text
 from .components import Component
@@ -114,6 +121,28 @@ class Header(NewBlock):
     _validate_text = validator("text", validate_text_length, max_len=150)
 
 
+class ImageBlock(NewBlock):
+    type: str = "image"
+    image_url: HttpUrl
+    alt_text: PlainText
+    title: Optional[PlainText] = None
+
+    def __init__(
+        self,
+        *,
+        image_url: HttpUrl,
+        alt_text: PlainText,
+        title: Optional[PlainText] = None,
+        block_id: Optional[str] = None
+    ):
+        super().__init__(
+            image_url=image_url, alt_text=alt_text, title=title, block_id=block_id
+        )
+
+    _validate_alt_text = validator("alt_text", validate_text_length, max_len=2000)
+    _validate_title = validator("title", validate_text_length, max_len=2000)
+
+
 class Section(Block):
     text = TextField(max_length=3000)
     fields = ArrayField(Text, max_items=10)
@@ -124,15 +153,6 @@ class Section(Block):
             raise ValidationError("Provide either text or fields.")
 
         super().__init__("section", block_id, text, fields, accessory)
-
-
-class ImageBlock(Block):
-    image_url = UrlField(max_length=3000)
-    alt_text = StringField(max_length=2000)
-    title = TextField(plain=True, max_length=2000)
-
-    def __init__(self, image_url, alt_text, title=None, block_id=None):
-        super().__init__("image", block_id, image_url, alt_text, title)
 
 
 class Input(Block):
