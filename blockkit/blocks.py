@@ -2,7 +2,7 @@ from typing import List, Optional, Union
 
 from blockkit.components import NewComponent
 from blockkit.objects import MarkdownText, PlainText
-from blockkit.validators import validate_list_size, validate_string_length, validator
+from blockkit.validators import validate_list_size, validate_string_length, validate_text_length, validator
 
 from . import Text
 from .components import Component
@@ -104,6 +104,16 @@ class Divider(NewBlock):
         super().__init__(block_id=block_id)
 
 
+class Header(NewBlock):
+    type: str = "header"
+    text: PlainText
+
+    def __init__(self, *, text: PlainText, block_id: Optional[str] = None):
+        super().__init__(text=text, block_id=block_id)
+
+    _validate_text = validator("text", validate_text_length, max_len=150)
+
+
 class Section(Block):
     text = TextField(max_length=3000)
     fields = ArrayField(Text, max_items=10)
@@ -144,10 +154,3 @@ class Input(Block):
         super().__init__(
             "input", block_id, label, element, dispatch_action, hint, optional
         )
-
-
-class Header(Block):
-    text = TextField(plain=True, max_length=3000)
-
-    def __init__(self, text, block_id=None):
-        super().__init__("header", block_id, text)

@@ -112,6 +112,27 @@ def test_builds_divider():
     }
 
 
+def test_builds_header():
+    assert Header(text=PlainText(text="text"), block_id="block_id").build() == {
+        "type": "header",
+        "text": {"type": "plain_text", "text": "text"},
+        "block_id": "block_id",
+    }
+
+
+def test_header_excessive_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Header(
+            text=PlainText(text="text"),
+            block_id="b" * 256,
+        )
+
+
+def test_header_excessive_text_raises_exception():
+    with pytest.raises(ValidationError):
+        Header(text=PlainText(text="t" * 151))
+
+
 @pytest.mark.skip
 def test_builds_section(values, markdown_text, button):
     section = Section(
@@ -177,15 +198,4 @@ def test_builds_input(values, plain_text):
         "block_id": values.block_id,
         "hint": plain_text.build(),
         "optional": optional,
-    }
-
-
-@pytest.mark.skip
-def test_builds_header(values, plain_text):
-    header = Header(plain_text, values.block_id)
-
-    assert header.build() == {
-        "type": "header",
-        "text": plain_text.build(),
-        "block_id": values.block_id,
     }
