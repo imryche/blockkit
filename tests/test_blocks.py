@@ -3,7 +3,6 @@ from blockkit import (
     Actions,
     Context,
     Divider,
-    File,
     Header,
     ImageBlock,
     Input,
