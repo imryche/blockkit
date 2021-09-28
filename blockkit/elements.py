@@ -1,5 +1,5 @@
 import itertools
-from datetime import date
+from datetime import date, time
 from typing import List, Optional
 
 from pydantic import root_validator
@@ -24,6 +24,7 @@ from blockkit.validators import (
     validate_list_size,
     validate_string_length,
     validate_text_length,
+    validate_time,
     validator,
 )
 
@@ -580,3 +581,28 @@ class RadioButtons(ActionableComponent):
         if initial_option is not None and initial_option not in options:
             raise ValueError(f"Option {initial_option} isn't within {options}")
         return values
+
+
+class Timepicker(ActionableComponent):
+    type: str = "timepicker"
+    placeholder: Optional[PlainText] = None
+    initial_time: Optional[time] = None
+    confirm: Optional[Confirm] = None
+
+    _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
+    _validate_initial_time = validator("initial_time", validate_time)
+
+    def __init__(
+        self,
+        *,
+        action_id: Optional[str] = None,
+        placeholder: Optional[PlainText] = None,
+        initial_time: Optional[time] = None,
+        confirm: Optional[Confirm] = None,
+    ):
+        super().__init__(
+            action_id=action_id,
+            placeholder=placeholder,
+            initial_time=initial_time,
+            confirm=confirm,
+        )

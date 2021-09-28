@@ -61,3 +61,9 @@ def validate_date(v):
     if v is not None:
         return v.isoformat()
     return v
+
+
+def validate_time(v):
+    if v is not None:
+        return v.strftime("%H:%M")
+    return v

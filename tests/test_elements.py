@@ -16,6 +16,7 @@ from blockkit import (
     PlainTextInput,
     RadioButtons,
     StaticSelect,
+    Timepicker,
     UsersSelect,
 )
 from blockkit.objects import (
@@ -1124,3 +1125,38 @@ def test_radio_buttons_initial_options_arent_within_options_raise_exception():
             options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
             initial_option=Option(text=PlainText(text=f"option 2"), value=f"value_2"),
         )
+
+
+def test_builds_timepicker():
+    assert Timepicker(
+        action_id="action_id",
+        placeholder=PlainText(text="placeholder"),
+        initial_time="22:55",
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+    ).build() == {
+        "type": "timepicker",
+        "action_id": "action_id",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "initial_time": "22:55",
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+    }
+
+
+def test_timepicker_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Timepicker(action_id="a" * 256)
+
+
+def test_timepicker_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        Timepicker(placeholder=PlainText(text="p" * 151))

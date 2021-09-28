@@ -26,6 +26,7 @@ from .elements import (  # noqa
     PlainTextInput,
     RadioButtons,
     Checkboxes,
+    Timepicker,
 )
 from .blocks import (  # noqa
     Section,
