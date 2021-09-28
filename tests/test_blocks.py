@@ -106,6 +106,13 @@ def test_context_excessive_elements_raise_exception():
         Context(elements=[MarkdownText(text="*markdown* text") for _ in range(11)])
 
 
+def test_builds_divider():
+    assert Divider(block_id="block_id").build() == {
+        "type": "divider",
+        "block_id": "block_id",
+    }
+
+
 @pytest.mark.skip
 def test_builds_section(values, markdown_text, button):
     section = Section(
@@ -128,16 +135,6 @@ def test_builds_section(values, markdown_text, button):
 def test_section_without_text_and_fields_raises_exception(values, button):
     with pytest.raises(ValidationError):
         Section(accessory=button)
-
-
-@pytest.mark.skip
-def test_builds_divider(values):
-    divider = Divider(values.block_id)
-
-    assert divider.build() == {
-        "type": "divider",
-        "block_id": values.block_id,
-    }
 
 
 @pytest.mark.skip

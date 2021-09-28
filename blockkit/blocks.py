@@ -97,6 +97,13 @@ class Context(NewBlock):
     )
 
 
+class Divider(NewBlock):
+    type: str = "divider"
+
+    def __init__(self, *, block_id: Optional[str] = None):
+        super().__init__(block_id=block_id)
+
+
 class Section(Block):
     text = TextField(max_length=3000)
     fields = ArrayField(Text, max_items=10)
@@ -107,11 +114,6 @@ class Section(Block):
             raise ValidationError("Provide either text or fields.")
 
         super().__init__("section", block_id, text, fields, accessory)
-
-
-class Divider(Block):
-    def __init__(self, block_id=None):
-        super().__init__("divider", block_id)
 
 
 class ImageBlock(Block):
