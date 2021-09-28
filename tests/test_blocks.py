@@ -182,25 +182,6 @@ def test_builds_input(values, plain_text):
 
 
 @pytest.mark.skip
-def test_builds_file(values):
-    external_id = "dfj345g"
-    source = "remote"
-
-    file_ = File(
-        external_id,
-        source,
-        values.block_id,
-    )
-
-    assert file_.build() == {
-        "type": "file",
-        "external_id": external_id,
-        "source": source,
-        "block_id": values.block_id,
-    }
-
-
-@pytest.mark.skip
 def test_builds_header(values, plain_text):
     header = Header(plain_text, values.block_id)
 

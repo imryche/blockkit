@@ -35,7 +35,6 @@ from .blocks import (  # noqa
     Actions,
     Context,
     Input,
-    File,
     Header,
 )
 from .surfaces import Message, Modal, Home, WorkflowStep  # noqa
