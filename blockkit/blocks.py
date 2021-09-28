@@ -1,15 +1,31 @@
+from typing import List, Optional, Union
+
+from blockkit.components import NewComponent
+from blockkit.validators import validate_list_size, validate_string_length, validator
+
 from . import Text
 from .components import Component
 from .elements import (
     Button,
+    ChannelsSelect,
     Checkboxes,
+    ConversationsSelect,
     DatePicker,
     Element,
+    ExternalSelect,
     Image,
+    MultiChannelsSelect,
+    MultiConversationsSelect,
+    MultiExternalSelect,
+    MultiStaticSelect,
+    MultiUsersSelect,
     Overflow,
     PlainTextInput,
     RadioButtons,
     Select,
+    StaticSelect,
+    Timepicker,
+    UsersSelect,
 )
 from .fields import (
     ArrayField,
@@ -25,6 +41,42 @@ from .fields import (
 class Block(Component):
     type = StringField()
     block_id = StringField(max_length=255)
+
+
+Element = Union[
+    Button,
+    Checkboxes,
+    DatePicker,
+    StaticSelect,
+    MultiStaticSelect,
+    ExternalSelect,
+    MultiExternalSelect,
+    UsersSelect,
+    MultiUsersSelect,
+    ConversationsSelect,
+    MultiConversationsSelect,
+    ChannelsSelect,
+    MultiChannelsSelect,
+    Overflow,
+    RadioButtons,
+    Timepicker,
+]
+
+
+class NewBlock(NewComponent):
+    block_id: Optional[str] = None
+
+    _validate_block_id = validator("block_id", validate_string_length, max_len=255)
+
+
+class Actions(NewBlock):
+    type: str = "actions"
+    elements: List[Element]
+
+    def __init__(self, *, elements: List[Element], block_id: Optional[str] = None):
+        super().__init__(elements=elements, block_id=block_id)
+
+    _validate_elements = validator("elements", validate_list_size, min_len=1, max_len=5)
 
 
 class Section(Block):
@@ -51,15 +103,6 @@ class ImageBlock(Block):
 
     def __init__(self, image_url, alt_text, title=None, block_id=None):
         super().__init__("image", block_id, image_url, alt_text, title)
-
-
-class Actions(Block):
-    elements = ArrayField(
-        Select, Button, Overflow, DatePicker, Checkboxes, RadioButtons, max_items=5
-    )
-
-    def __init__(self, elements, block_id=None):
-        super().__init__("actions", block_id, elements)
 
 
 class Context(Block):

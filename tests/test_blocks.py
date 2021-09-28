@@ -7,12 +7,66 @@ from blockkit import (
     Header,
     ImageBlock,
     Input,
+    PlainText,
     PlainTextInput,
     Section,
+    UsersSelect,
 )
-from blockkit.fields import ValidationError
+from blockkit.elements import Button, Image
+from pydantic import ValidationError
 
 
+def test_builds_actions():
+    assert Actions(
+        elements=[
+            Button(text=PlainText(text="text"), action_id="action_id_button"),
+            UsersSelect(
+                placeholder=PlainText(text="placeholder"), action_id="action_id_select"
+            ),
+        ],
+        block_id="block_id",
+    ).build() == {
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {"type": "plain_text", "text": "text"},
+                "action_id": "action_id_button",
+            },
+            {
+                "type": "users_select",
+                "placeholder": {"type": "plain_text", "text": "placeholder"},
+                "action_id": "action_id_select",
+            },
+        ],
+        "block_id": "block_id",
+    }
+
+
+def test_actions_excessive_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Actions(
+            elements=[Button(text=PlainText(text="text"), action_id="action_id")],
+            block_id="b" * 256,
+        )
+
+
+def test_actions_empty_elements_raise_exception():
+    with pytest.raises(ValidationError):
+        Actions(elements=[])
+
+
+def test_actions_excessive_elements_raise_exception():
+    with pytest.raises(ValidationError):
+        Actions(
+            elements=[
+                Button(text=PlainText(text=f"text"), action_id=f"action_id")
+                for _ in range(6)
+            ]
+        )
+
+
+@pytest.mark.skip
 def test_builds_section(values, markdown_text, button):
     section = Section(
         markdown_text,
@@ -30,11 +84,13 @@ def test_builds_section(values, markdown_text, button):
     }
 
 
+@pytest.mark.skip
 def test_section_without_text_and_fields_raises_exception(values, button):
     with pytest.raises(ValidationError):
         Section(accessory=button)
 
 
+@pytest.mark.skip
 def test_builds_divider(values):
     divider = Divider(values.block_id)
 
@@ -44,6 +100,7 @@ def test_builds_divider(values):
     }
 
 
+@pytest.mark.skip
 def test_builds_image_block(values, plain_text):
     image = ImageBlock(
         values.image_url,
@@ -61,19 +118,7 @@ def test_builds_image_block(values, plain_text):
     }
 
 
-def test_builds_actions(values, button):
-    actions = Actions(
-        [button for _ in range(4)],
-        values.block_id,
-    )
-
-    assert actions.build() == {
-        "type": "actions",
-        "elements": [button.build() for _ in range(4)],
-        "block_id": values.block_id,
-    }
-
-
+@pytest.mark.skip
 def test_builds_context(values, plain_text, image):
     context = Context(
         [plain_text, image],
@@ -87,6 +132,7 @@ def test_builds_context(values, plain_text, image):
     }
 
 
+@pytest.mark.skip
 def test_builds_input(values, plain_text):
     optional = True
     dispatch_action = True
@@ -112,6 +158,7 @@ def test_builds_input(values, plain_text):
     }
 
 
+@pytest.mark.skip
 def test_builds_file(values):
     external_id = "dfj345g"
     source = "remote"
@@ -130,6 +177,7 @@ def test_builds_file(values):
     }
 
 
+@pytest.mark.skip
 def test_builds_header(values, plain_text):
     header = Header(plain_text, values.block_id)
 
