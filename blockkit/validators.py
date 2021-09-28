@@ -26,6 +26,12 @@ def validate_text_length(v, *, max_len):
     return v
 
 
+def validate_list_text_length(v, *, max_len):
+    for item in v:
+        validate_text_length(item, max_len=max_len)
+    return v
+
+
 def validate_string_length(v, *, max_len):
     if v is not None and len(v) > max_len:
         raise ValueError(f"Maximum length is {max_len} characters")

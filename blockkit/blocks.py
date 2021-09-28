@@ -1,14 +1,17 @@
 from typing import List, Optional, Union
 
+from pydantic import root_validator
 from pydantic.networks import HttpUrl
 
 from blockkit.components import NewComponent
 from blockkit.objects import MarkdownText, PlainText
 from blockkit.validators import (
     validate_list_size,
+    validate_list_text_length,
     validate_string_length,
     validate_text_length,
     validator,
+    validators,
 )
 
 from . import Text
@@ -194,13 +197,58 @@ class Input(NewBlock):
     _validate_hint = validator("hint", validate_text_length, max_len=2000)
 
 
-class Section(Block):
-    text = TextField(max_length=3000)
-    fields = ArrayField(Text, max_items=10)
-    accessory = ObjectField(Element)
+Element = Union[
+    Button,
+    Checkboxes,
+    DatePicker,
+    Image,
+    StaticSelect,
+    MultiStaticSelect,
+    ExternalSelect,
+    MultiExternalSelect,
+    UsersSelect,
+    MultiUsersSelect,
+    ConversationsSelect,
+    MultiConversationsSelect,
+    ChannelsSelect,
+    MultiChannelsSelect,
+    Overflow,
+    RadioButtons,
+    Timepicker,
+]
 
-    def __init__(self, text=None, block_id=None, fields=None, accessory=None):
-        if not any((text, fields)):
-            raise ValidationError("Provide either text or fields.")
 
-        super().__init__("section", block_id, text, fields, accessory)
+class Section(NewBlock):
+    type: str = "section"
+    text: Optional[Union[PlainText, MarkdownText]] = None
+    fields: Optional[List[Union[PlainText, MarkdownText]]] = None
+    accessory: Optional[Element] = None
+
+    def __init__(
+        self,
+        *,
+        text: Optional[Union[PlainText, MarkdownText]] = None,
+        block_id: Optional[str] = None,
+        fields: Optional[List[Union[PlainText, MarkdownText]]] = None,
+        accessory: Optional[Element] = None,
+    ):
+        super().__init__(
+            text=text, block_id=block_id, fields=fields, accessory=accessory
+        )
+
+    _validate_text = validator("text", validate_text_length, max_len=3000)
+    _validate_fields = validators(
+        "fields",
+        (validate_list_size, {"min_len": 1, "max_len": 10}),
+        (validate_list_text_length, {"max_len": 2000}),
+    )
+
+    @root_validator
+    def _validate_values(cls, values):
+        text = values.get("text")
+        fields = values.get("fields")
+
+        if text is None and fields is None:
+            raise ValueError("You must provide either text or fields")
+
+        return values

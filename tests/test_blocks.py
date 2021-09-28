@@ -192,6 +192,7 @@ def test_builds_input():
         "optional": True,
     }
 
+
 def test_input_excessive_block_id_raises_exception():
     with pytest.raises(ValidationError):
         Input(
@@ -200,12 +201,14 @@ def test_input_excessive_block_id_raises_exception():
             block_id="b" * 256,
         )
 
+
 def test_input_excessive_label_raises_exception():
     with pytest.raises(ValidationError):
         Input(
             label=PlainText(text="l" * 2001),
             element=PlainTextInput(action_id="action_id"),
         )
+
 
 def test_input_excessive_hint_raises_exception():
     with pytest.raises(ValidationError):
@@ -216,25 +219,55 @@ def test_input_excessive_hint_raises_exception():
         )
 
 
-@pytest.mark.skip
-def test_builds_section(values, markdown_text, button):
-    section = Section(
-        markdown_text,
-        block_id=values.block_id,
-        fields=[markdown_text for _ in range(2)],
-        accessory=button,
-    )
-
-    assert section.build() == {
+def test_builds_section():
+    assert Section(
+        text=MarkdownText(text="*markdown* text"),
+        block_id="block_id",
+        fields=[MarkdownText(text="field 1"), MarkdownText(text="field 2")],
+        accessory=Button(text=PlainText(text="button"), action_id="action_id"),
+    ).build() == {
         "type": "section",
-        "text": markdown_text.build(),
-        "block_id": values.block_id,
-        "fields": [markdown_text.build() for _ in range(2)],
-        "accessory": button.build(),
+        "text": {"type": "mrkdwn", "text": "*markdown* text"},
+        "block_id": "block_id",
+        "fields": [
+            {"type": "mrkdwn", "text": "field 1"},
+            {"type": "mrkdwn", "text": "field 2"},
+        ],
+        "accessory": {
+            "type": "button",
+            "text": {"type": "plain_text", "text": "button"},
+            "action_id": "action_id",
+        },
     }
 
 
-@pytest.mark.skip
-def test_section_without_text_and_fields_raises_exception(values, button):
+def test_empty_section_raises_exception():
     with pytest.raises(ValidationError):
-        Section(accessory=button)
+        Section()
+
+
+def test_section_excessive_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Section(text=MarkdownText(text="*markdown* text"), block_id="b" * 256)
+
+
+def test_section_excessive_text_raises_exception():
+    with pytest.raises(ValidationError):
+        Section(text=MarkdownText(text="t" * 3001))
+
+
+def test_section_empty_fields_raises_exception():
+    with pytest.raises(ValidationError):
+        Section(fields=[])
+
+
+def test_section_excessive_fields_raises_exception():
+    with pytest.raises(ValidationError):
+        Section(fields=[MarkdownText(text=f"field {f}") for f in range(11)])
+
+
+def test_section_excessive_fields_text_raises_exception():
+    with pytest.raises(ValidationError):
+        Section(
+            fields=[MarkdownText(text="field 1"), MarkdownText(text="f" * 2001)],
+        )

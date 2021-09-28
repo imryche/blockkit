@@ -99,7 +99,7 @@ class Checkboxes(ActionableComponent):
     )
 
     @root_validator
-    def _validate_initial_within_options(cls, values):
+    def _validate_values(cls, values):
         initial_options = values.get("initial_options")
         options = values.get("options")
 
