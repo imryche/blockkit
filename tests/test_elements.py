@@ -1061,19 +1061,66 @@ def test_plain_text_input_excessive_max_length_raises_exception():
         PlainTextInput(max_length=3001)
 
 
-@pytest.mark.skip
-def test_builds_radio_buttons(values, option, confirm):
-    radio_buttons = RadioButtons(
-        values.action_id,
-        [option for _ in range(3)],
-        initial_option=option,
-        confirm=confirm,
-    )
-
-    assert radio_buttons.build() == {
+def test_builds_radio_buttons():
+    assert RadioButtons(
+        action_id="action_id",
+        options=[
+            Option(text=PlainText(text="option 1"), value="value_1"),
+            Option(text=PlainText(text="option 2"), value="value_2"),
+        ],
+        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+    ).build() == {
         "type": "radio_buttons",
-        "action_id": values.action_id,
-        "options": [option.build() for _ in range(3)],
-        "initial_option": option.build(),
-        "confirm": confirm.build(),
+        "action_id": "action_id",
+        "options": [
+            {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
+            {"text": {"type": "plain_text", "text": "option 2"}, "value": "value_2"},
+        ],
+        "initial_option": {
+            "text": {"type": "plain_text", "text": "option 1"},
+            "value": "value_1",
+        },
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
     }
+
+
+def test_radio_buttons_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        RadioButtons(
+            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            action_id="a" * 256,
+        )
+
+
+def test_radio_buttons_empty_options_raise_exception():
+    with pytest.raises(ValidationError):
+        RadioButtons(options=[])
+
+
+def test_radio_buttons_excessive_options_raise_exception():
+    with pytest.raises(ValidationError):
+        RadioButtons(
+            options=[
+                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                for o in range(11)
+            ]
+        )
+
+
+def test_radio_buttons_initial_options_arent_within_options_raise_exception():
+    with pytest.raises(ValidationError):
+        RadioButtons(
+            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
+            initial_option=Option(text=PlainText(text=f"option 2"), value=f"value_2"),
+        )

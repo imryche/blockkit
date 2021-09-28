@@ -541,13 +541,42 @@ class PlainTextInput(ActionableComponent):
         )
 
     _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
-    _validate_min_length = validator("min_length", validate_int_range, min_value=0, max_value=3000)
-    _validate_max_length = validator("max_length", validate_int_range, min_value=0, max_value=3000)
+    _validate_min_length = validator(
+        "min_length", validate_int_range, min_value=0, max_value=3000
+    )
+    _validate_max_length = validator(
+        "max_length", validate_int_range, min_value=0, max_value=3000
+    )
 
-class RadioButtons(ActionableElement):
-    options = ArrayField(Option)
-    initial_option = ObjectField(Option)
-    confirm = ObjectField(Confirm)
 
-    def __init__(self, action_id, options, initial_option=None, confirm=None):
-        super().__init__("radio_buttons", action_id, options, initial_option, confirm)
+class RadioButtons(ActionableComponent):
+    type: str = "radio_buttons"
+    options: List[Option]
+    initial_option: Optional[Option] = None
+    confirm: Optional[Confirm] = None
+
+    def __init__(
+        self,
+        *,
+        options: List[Option],
+        action_id: Optional[str] = None,
+        initial_option: Optional[Option] = None,
+        confirm: Optional[Confirm] = None,
+    ):
+        super().__init__(
+            options=options,
+            action_id=action_id,
+            initial_option=initial_option,
+            confirm=confirm,
+        )
+
+    _validate_options = validator("options", validate_list_size, min_len=1, max_len=10)
+
+    @root_validator
+    def _validate_initial_within_options(cls, values):
+        initial_option = values.get("initial_option")
+        options = values.get("options")
+
+        if initial_option is not None and initial_option not in options:
+            raise ValueError(f"Option {initial_option} isn't within {options}")
+        return values
