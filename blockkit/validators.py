@@ -27,6 +27,8 @@ def validate_text_length(v, *, max_len):
 
 
 def validate_list_text_length(v, *, max_len):
+    if v is None:
+        return
     for item in v:
         validate_text_length(item, max_len=max_len)
     return v
