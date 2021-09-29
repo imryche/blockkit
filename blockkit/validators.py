@@ -56,11 +56,11 @@ def validate_list_size(v, *, min_len, max_len):
     if v is not None:
         if len(v) < min_len:
             raise ValueError(
-                f"Should contain minimum of {min_len} item" + "s" if min_len > 0 else ""
+                f"Must contain at least {min_len} item" + ("s" if min_len > 1 else "")
             )
         if len(v) > max_len:
             raise ValueError(
-                f"Should contain maximum of {max_len} item" + "s" if max_len > 0 else ""
+                f"Must contain a maximum of {max_len} item" + ("s" if max_len > 1 else "")
             )
     return v
 
