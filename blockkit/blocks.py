@@ -4,25 +4,12 @@ from pydantic import root_validator
 from pydantic.networks import HttpUrl
 
 from blockkit.components import NewComponent
-from blockkit.objects import MarkdownText, PlainText
-from blockkit.validators import (
-    validate_list_size,
-    validate_list_text_length,
-    validate_string_length,
-    validate_text_length,
-    validator,
-    validators,
-)
-
-from . import Text
-from .components import Component
-from .elements import (
+from blockkit.elements import (
     Button,
     ChannelsSelect,
     Checkboxes,
     ConversationsSelect,
     DatePicker,
-    Element,
     ExternalSelect,
     Image,
     MultiChannelsSelect,
@@ -33,26 +20,19 @@ from .elements import (
     Overflow,
     PlainTextInput,
     RadioButtons,
-    Select,
     StaticSelect,
     Timepicker,
     UsersSelect,
 )
-from .fields import (
-    ArrayField,
-    BooleanField,
-    ObjectField,
-    StringField,
-    TextField,
-    UrlField,
-    ValidationError,
+from blockkit.objects import MarkdownText, PlainText
+from blockkit.validators import (
+    validate_list_size,
+    validate_list_text_length,
+    validate_string_length,
+    validate_text_length,
+    validator,
+    validators,
 )
-
-
-class Block(Component):
-    type = StringField()
-    block_id = StringField(max_length=255)
-
 
 ActionElement = Union[
     Button,
@@ -197,7 +177,7 @@ class Input(NewBlock):
     _validate_hint = validator("hint", validate_text_length, max_len=2000)
 
 
-Element = Union[
+AccessoryElement = Union[
     Button,
     Checkboxes,
     DatePicker,
@@ -222,7 +202,7 @@ class Section(NewBlock):
     type: str = "section"
     text: Optional[Union[PlainText, MarkdownText]] = None
     fields: Optional[List[Union[PlainText, MarkdownText]]] = None
-    accessory: Optional[Element] = None
+    accessory: Optional[AccessoryElement] = None
 
     def __init__(
         self,
@@ -230,7 +210,7 @@ class Section(NewBlock):
         text: Optional[Union[PlainText, MarkdownText]] = None,
         block_id: Optional[str] = None,
         fields: Optional[List[Union[PlainText, MarkdownText]]] = None,
-        accessory: Optional[Element] = None,
+        accessory: Optional[AccessoryElement] = None,
     ):
         super().__init__(
             text=text, block_id=block_id, fields=fields, accessory=accessory
