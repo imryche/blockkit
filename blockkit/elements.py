@@ -6,8 +6,14 @@ from pydantic import root_validator
 from pydantic.networks import AnyUrl, HttpUrl
 
 from blockkit.components import NewComponent
-from blockkit.fields import ObjectField, StringField, TextField
-from blockkit.objects import PlainText
+from blockkit.objects import (
+    Confirm,
+    DispatchActionConfig,
+    Filter,
+    Option,
+    OptionGroup,
+    PlainText,
+)
 from blockkit.validators import (
     validate_choices,
     validate_date,
@@ -18,17 +24,6 @@ from blockkit.validators import (
     validate_time,
     validator,
 )
-
-from . import Confirm, DispatchActionConfig, Filter, Option, OptionGroup
-from .components import Component
-
-
-class Element(Component):
-    type = StringField()
-
-
-class ActionableElement(Element):
-    action_id = StringField(max_length=255)
 
 
 class ActionableComponent(NewComponent):
@@ -144,11 +139,6 @@ class Image(NewComponent):
         super().__init__(image_url=image_url, alt_text=alt_text)
 
     _validate_alt_text = validator("alt_text", validate_string_length, max_len=2000)
-
-
-class Select(ActionableElement):
-    placeholder = TextField(plain=True, max_length=150)
-    confirm = ObjectField(Confirm)
 
 
 class NewSelect(ActionableComponent):

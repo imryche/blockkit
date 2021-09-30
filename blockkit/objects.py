@@ -15,10 +15,6 @@ from blockkit.validators import (
 )
 
 
-class Text:
-    pass
-
-
 class MarkdownText(NewComponent):
     type: str = "mrkdwn"
     text: str
