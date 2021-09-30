@@ -109,14 +109,14 @@ class Header(NewBlock):
 class ImageBlock(NewBlock):
     type: str = "image"
     image_url: HttpUrl
-    alt_text: PlainText
+    alt_text: str
     title: Optional[PlainText] = None
 
     def __init__(
         self,
         *,
         image_url: HttpUrl,
-        alt_text: PlainText,
+        alt_text: str,
         title: Optional[PlainText] = None,
         block_id: Optional[str] = None,
     ):
@@ -124,7 +124,7 @@ class ImageBlock(NewBlock):
             image_url=image_url, alt_text=alt_text, title=title, block_id=block_id
         )
 
-    _validate_alt_text = validator("alt_text", validate_text_length, max_len=2000)
+    _validate_alt_text = validator("alt_text", validate_string_length, max_len=2000)
     _validate_title = validator("title", validate_text_length, max_len=2000)
 
 

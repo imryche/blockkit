@@ -136,13 +136,13 @@ def test_header_excessive_text_raises_exception():
 def test_builds_image_block():
     assert ImageBlock(
         image_url="http://placekitten.com/300/200",
-        alt_text=PlainText(text="kitten"),
+        alt_text="kitten",
         title=PlainText(text="kitten"),
         block_id="block_id",
     ).build() == {
         "type": "image",
         "image_url": "http://placekitten.com/300/200",
-        "alt_text": {"type": "plain_text", "text": "kitten"},
+        "alt_text": "kitten",
         "title": {"type": "plain_text", "text": "kitten"},
         "block_id": "block_id",
     }
@@ -152,7 +152,7 @@ def test_image_block_excessive_block_id_raises_exception():
     with pytest.raises(ValidationError):
         ImageBlock(
             image_url="http://placekitten.com/300/200",
-            alt_text=PlainText(text="kitten"),
+            alt_text="kitten",
             block_id="b" * 256,
         )
 
@@ -161,15 +161,15 @@ def test_image_block_excessive_alt_text_raises_exception():
     with pytest.raises(ValidationError):
         ImageBlock(
             image_url="http://placekitten.com/300/200",
-            alt_text=PlainText(text="k" * 2001),
+            alt_text="k" * 2001,
         )
 
 
-def test_image_block_excessive_alt_text_raises_exception():
+def test_image_block_excessive_title_raises_exception():
     with pytest.raises(ValidationError):
         ImageBlock(
             image_url="http://placekitten.com/300/200",
-            alt_text=PlainText(text="kitten"),
+            alt_text="kitten",
             title=PlainText(text="k" * 2001),
         )
 
