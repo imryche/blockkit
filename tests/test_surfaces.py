@@ -1,123 +1,280 @@
 import pytest
-from blockkit import Home, Input, Message, Modal, PlainTextInput, Section, WorkflowStep
-from blockkit.fields import ValidationError
+from blockkit import Button, Input, MarkdownText, PlainText, PlainTextInput, Section
+from blockkit.surfaces import Home, Message, Modal, WorkflowStep
+from pydantic import ValidationError
 
 
-def test_builds_message(values, markdown_text, button):
-    blocks = [Section(markdown_text, accessory=button)]
-    attachments = [
-        {
-            "color": "#36a64f",
-            "mrkdwn_in": ["text"],
-            "text": "Optional `text` that appears within the attachment",
-        }
-    ]
-    thread_ts = "1233333456.33"
-    mrkdwn = True
-
-    message = Message(
-        values.text,
-        blocks=blocks,
-        attachments=attachments,
-        thread_ts=thread_ts,
-        mrkdwn=mrkdwn,
-    )
-
-    assert message.build() == {
-        "text": values.text,
-        "blocks": [b.build() for b in blocks],
-        "attachments": attachments,
-        "thread_ts": thread_ts,
-        "mrkdwn": mrkdwn,
+def test_builds_home():
+    assert Home(
+        blocks=[
+            Section(
+                text=MarkdownText(text="*markdown* text"),
+                accessory=Button(text=PlainText(text="button"), action_id="action_id"),
+            )
+        ],
+        private_metadata="private_metadata",
+        callback_id="callback_id",
+        external_id="external_id",
+    ).build() == {
+        "type": "home",
+        "blocks": [
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*markdown* text"},
+                "accessory": {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "button"},
+                    "action_id": "action_id",
+                },
+            }
+        ],
+        "private_metadata": "private_metadata",
+        "callback_id": "callback_id",
+        "external_id": "external_id",
     }
 
 
-def test_builds_modal(values, modal_text, markdown_text, button):
-    blocks = [Section(markdown_text, accessory=button)]
-    private_metadata = "foobar"
-    callback_id = "view_callback"
-    clear_on_close = True
-    notify_on_close = False
-    external_id = "external"
-
-    modal = Modal(
-        modal_text,
-        blocks,
-        close=modal_text,
-        submit=modal_text,
-        private_metadata=private_metadata,
-        callback_id=callback_id,
-        clear_on_close=clear_on_close,
-        notify_on_close=notify_on_close,
-        external_id=external_id,
-    )
-
-    assert modal.build() == {
-        "type": "modal",
-        "title": modal_text.build(),
-        "blocks": [b.build() for b in blocks],
-        "close": modal_text.build(),
-        "submit": modal_text.build(),
-        "private_metadata": private_metadata,
-        "callback_id": callback_id,
-        "clear_on_close": clear_on_close,
-        "notify_on_close": notify_on_close,
-        "external_id": external_id,
-    }
-
-
-def test_modal_raises_exception_with_inputs_without_submit(values, modal_text):
+def test_home_empty_blocks_raise_exception():
     with pytest.raises(ValidationError):
-        Modal(
-            modal_text, blocks=[Input(values.title, PlainTextInput(values.action_id))]
+        Home(blocks=[])
+
+
+def test_home_excessive_blocks_raise_exception():
+    with pytest.raises(ValidationError):
+        Home(
+            blocks=[
+                Section(text=MarkdownText(text="*markdown* text")) for _ in range(101)
+            ]
         )
 
 
-def test_builds_workflow_step(values):
-    blocks = [Input(values.text, PlainTextInput(values.action_id))]
-    private_metadata = "foobar"
-    callback_id = "view_callback"
-    clear_on_close = True
-    notify_on_close = False
-    external_id = "external"
+def test_home_excessive_private_metadata_raise_exception():
+    with pytest.raises(ValidationError):
+        Home(
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+            private_metadata="p" * 3001,
+        )
 
-    workflow_step = WorkflowStep(
-        blocks,
-        private_metadata=private_metadata,
-        callback_id=callback_id,
-        clear_on_close=clear_on_close,
-        notify_on_close=notify_on_close,
-        external_id=external_id,
-    )
 
-    assert workflow_step.build() == {
+def test_home_excessive_callback_id_raise_exception():
+    with pytest.raises(ValidationError):
+        Home(
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+            callback_id="c" * 256,
+        )
+
+
+def test_home_excessive_external_id_raise_exception():
+    with pytest.raises(ValidationError):
+        Home(
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+            external_id="c" * 256,
+        )
+
+
+def test_builds_message():
+    assert Message(
+        blocks=[
+            Section(
+                text=MarkdownText(text="*markdown* text"),
+                accessory=Button(text=PlainText(text="button"), action_id="action_id"),
+            )
+        ],
+    ).build() == {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*markdown* text"},
+                "accessory": {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "button"},
+                    "action_id": "action_id",
+                },
+            }
+        ],
+    }
+
+
+def test_builds_modal():
+    assert Modal(
+        title=PlainText(text="title"),
+        blocks=[
+            Section(
+                text=MarkdownText(text="*markdown* text"),
+                accessory=Button(text=PlainText(text="button"), action_id="action_id"),
+            )
+        ],
+        close=PlainText(text="close"),
+        submit=PlainText(text="submit"),
+        private_metadata="private_metadata",
+        callback_id="callback_id",
+        clear_on_close=True,
+        notify_on_close=True,
+        external_id="external_id",
+        submit_disabled=True,
+    ).build() == {
+        "type": "modal",
+        "title": {"type": "plain_text", "text": "title"},
+        "blocks": [
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*markdown* text"},
+                "accessory": {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "button"},
+                    "action_id": "action_id",
+                },
+            }
+        ],
+        "close": {"type": "plain_text", "text": "close"},
+        "submit": {"type": "plain_text", "text": "submit"},
+        "private_metadata": "private_metadata",
+        "callback_id": "callback_id",
+        "clear_on_close": True,
+        "notify_on_close": True,
+        "external_id": "external_id",
+        "submit_disabled": True,
+    }
+
+
+def test_modal_excessive_title_raises_exception():
+    with pytest.raises(ValidationError):
+        Modal(
+            title=PlainText(text="t" * 25),
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+        )
+
+
+def test_modal_empty_blocks_raise_exception():
+    with pytest.raises(ValidationError):
+        Modal(title=PlainText(text="title"), blocks=[])
+
+
+def test_modal_excessive_blocks_raise_exception():
+    with pytest.raises(ValidationError):
+        Modal(
+            title=PlainText(text="title"),
+            blocks=[
+                Section(text=MarkdownText(text="*markdown* text")) for _ in range(101)
+            ],
+        )
+
+
+def test_modal_excessive_close_raises_exception():
+    with pytest.raises(ValidationError):
+        Modal(
+            title=PlainText(text="title"),
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+            close=PlainText(text="c" * 25),
+        )
+
+
+def test_modal_excessive_submit_raises_exception():
+    with pytest.raises(ValidationError):
+        Modal(
+            title=PlainText(text="title"),
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+            submit=PlainText(text="s" * 25),
+        )
+
+
+def test_modal_input_without_submit_raises_exception():
+    with pytest.raises(ValidationError):
+        Modal(
+            title=PlainText(text="title"),
+            blocks=[Input(label=PlainText(text="label"), element=PlainTextInput())],
+            submit=PlainText(text="submit"),
+        )
+
+
+def test_modal_excessive_private_metadata_raises_exception():
+    with pytest.raises(ValidationError):
+        Modal(
+            title=PlainText(text="title"),
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+            private_metadata="p" * 3001,
+        )
+
+
+def test_modal_excessive_callback_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Modal(
+            title=PlainText(text="title"),
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+            callback_id="c" * 256,
+        )
+
+
+def test_modal_excessive_external_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Modal(
+            title=PlainText(text="title"),
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+            external_id="c" * 256,
+        )
+
+
+def test_message_empty_blocks_raise_exception():
+    with pytest.raises(ValidationError):
+        Message(blocks=[])
+
+
+def test_message_excessive_blocks_raise_exception():
+    with pytest.raises(ValidationError):
+        Message(
+            blocks=[
+                Section(text=MarkdownText(text="*markdown* text")) for _ in range(51)
+            ]
+        )
+
+
+def test_builds_workflow_step():
+    assert WorkflowStep(
+        blocks=[
+            Section(
+                text=MarkdownText(text="*markdown* text"),
+                accessory=Button(text=PlainText(text="button"), action_id="action_id"),
+            )
+        ],
+        private_metadata="private_metadata",
+        callback_id="callback_id",
+        submit_disabled=True,
+    ).build() == {
         "type": "workflow_step",
-        "blocks": [b.build() for b in blocks],
-        "private_metadata": private_metadata,
-        "callback_id": callback_id,
-        "clear_on_close": clear_on_close,
-        "notify_on_close": notify_on_close,
-        "external_id": external_id,
+        "blocks": [
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*markdown* text"},
+                "accessory": {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "button"},
+                    "action_id": "action_id",
+                },
+            }
+        ],
+        "private_metadata": "private_metadata",
+        "callback_id": "callback_id",
+        "submit_disabled": True,
     }
 
 
-def test_builds_home(values, markdown_text, button):
-    blocks = [Section(markdown_text, accessory=button)]
-    private_metadata = "foobar"
-    callback_id = "view_callback"
-    external_id = "external"
+def test_workflow_step_empty_blocks_raise_exception():
+    with pytest.raises(ValidationError):
+        WorkflowStep(blocks=[])
 
-    home = Home(
-        blocks,
-        private_metadata=private_metadata,
-        callback_id=callback_id,
-        external_id=external_id,
-    )
 
-    assert home.build() == {
-        "type": "home",
-        "blocks": [b.build() for b in blocks],
-        "private_metadata": private_metadata,
-        "callback_id": callback_id,
-        "external_id": external_id,
-    }
+def test_workflow_step_excessive_blocks_raise_exception():
+    with pytest.raises(ValidationError):
+        WorkflowStep(
+            blocks=[
+                Section(text=MarkdownText(text="*markdown* text")) for _ in range(101)
+            ]
+        )
+
+
+def test_workflow_step_excessive_callback_id_raises_exception():
+    with pytest.raises(ValidationError):
+        WorkflowStep(
+            blocks=[Section(text=MarkdownText(text="*markdown* text"))],
+            callback_id="c" * 256,
+        )
