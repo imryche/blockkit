@@ -1,11 +1,9 @@
 import pytest
-from blockkit.fields import ValidationError
 from blockkit.generators import CodeGenerationError, eval_components, generate
 
-cases = []
 
-section_plain_text_case = (
-    {
+def test_generates_section_plain_text():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -16,33 +14,38 @@ section_plain_text_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])',  # noqa
-)
-cases.append(section_plain_text_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])'  # noqa
+    )
 
-section_markdown_text_case = (
-    {
+
+def test_generates_section_markdown_text():
+    payload = {
         "blocks": [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
                     "text": (
-                        "This is a mrkdwn section block :ghost: *this is bold*, "
+                        "This is a mrkdwn section "
+                        "block :ghost: *this is bold*, "
                         "and ~this is crossed out~, "
                         "and <https://google.com|this is a link>"
                     ),
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="This is a mrkdwn section block :ghost: *this is bold*, and ~this is crossed out~, and <https://google.com|this is a link>"))])',  # noqa
-)
-cases.append(section_markdown_text_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="This is a mrkdwn section block :ghost: *this is bold*, and ~this is crossed out~, and <https://google.com|this is a link>"))])'  # noqa
+    )
 
-section_text_fields_case = (
-    {
+
+def test_generates_section_text_fields():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -55,13 +58,15 @@ section_text_fields_case = (
                 ],
             }
         ]
-    },
-    'Message(blocks=[Section(fields=[PlainText(text="*this is plain_text text*", emoji=True)])])',  # noqa
-)
-cases.append(section_text_fields_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(fields=[PlainText(text="*this is plain_text text*", emoji=True)])])'  # noqa
+    )
 
-section_static_select_case = (
-    {
+
+def test_generates_section_static_select():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -90,13 +95,15 @@ section_static_select_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="Pick an item from the dropdown list"), accessory=StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="static_select-action"))])',  # noqa
-)
-cases.append(section_static_select_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="Pick an item from the dropdown list"), accessory=StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="static_select-action"))])'  # noqa
+    )
 
-section_static_select_option_groups_case = (
-    {
+
+def test_generates_section_static_select_option_groups():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -141,17 +148,22 @@ section_static_select_option_groups_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="Available options"), accessory=StaticSelect(placeholder=PlainText(emoji=True, text="Manage"), action_id="static_select-action", option_groups=[OptionGroup(label=PlainText(text="Group 1"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0")]), OptionGroup(label=PlainText(text="Group 2"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-3")])]))])',  # noqa
-)
-cases.append(section_static_select_option_groups_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="Available options"), accessory=StaticSelect(placeholder=PlainText(emoji=True, text="Manage"), action_id="static_select-action", option_groups=[OptionGroup(label=PlainText(text="Group 1"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0")]), OptionGroup(label=PlainText(text="Group 2"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-3")])]))])'  # noqa
+    )
 
-section_users_select_case = (
-    {
+
+def test_generates_section_users_select():
+    payload = {
         "blocks": [
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": "Test block with users select"},
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "Test block with users select",
+                },
                 "accessory": {
                     "type": "users_select",
                     "placeholder": {
@@ -163,13 +175,15 @@ section_users_select_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="Test block with users select"), accessory=UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="users_select-action"))])',  # noqa
-)
-cases.append(section_users_select_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="Test block with users select"), accessory=UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="users_select-action"))])'  # noqa
+    )
 
-section_channels_select_case = (
-    {
+
+def test_generates_section_channels_select():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -181,17 +195,22 @@ section_channels_select_case = (
                 "accessory": {
                     "action_id": "text1234",
                     "type": "channels_select",
-                    "placeholder": {"type": "plain_text", "text": "Select an item"},
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select an item",
+                    },
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick a channel from the dropdown list"), accessory=ChannelsSelect(action_id="text1234", placeholder=PlainText(text="Select an item")))])',  # noqa
-)
-cases.append(section_channels_select_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick a channel from the dropdown list"), accessory=ChannelsSelect(action_id="text1234", placeholder=PlainText(text="Select an item")))])'  # noqa
+    )
 
-section_conversations_select = (
-    {
+
+def test_generates_section_conversations():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -203,17 +222,22 @@ section_conversations_select = (
                 "accessory": {
                     "action_id": "text1234",
                     "type": "conversations_select",
-                    "placeholder": {"type": "plain_text", "text": "Select an item"},
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select an item",
+                    },
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick a conversation from the dropdown list"), accessory=ConversationsSelect(action_id="text1234", placeholder=PlainText(text="Select an item")))])',  # noqa
-)
-cases.append(section_conversations_select)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick a conversation from the dropdown list"), accessory=ConversationsSelect(action_id="text1234", placeholder=PlainText(text="Select an item")))])'  # noqa
+    )
 
-section_external_select_case = (
-    {
+
+def test_generates_section_external_select():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -225,18 +249,23 @@ section_external_select_case = (
                 "accessory": {
                     "action_id": "text1234",
                     "type": "external_select",
-                    "placeholder": {"type": "plain_text", "text": "Select an item"},
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select an item",
+                    },
                     "min_query_length": 3,
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick an item from the dropdown list"), accessory=ExternalSelect(action_id="text1234", placeholder=PlainText(text="Select an item"), min_query_length=3))])',  # noqa
-)
-cases.append(section_external_select_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick an item from the dropdown list"), accessory=ExternalSelect(action_id="text1234", placeholder=PlainText(text="Select an item"), min_query_length=3))])'  # noqa
+    )
 
-section_multi_static_select = (
-    {
+
+def test_generates_section_multi_static():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -245,7 +274,10 @@ section_multi_static_select = (
                 "accessory": {
                     "action_id": "text1234",
                     "type": "multi_static_select",
-                    "placeholder": {"type": "plain_text", "text": "Select items"},
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select items",
+                    },
                     "options": [
                         {
                             "text": {
@@ -265,13 +297,15 @@ section_multi_static_select = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiStaticSelect(action_id="text1234", placeholder=PlainText(text="Select items"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0"), Option(text=PlainText(text="*this is plain_text text*"), value="value-1")]))])',  # noqa
-)
-cases.append(section_multi_static_select)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiStaticSelect(action_id="text1234", placeholder=PlainText(text="Select items"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0"), Option(text=PlainText(text="*this is plain_text text*"), value="value-1")]))])'  # noqa
+    )
 
-section_multi_users_select_case = (
-    {
+
+def test_generates_section_multi_users_select():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -280,36 +314,49 @@ section_multi_users_select_case = (
                 "accessory": {
                     "action_id": "text1234",
                     "type": "multi_users_select",
-                    "placeholder": {"type": "plain_text", "text": "Select users"},
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select users",
+                    },
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick users from the list"), accessory=MultiUsersSelect(action_id="text1234", placeholder=PlainText(text="Select users")))])',  # noqa
-)
-cases.append(section_multi_users_select_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick users from the list"), accessory=MultiUsersSelect(action_id="text1234", placeholder=PlainText(text="Select users")))])'  # noqa
+    )
 
-section_multi_channels_select_case = (
-    {
+
+def test_generates_section_multi_channels_select():
+    payload = {
         "blocks": [
             {
                 "type": "section",
                 "block_id": "section678",
-                "text": {"type": "mrkdwn", "text": "Pick channels from the list"},
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "Pick channels from the list",
+                },
                 "accessory": {
                     "action_id": "text1234",
                     "type": "multi_channels_select",
-                    "placeholder": {"type": "plain_text", "text": "Select channels"},
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select channels",
+                    },
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick channels from the list"), accessory=MultiChannelsSelect(action_id="text1234", placeholder=PlainText(text="Select channels")))])',  # noqa
-)
-cases.append(section_multi_channels_select_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick channels from the list"), accessory=MultiChannelsSelect(action_id="text1234", placeholder=PlainText(text="Select channels")))])'  # noqa
+    )
 
-section_multi_conversations_select = (
-    {
+
+def test_generates_section_multi_conversations():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -328,13 +375,15 @@ section_multi_conversations_select = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="Test block with multi conversations select"), accessory=MultiConversationsSelect(placeholder=PlainText(text="Select conversations", emoji=True), action_id="multi_conversations_select-action"))])',  # noqa
-)
-cases.append(section_multi_conversations_select)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="Test block with multi conversations select"), accessory=MultiConversationsSelect(placeholder=PlainText(text="Select conversations", emoji=True), action_id="multi_conversations_select-action"))])'  # noqa
+    )
 
-section_multi_external_select_case = (
-    {
+
+def test_generates_section_multi_external_select():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -343,18 +392,23 @@ section_multi_external_select_case = (
                 "accessory": {
                     "action_id": "text1234",
                     "type": "multi_external_select",
-                    "placeholder": {"type": "plain_text", "text": "Select items"},
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select items",
+                    },
                     "min_query_length": 3,
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiExternalSelect(action_id="text1234", placeholder=PlainText(text="Select items"), min_query_length=3))])',  # noqa
-)
-cases.append(section_external_select_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiExternalSelect(action_id="text1234", placeholder=PlainText(text="Select items"), min_query_length=3))])'  # noqa
+    )
 
-section_button_case = (
-    {
+
+def test_generates_section_button():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -364,19 +418,25 @@ section_button_case = (
                 },
                 "accessory": {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "Click Me", "emoji": True},
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Click Me",
+                        "emoji": True,
+                    },
                     "value": "click_me_123",
                     "action_id": "button-action",
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", action_id="button-action"))])',  # noqa
-)
-cases.append(section_button_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", action_id="button-action"))])'  # noqa
+    )
 
-section_button_confirm_case = (
-    {
+
+def test_generates_section_button_confirm():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -386,11 +446,18 @@ section_button_confirm_case = (
                 },
                 "accessory": {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "Click Me", "emoji": True},
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Click Me",
+                        "emoji": True,
+                    },
                     "value": "click_me_123",
                     "action_id": "button-action",
                     "confirm": {
-                        "title": {"type": "plain_text", "text": "Are you sure?"},
+                        "title": {
+                            "type": "plain_text",
+                            "text": "Are you sure?",
+                        },
                         "text": {
                             "type": "mrkdwn",
                             "text": "Wouldn't you prefer a good game of _chess_?",
@@ -404,13 +471,15 @@ section_button_confirm_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", action_id="button-action", confirm=Confirm(title=PlainText(text="Are you sure?"), text=MarkdownText(text="Wouldn\'t you prefer a good game of _chess_?"), confirm=PlainText(text="Do it"), deny=PlainText(text="Stop, I\'ve changed my mind!"))))])',  # noqa
-)
-cases.append(section_button_confirm_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", action_id="button-action", confirm=Confirm(title=PlainText(text="Are you sure?"), text=MarkdownText(text="Wouldn\'t you prefer a good game of _chess_?"), confirm=PlainText(text="Do it"), deny=PlainText(text="Stop, I\'ve changed my mind!"))))])'  # noqa
+    )
 
-section_link_button_case = (
-    {
+
+def test_generates_section_link_button():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -420,20 +489,26 @@ section_link_button_case = (
                 },
                 "accessory": {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "Click Me", "emoji": True},
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Click Me",
+                        "emoji": True,
+                    },
                     "value": "click_me_123",
                     "url": "https://google.com",
                     "action_id": "button-action",
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", url="https://google.com", action_id="button-action"))])',  # noqa
-)
-cases.append(section_link_button_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", url="https://google.com", action_id="button-action"))])'  # noqa
+    )
 
-section_image_case = (
-    {
+
+def test_generates_section_image():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -443,20 +518,26 @@ section_image_case = (
                 },
                 "accessory": {
                     "type": "button",
-                    "text": {"type": "plain_text", "text": "Click Me", "emoji": True},
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Click Me",
+                        "emoji": True,
+                    },
                     "value": "click_me_123",
                     "url": "https://google.com",
                     "action_id": "button-action",
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", url="https://google.com", action_id="button-action"))])',  # noqa
-)
-cases.append(section_link_button_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", url="https://google.com", action_id="button-action"))])'  # noqa
+    )
 
-section_image_case = (
-    {
+
+def test_generates_section_image():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -474,13 +555,15 @@ section_image_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="This is a section block with an accessory image."), accessory=Image(image_url="https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg", alt_text="cute cat"))])',  # noqa
-)
-cases.append(section_image_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with an accessory image."), accessory=Image(image_url="https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg", alt_text="cute cat"))])'  # noqa
+    )
 
-section_overflow_case = (
-    {
+
+def test_generates_section_overflow():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -498,23 +581,36 @@ section_overflow_case = (
                                 "emoji": True,
                             },
                             "value": "value-0",
-                        }
+                        },
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "*this is plain_text text*",
+                                "emoji": True,
+                            },
+                            "value": "value-1",
+                        },
                     ],
                     "action_id": "overflow-action",
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="This is a section block with an overflow menu."), accessory=Overflow(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="overflow-action"))])',  # noqa
-)
-cases.append(section_overflow_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with an overflow menu."), accessory=Overflow(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0"), Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-1")], action_id="overflow-action"))])'  # noqa
+    )
 
-section_datepicker_case = (
-    {
+
+def test_generates_section_datepicker():
+    payload = {
         "blocks": [
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": "Pick a date for the deadline."},
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "Pick a date for the deadline.",
+                },
                 "accessory": {
                     "type": "datepicker",
                     "initial_date": "1990-04-28",
@@ -527,13 +623,15 @@ section_datepicker_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="Pick a date for the deadline."), accessory=DatePicker(initial_date="1990-04-28", placeholder=PlainText(text="Select a date", emoji=True), action_id="datepicker-action"))])',  # noqa
-)
-cases.append(section_datepicker_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="Pick a date for the deadline."), accessory=DatePicker(initial_date="1990-04-28", placeholder=PlainText(text="Select a date", emoji=True), action_id="datepicker-action"))])'  # noqa
+    )
 
-section_checkboxes_case = (
-    {
+
+def test_generates_section_checkboxes():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -560,17 +658,22 @@ section_checkboxes_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="This is a section block with checkboxes."), accessory=Checkboxes(options=[Option(text=PlainText(text="this is plain text"), description=PlainText(text="this is plain text"), value="value-0")], action_id="checkboxes-action"))])',  # noqa
-)
-cases.append(section_checkboxes_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with checkboxes."), accessory=Checkboxes(options=[Option(text=PlainText(text="this is plain text"), description=PlainText(text="this is plain text"), value="value-0")], action_id="checkboxes-action"))])'  # noqa
+    )
 
-section_radio_buttons_case = (
-    {
+
+def test_generates_section_radio_buttons():
+    payload = {
         "blocks": [
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": "Section block with radio buttons"},
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "Section block with radio buttons",
+                },
                 "accessory": {
                     "type": "radio_buttons",
                     "options": [
@@ -587,13 +690,15 @@ section_radio_buttons_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=MarkdownText(text="Section block with radio buttons"), accessory=RadioButtons(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="radio_buttons-action"))])',  # noqa
-)
-cases.append(section_radio_buttons_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=MarkdownText(text="Section block with radio buttons"), accessory=RadioButtons(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="radio_buttons-action"))])'  # noqa
+    )
 
-actions_all_selects_case = (
-    {
+
+def test_generates_actions_all_selects():
+    payload = {
         "blocks": [
             {
                 "type": "actions",
@@ -647,13 +752,15 @@ actions_all_selects_case = (
                 ],
             }
         ]
-    },
-    'Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), action_id="actionId-0"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), action_id="actionId-1"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="actionId-2"), StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="actionId-3")])])',  # noqa
-)
-cases.append(actions_all_selects_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), action_id="actionId-0"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), action_id="actionId-1"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="actionId-2"), StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="actionId-3")])])'  # noqa
+    )
 
-actions_filtered_conversations_select_case = (
-    {
+
+def test_generates_actions_filtered_conversations_select():
+    payload = {
         "blocks": [
             {
                 "type": "actions",
@@ -671,13 +778,15 @@ actions_filtered_conversations_select_case = (
                 ],
             }
         ]
-    },
-    'Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select private conversation", emoji=True), filter=Filter(include=["private"]), action_id="actionId-0")])])',  # noqa
-)
-cases.append(actions_filtered_conversations_select_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select private conversation", emoji=True), filter=Filter(include=["private"]), action_id="actionId-0")])])'  # noqa
+    )
 
-actions_selects_with_initial_options = (
-    {
+
+def test_generates_actions_selects_with_initial():
+    payload = {
         "blocks": [
             {
                 "type": "actions",
@@ -715,20 +824,27 @@ actions_selects_with_initial_options = (
                 ],
             }
         ]
-    },
-    'Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), initial_conversation="G12345678", action_id="actionId-0"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), initial_user="U12345678", action_id="actionId-1"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), initial_channel="C12345678", action_id="actionId-2")])])',  # noqa
-)
-cases.append(actions_selects_with_initial_options)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), initial_conversation="G12345678", action_id="actionId-0"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), initial_user="U12345678", action_id="actionId-1"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), initial_channel="C12345678", action_id="actionId-2")])])'  # noqa
+    )
 
-divider_case = ({"blocks": [{"type": "divider"}]}, "Message(blocks=[Divider()])")
-cases.append(divider_case)
 
-image_title_case = (
-    {
+def test_generates_divider():
+    assert generate({"blocks": [{"type": "divider"}]}) == "Message(blocks=[Divider()])"
+
+
+def test_generates_image_title():
+    payload = {
         "blocks": [
             {
                 "type": "image",
-                "title": {"type": "plain_text", "text": "I Need a Marg", "emoji": True},
+                "title": {
+                    "type": "plain_text",
+                    "text": "I Need a Marg",
+                    "emoji": True,
+                },
                 "image_url": (
                     "https://assets3.thrillist.com/v1/image/"
                     "1682388/size/tl-horizontal_main.jpg"
@@ -736,13 +852,15 @@ image_title_case = (
                 "alt_text": "marg",
             }
         ]
-    },
-    'Message(blocks=[ImageBlock(title=PlainText(text="I Need a Marg", emoji=True), image_url="https://assets3.thrillist.com/v1/image/1682388/size/tl-horizontal_main.jpg", alt_text="marg")])',  # noqa
-)
-cases.append(image_title_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[ImageBlock(title=PlainText(text="I Need a Marg", emoji=True), image_url="https://assets3.thrillist.com/v1/image/1682388/size/tl-horizontal_main.jpg", alt_text="marg")])'  # noqa
+    )
 
-image_no_title_case = (
-    {
+
+def test_generates_image_no_title():
+    payload = {
         "blocks": [
             {
                 "type": "image",
@@ -753,14 +871,15 @@ image_no_title_case = (
                 "alt_text": "inspiration",
             }
         ]
-    },
-    'Message(blocks=[ImageBlock(image_url="https://i1.wp.com/thetempest.co/wp-content/uploads/2017/08/The-wise-words-of-Michael-Scott-Imgur-2.jpg?w=1024&ssl=1", alt_text="inspiration")])',  # noqa
-)
-cases.append(image_no_title_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[ImageBlock(image_url="https://i1.wp.com/thetempest.co/wp-content/uploads/2017/08/The-wise-words-of-Michael-Scott-Imgur-2.jpg?w=1024&ssl=1", alt_text="inspiration")])'  # noqa
+    )
 
 
-context_plain_text_case = (
-    {
+def test_generates_context_plain_text():
+    payload = {
         "blocks": [
             {
                 "type": "context",
@@ -773,13 +892,15 @@ context_plain_text_case = (
                 ],
             }
         ]
-    },
-    'Message(blocks=[Context(elements=[PlainText(text="Author: K A Applegate", emoji=True)])])',  # noqa
-)
-cases.append(context_plain_text_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Context(elements=[PlainText(text="Author: K A Applegate", emoji=True)])])'  # noqa
+    )
 
-context_mrkdwn_case = (
-    {
+
+def test_generates_context_mrkdwn():
+    payload = {
         "blocks": [
             {
                 "type": "context",
@@ -792,17 +913,22 @@ context_mrkdwn_case = (
                         ),
                         "alt_text": "cute cat",
                     },
-                    {"type": "mrkdwn", "text": "*Cat* has approved this message."},
+                    {
+                        "type": "mrkdwn",
+                        "text": "*Cat* has approved this message.",
+                    },
                 ],
             }
         ]
-    },
-    'Message(blocks=[Context(elements=[Image(image_url="https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg", alt_text="cute cat"), MarkdownText(text="*Cat* has approved this message.")])])',  # noqa
-)
-cases.append(context_mrkdwn_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Context(elements=[Image(image_url="https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg", alt_text="cute cat"), MarkdownText(text="*Cat* has approved this message.")])])'  # noqa
+    )
 
-input_dispatches_actions_case = (
-    {
+
+def test_generates_input_dispatches_actions():
+    payload = {
         "blocks": [
             {
                 "dispatch_action": True,
@@ -814,13 +940,15 @@ input_dispatches_actions_case = (
                 "label": {"type": "plain_text", "text": "Label", "emoji": True},
             }
         ]
-    },
-    'Message(blocks=[Input(dispatch_action=True, element=PlainTextInput(action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])',  # noqa
-)
-cases.append(input_dispatches_actions_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Input(dispatch_action=True, element=PlainTextInput(action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
+    )
 
-input_dispatches_custom_actions_case = (
-    {
+
+def test_generates_input_dispatches_custom_actions():
+    payload = {
         "blocks": [
             {
                 "dispatch_action": True,
@@ -835,13 +963,15 @@ input_dispatches_custom_actions_case = (
                 "label": {"type": "plain_text", "text": "Label", "emoji": True},
             }
         ]
-    },
-    'Message(blocks=[Input(dispatch_action=True, element=PlainTextInput(dispatch_action_config=DispatchActionConfig(trigger_actions_on=["on_character_entered"]), action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])',  # noqa
-)
-cases.append(input_dispatches_custom_actions_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Input(dispatch_action=True, element=PlainTextInput(dispatch_action_config=DispatchActionConfig(trigger_actions_on=["on_character_entered"]), action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
+    )
 
-input_multiline_plain_text_case = (
-    {
+
+def test_generates_input_multiline_plain_text():
+    payload = {
         "blocks": [
             {
                 "type": "input",
@@ -853,13 +983,15 @@ input_multiline_plain_text_case = (
                 "label": {"type": "plain_text", "text": "Label", "emoji": True},
             }
         ]
-    },
-    'Message(blocks=[Input(element=PlainTextInput(multiline=True, action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])',  # noqa
-)
-cases.append(input_multiline_plain_text_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Input(element=PlainTextInput(multiline=True, action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
+    )
 
-input_plain_text_case = (
-    {
+
+def test_generates_input_plain_text():
+    payload = {
         "blocks": [
             {
                 "type": "input",
@@ -870,13 +1002,15 @@ input_plain_text_case = (
                 "label": {"type": "plain_text", "text": "Label", "emoji": True},
             }
         ]
-    },
-    'Message(blocks=[Input(element=PlainTextInput(action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])',  # noqa
-)
-cases.append(input_plain_text_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Input(element=PlainTextInput(action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
+    )
 
-header_case = (
-    {
+
+def test_generates_header():
+    payload = {
         "blocks": [
             {
                 "type": "header",
@@ -887,13 +1021,15 @@ header_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Header(text=PlainText(text="This is a header block", emoji=True))])',  # noqa
-)
-cases.append(header_case)
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Header(text=PlainText(text="This is a header block", emoji=True))])'  # noqa
+    )
 
-modal_case = (
-    {
+
+def test_generates_modal():
+    payload = {
         "type": "modal",
         "title": {"type": "plain_text", "text": "My App", "emoji": True},
         "submit": {"type": "plain_text", "text": "Submit", "emoji": True},
@@ -908,13 +1044,15 @@ modal_case = (
                 },
             }
         ],
-    },
-    'Modal(title=PlainText(text="My App", emoji=True), submit=PlainText(text="Submit", emoji=True), close=PlainText(text="Cancel", emoji=True), blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])',  # noqa
-)
-cases.append(modal_case)
+    }
+    assert (
+        generate(payload)
+        == 'Modal(title=PlainText(text="My App", emoji=True), submit=PlainText(text="Submit", emoji=True), close=PlainText(text="Cancel", emoji=True), blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])'  # noqa
+    )
 
-app_home_case = (
-    {
+
+def test_generates_app_home():
+    payload = {
         "type": "home",
         "blocks": [
             {
@@ -926,13 +1064,15 @@ app_home_case = (
                 },
             }
         ],
-    },
-    'Home(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])',  # noqa,
-)
-cases.append(app_home_case)
+    }
+    assert (
+        generate(payload)
+        == 'Home(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])'  # noqa
+    )
 
-escape_case = (
-    {
+
+def test_generates_escape():
+    payload = {
         "blocks": [
             {
                 "type": "section",
@@ -943,19 +1083,11 @@ escape_case = (
                 },
             }
         ]
-    },
-    'Message(blocks=[Section(text=PlainText(text="This is a plain\\n\\ttext section block.", emoji=True))])',  # noqa
-)
-cases.append(escape_case)
-
-
-@pytest.mark.parametrize(
-    "payload, expected_code",
-    cases,
-)
-def test_generate(payload, expected_code):
-    code = generate(payload)
-    assert code == expected_code
+    }
+    assert (
+        generate(payload)
+        == 'Message(blocks=[Section(text=PlainText(text="This is a plain\\n\\ttext section block.", emoji=True))])'  # noqa
+    )
 
 
 def test_raises_exception_on_incorrect_block_type():
@@ -992,7 +1124,7 @@ def test_raises_exception_on_empty_accessory():
 
 
 def test_raises_exception_on_validation():
-    with pytest.raises(ValidationError):
+    with pytest.raises(TypeError):
         eval_components(
-            'Message(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji="True"))])'  # noqa
+            'Message(blocks=[Section(text=MarkdownText(text="This is a plain text section block.", emoji="True"))])'  # noqa
         )
