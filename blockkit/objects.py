@@ -138,7 +138,7 @@ class Filter(NewComponent):
     )
 
     @root_validator
-    def _validate_at_least_one(cls, values):
+    def _validate_values(cls, values):
         if not any(values.values()):
             raise ValueError("You should provide at least one argument.")
         return values

@@ -567,7 +567,7 @@ class RadioButtons(ActionableComponent):
     _validate_options = validator("options", validate_list_size, min_len=1, max_len=10)
 
     @root_validator
-    def _validate_initial_within_options(cls, values):
+    def _validate_values(cls, values):
         initial_option = values.get("initial_option")
         options = values.get("options")
 
