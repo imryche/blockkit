@@ -17,7 +17,7 @@ AUTHOR = 'Dmitry Chernyshov'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = '1.0.1'
 
-REQUIRED = ['validators', 'black']
+REQUIRED = ['pydantic', 'black']
 EXTRAS = {}
 
 here = os.path.abspath(os.path.dirname(__file__))
