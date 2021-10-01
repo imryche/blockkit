@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 
-class NewComponent(BaseModel):
+class Component(BaseModel):
     def build(self) -> dict:
-        return self.dict(exclude_none=True)
+        return self.dict(by_alias=True, exclude_none=True)

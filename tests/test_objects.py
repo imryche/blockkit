@@ -1,5 +1,5 @@
 import pytest
-from blockkit import (
+from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
     Filter,
@@ -7,7 +7,6 @@ from blockkit import (
     Option,
     OptionGroup,
     PlainText,
-    Text,
 )
 from pydantic import ValidationError
 

@@ -1,5 +1,7 @@
 import pytest
-from blockkit import Button, Input, MarkdownText, PlainText, PlainTextInput, Section
+from blockkit.blocks import Input, Section
+from blockkit.elements import Button, PlainTextInput
+from blockkit.objects import MarkdownText, PlainText
 from blockkit.surfaces import Home, Message, Modal, WorkflowStep
 from pydantic import ValidationError
 

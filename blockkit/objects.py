@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 from pydantic.class_validators import root_validator
 from pydantic.networks import AnyUrl
 
-from blockkit.components import NewComponent
+from blockkit.components import Component
 from blockkit.validators import (
     validate_choices,
     validate_list_choices,
@@ -14,8 +14,18 @@ from blockkit.validators import (
     validators,
 )
 
+__all__ = [
+    "Confirm",
+    "DispatchActionConfig",
+    "Filter",
+    "MarkdownText",
+    "Option",
+    "OptionGroup",
+    "PlainText",
+]
 
-class MarkdownText(NewComponent):
+
+class MarkdownText(Component):
     type: str = "mrkdwn"
     text: str
     verbatim: Optional[bool] = None
@@ -24,7 +34,7 @@ class MarkdownText(NewComponent):
         super().__init__(text=text, verbatim=verbatim)
 
 
-class PlainText(NewComponent):
+class PlainText(Component):
     type: str = "plain_text"
     text: str
     emoji: Optional[bool] = None
@@ -33,7 +43,7 @@ class PlainText(NewComponent):
         super().__init__(text=text, emoji=emoji)
 
 
-class Confirm(NewComponent):
+class Confirm(Component):
     title: PlainText
     text: Union[PlainText, MarkdownText]
     confirm: PlainText
@@ -62,7 +72,7 @@ class Confirm(NewComponent):
     )
 
 
-class Option(NewComponent):
+class Option(Component):
     text: Union[PlainText, MarkdownText]
     value: str
     description: Optional[PlainText] = None
@@ -84,7 +94,7 @@ class Option(NewComponent):
     _validate_url = validator("url", validate_string_length, max_len=3000)
 
 
-class OptionGroup(NewComponent):
+class OptionGroup(Component):
     label: PlainText
     options: List[Option]
 
@@ -95,7 +105,7 @@ class OptionGroup(NewComponent):
     _validate_options = validator("options", validate_list_size, min_len=1, max_len=100)
 
 
-class DispatchActionConfig(NewComponent):
+class DispatchActionConfig(Component):
     trigger_actions_on: List[str]
 
     def __init__(self, *, trigger_actions_on: List[str]):
@@ -111,7 +121,7 @@ class DispatchActionConfig(NewComponent):
     )
 
 
-class Filter(NewComponent):
+class Filter(Component):
     include: Optional[List[str]] = None
     exclude_external_shared_channels: Optional[bool] = None
     exclude_bot_users: Optional[bool] = None

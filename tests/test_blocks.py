@@ -1,5 +1,5 @@
 import pytest
-from blockkit import (
+from blockkit.blocks import (
     Actions,
     Context,
     Divider,

@@ -1,9 +1,9 @@
 from typing import List, Optional, Union
 
-from pydantic import root_validator
+from pydantic import Field, root_validator
 from pydantic.networks import HttpUrl
 
-from blockkit.components import NewComponent
+from blockkit.components import Component
 from blockkit.elements import (
     Button,
     ChannelsSelect,
@@ -34,6 +34,8 @@ from blockkit.validators import (
     validators,
 )
 
+__all__ = ["Actions", "Context", "Divider", "Header", "ImageBlock", "Input", "Section"]
+
 ActionElement = Union[
     Button,
     Checkboxes,
@@ -54,13 +56,13 @@ ActionElement = Union[
 ]
 
 
-class NewBlock(NewComponent):
+class Block(Component):
     block_id: Optional[str] = None
 
     _validate_block_id = validator("block_id", validate_string_length, max_len=255)
 
 
-class Actions(NewBlock):
+class Actions(Block):
     type: str = "actions"
     elements: List[ActionElement]
 
@@ -72,7 +74,7 @@ class Actions(NewBlock):
     _validate_elements = validator("elements", validate_list_size, min_len=1, max_len=5)
 
 
-class Context(NewBlock):
+class Context(Block):
     type: str = "context"
     elements: List[Union[Image, PlainText, MarkdownText]]
 
@@ -89,14 +91,14 @@ class Context(NewBlock):
     )
 
 
-class Divider(NewBlock):
+class Divider(Block):
     type: str = "divider"
 
     def __init__(self, *, block_id: Optional[str] = None):
         super().__init__(block_id=block_id)
 
 
-class Header(NewBlock):
+class Header(Block):
     type: str = "header"
     text: PlainText
 
@@ -106,7 +108,7 @@ class Header(NewBlock):
     _validate_text = validator("text", validate_text_length, max_len=150)
 
 
-class ImageBlock(NewBlock):
+class ImageBlock(Block):
     type: str = "image"
     image_url: HttpUrl
     alt_text: str
@@ -146,7 +148,7 @@ InputElement = Union[
 ]
 
 
-class Input(NewBlock):
+class Input(Block):
     type: str = "input"
     label: PlainText
     element: InputElement
@@ -198,10 +200,12 @@ AccessoryElement = Union[
 ]
 
 
-class Section(NewBlock):
+class Section(Block):
     type: str = "section"
     text: Optional[Union[PlainText, MarkdownText]] = None
-    fields: Optional[List[Union[PlainText, MarkdownText]]] = None
+    fields_: Optional[List[Union[PlainText, MarkdownText]]] = Field(
+        None, alias="fields"
+    )
     accessory: Optional[AccessoryElement] = None
 
     def __init__(
@@ -218,7 +222,7 @@ class Section(NewBlock):
 
     _validate_text = validator("text", validate_text_length, max_len=3000)
     _validate_fields = validators(
-        "fields",
+        "fields_",
         (validate_list_size, {"min_len": 1, "max_len": 10}),
         (validate_list_text_length, {"max_len": 2000}),
     )
@@ -226,7 +230,7 @@ class Section(NewBlock):
     @root_validator
     def _validate_values(cls, values):
         text = values.get("text")
-        fields = values.get("fields")
+        fields = values.get("fields_")
 
         if text is None and fields is None:
             raise ValueError("You must provide either text or fields")

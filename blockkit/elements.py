@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import root_validator
 from pydantic.networks import AnyUrl, HttpUrl
 
-from blockkit.components import NewComponent
+from blockkit.components import Component
 from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
@@ -25,8 +25,29 @@ from blockkit.validators import (
     validator,
 )
 
+__all__ = [
+    "Button",
+    "ChannelsSelect",
+    "Checkboxes",
+    "ConversationsSelect",
+    "DatePicker",
+    "ExternalSelect",
+    "Image",
+    "MultiChannelsSelect",
+    "MultiConversationsSelect",
+    "MultiExternalSelect",
+    "MultiStaticSelect",
+    "MultiUsersSelect",
+    "Overflow",
+    "PlainTextInput",
+    "RadioButtons",
+    "StaticSelect",
+    "Timepicker",
+    "UsersSelect",
+]
 
-class ActionableComponent(NewComponent):
+
+class ActionableComponent(Component):
     action_id: Optional[str] = None
 
     _validate_action_id = validator("action_id", validate_string_length, max_len=255)
@@ -130,7 +151,7 @@ class DatePicker(ActionableComponent):
     _validate_initial_date = validator("initial_date", validate_date)
 
 
-class Image(NewComponent):
+class Image(Component):
     type: str = "image"
     image_url: HttpUrl
     alt_text: str
@@ -141,14 +162,14 @@ class Image(NewComponent):
     _validate_alt_text = validator("alt_text", validate_string_length, max_len=2000)
 
 
-class NewSelect(ActionableComponent):
+class Select(ActionableComponent):
     placeholder: PlainText
     confirm: Optional[Confirm] = None
 
     _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
 
 
-class NewStaticSelectBase(NewSelect):
+class StaticSelectBase(Select):
     options: Optional[List[Option]] = None
     option_groups: Optional[List[OptionGroup]] = None
 
@@ -158,7 +179,7 @@ class NewStaticSelectBase(NewSelect):
     )
 
 
-class StaticSelect(NewStaticSelectBase):
+class StaticSelect(StaticSelectBase):
     type: str = "static_select"
     initial_option: Optional[Option] = None
 
@@ -204,7 +225,7 @@ class StaticSelect(NewStaticSelectBase):
         return values
 
 
-class MultiStaticSelect(NewStaticSelectBase):
+class MultiStaticSelect(StaticSelectBase):
     type: str = "multi_static_select"
     initial_options: Optional[List[Option]] = None
     max_selected_items: Optional[int] = None
@@ -259,7 +280,7 @@ class MultiStaticSelect(NewStaticSelectBase):
     )
 
 
-class NewExternalSelectBase(NewSelect):
+class ExternalSelectBase(Select):
     min_query_length: Optional[int] = None
 
     _validate_min_query_length = validator(
@@ -267,7 +288,7 @@ class NewExternalSelectBase(NewSelect):
     )
 
 
-class ExternalSelect(NewExternalSelectBase):
+class ExternalSelect(ExternalSelectBase):
     type: str = "external_select"
     initial_option: Optional[Option] = None
 
@@ -289,7 +310,7 @@ class ExternalSelect(NewExternalSelectBase):
         )
 
 
-class MultiExternalSelect(NewExternalSelectBase):
+class MultiExternalSelect(ExternalSelectBase):
     type: str = "multi_external_select"
     initial_options: Optional[List[Option]] = None
     max_selected_items: Optional[int] = None
@@ -318,7 +339,7 @@ class MultiExternalSelect(NewExternalSelectBase):
     )
 
 
-class UsersSelect(NewSelect):
+class UsersSelect(Select):
     type: str = "users_select"
     initial_user: Optional[str] = None
 
@@ -338,7 +359,7 @@ class UsersSelect(NewSelect):
         )
 
 
-class MultiUsersSelect(NewSelect):
+class MultiUsersSelect(Select):
     type: str = "multi_users_select"
     initial_users: Optional[List[str]] = None
     max_selected_items: Optional[int] = None
@@ -365,7 +386,7 @@ class MultiUsersSelect(NewSelect):
     )
 
 
-class ConversationsSelect(NewSelect):
+class ConversationsSelect(Select):
     type: str = "conversations_select"
     initial_conversation: Optional[str] = None
     default_to_current_conversation: Optional[bool] = None
@@ -394,7 +415,7 @@ class ConversationsSelect(NewSelect):
         )
 
 
-class MultiConversationsSelect(NewSelect):
+class MultiConversationsSelect(Select):
     type: str = "multi_conversations_select"
     initial_conversations: Optional[List[str]] = None
     default_to_current_conversation: Optional[bool] = None
@@ -427,7 +448,7 @@ class MultiConversationsSelect(NewSelect):
     )
 
 
-class ChannelsSelect(NewSelect):
+class ChannelsSelect(Select):
     type: str = "channels_select"
     initial_channel: Optional[str] = None
     response_url_enabled: Optional[bool] = None
@@ -450,7 +471,7 @@ class ChannelsSelect(NewSelect):
         )
 
 
-class MultiChannelsSelect(NewSelect):
+class MultiChannelsSelect(Select):
     type: str = "multi_channels_select"
     initial_channels: Optional[List[str]] = None
     max_selected_items: Optional[int] = None
