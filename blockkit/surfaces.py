@@ -112,7 +112,7 @@ class Modal(View):
         blocks = values.get("blocks")
         submit = values.get("submit")
 
-        if None not in (blocks, submit) and Input in (
+        if blocks and not submit and Input in (
             type(b) for b in values["blocks"]
         ):
             raise ValueError("submit is required when an Input is within blocks")

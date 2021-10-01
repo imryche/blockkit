@@ -15,7 +15,7 @@ URL = 'https://github.com/imryche/blockkit'
 EMAIL = 'imryche13@gmail.com'
 AUTHOR = 'Dmitry Chernyshov'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.10.3'
+VERSION = '1.0.1'
 
 REQUIRED = ['validators', 'black']
 EXTRAS = {}

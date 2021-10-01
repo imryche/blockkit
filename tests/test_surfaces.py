@@ -185,7 +185,6 @@ def test_modal_input_without_submit_raises_exception():
         Modal(
             title=PlainText(text="title"),
             blocks=[Input(label=PlainText(text="label"), element=PlainTextInput())],
-            submit=PlainText(text="submit"),
         )
 
 
