@@ -1,3 +1,4 @@
+from pydantic import AnyUrl
 from pydantic import validator as pydantic_validator
 
 
@@ -34,12 +35,6 @@ def validate_list_text_length(v, *, max_len):
     return v
 
 
-def validate_string_length(v, *, max_len):
-    if v is not None and len(v) > max_len:
-        raise ValueError(f"Maximum length is {max_len} characters")
-    return v
-
-
 def validate_choices(v, *, choices):
     if v is not None and v not in choices:
         raise ValueError(f"Allowed values are {choices}")
@@ -60,7 +55,8 @@ def validate_list_size(v, *, min_len, max_len):
             )
         if len(v) > max_len:
             raise ValueError(
-                f"Must contain a maximum of {max_len} item" + ("s" if max_len > 1 else "")
+                f"Must contain a maximum of {max_len} item"
+                + ("s" if max_len > 1 else "")
             )
     return v
 
@@ -75,3 +71,7 @@ def validate_time(v):
     if v is not None:
         return v.strftime("%H:%M")
     return v
+
+
+class SlackUrl(AnyUrl):
+    max_length = 3000

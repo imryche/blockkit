@@ -43,6 +43,14 @@ def test_builds_actions():
     }
 
 
+def test_actions_empty_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Actions(
+            elements=[Button(text=PlainText(text="text"), action_id="action_id")],
+            block_id="",
+        )
+
+
 def test_actions_excessive_block_id_raises_exception():
     with pytest.raises(ValidationError):
         Actions(
@@ -60,7 +68,7 @@ def test_actions_excessive_elements_raise_exception():
     with pytest.raises(ValidationError):
         Actions(
             elements=[
-                Button(text=PlainText(text=f"text"), action_id=f"action_id")
+                Button(text=PlainText(text="text"), action_id="action_id")
                 for _ in range(6)
             ]
         )
@@ -85,6 +93,14 @@ def test_builds_context():
         ],
         "block_id": "block_id",
     }
+
+
+def test_context_empty_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Context(
+            elements=[MarkdownText(text="*markdown* text")],
+            block_id="",
+        )
 
 
 def test_context_excessive_block_id_raises_exception():
@@ -112,12 +128,22 @@ def test_builds_divider():
     }
 
 
+def test_divider_empty_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Divider(block_id="")
+
+
 def test_builds_header():
     assert Header(text=PlainText(text="text"), block_id="block_id").build() == {
         "type": "header",
         "text": {"type": "plain_text", "text": "text"},
         "block_id": "block_id",
     }
+
+
+def test_header_empty_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Header(text=PlainText(text="text"), block_id="")
 
 
 def test_header_excessive_block_id_raises_exception():
@@ -148,6 +174,13 @@ def test_builds_image_block():
     }
 
 
+def test_image_block_empty_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        ImageBlock(
+            image_url="http://placekitten.com/300/200", alt_text="kitten", block_id=""
+        )
+
+
 def test_image_block_excessive_block_id_raises_exception():
     with pytest.raises(ValidationError):
         ImageBlock(
@@ -155,6 +188,11 @@ def test_image_block_excessive_block_id_raises_exception():
             alt_text="kitten",
             block_id="b" * 256,
         )
+
+
+def test_image_block_empty_alt_text_raises_exception():
+    with pytest.raises(ValidationError):
+        ImageBlock(image_url="http://placekitten.com/300/200", alt_text="")
 
 
 def test_image_block_excessive_alt_text_raises_exception():
@@ -191,6 +229,15 @@ def test_builds_input():
         "hint": {"type": "plain_text", "text": "hint"},
         "optional": True,
     }
+
+
+def test_input_empty_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Input(
+            label=PlainText(text="label"),
+            element=PlainTextInput(action_id="action_id"),
+            block_id="",
+        )
 
 
 def test_input_excessive_block_id_raises_exception():
@@ -244,6 +291,11 @@ def test_builds_section():
 def test_empty_section_raises_exception():
     with pytest.raises(ValidationError):
         Section()
+
+
+def test_section_empty_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Section(text=MarkdownText(text="*markdown* text"), block_id="")
 
 
 def test_section_excessive_block_id_raises_exception():

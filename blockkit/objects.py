@@ -1,14 +1,14 @@
 from typing import List, Optional, Union
 
+from pydantic import Field
 from pydantic.class_validators import root_validator
-from pydantic.networks import AnyUrl
 
 from blockkit.components import Component
 from blockkit.validators import (
+    SlackUrl,
     validate_choices,
     validate_list_choices,
     validate_list_size,
-    validate_string_length,
     validate_text_length,
     validator,
     validators,
@@ -27,7 +27,7 @@ __all__ = [
 
 class MarkdownText(Component):
     type: str = "mrkdwn"
-    text: str
+    text: str = Field(..., min_length=1)
     verbatim: Optional[bool] = None
 
     def __init__(self, *, text: str, verbatim: Optional[bool] = None):
@@ -36,7 +36,7 @@ class MarkdownText(Component):
 
 class PlainText(Component):
     type: str = "plain_text"
-    text: str
+    text: str = Field(..., min_length=1)
     emoji: Optional[bool] = None
 
     def __init__(self, *, text: str, emoji: Optional[bool] = None):
@@ -74,9 +74,9 @@ class Confirm(Component):
 
 class Option(Component):
     text: Union[PlainText, MarkdownText]
-    value: str
+    value: str = Field(..., min_length=1, max_length=75)
     description: Optional[PlainText] = None
-    url: Optional[AnyUrl] = None
+    url: Optional[SlackUrl] = None
 
     def __init__(
         self,
@@ -84,14 +84,12 @@ class Option(Component):
         text: Union[PlainText, MarkdownText],
         value: str,
         description: Optional[PlainText] = None,
-        url: Optional[AnyUrl] = None,
+        url: Optional[SlackUrl] = None,
     ):
         super().__init__(text=text, value=value, description=description, url=url)
 
     _validate_text = validator("text", validate_text_length, max_len=75)
-    _validate_value = validator("value", validate_string_length, max_len=75)
     _validate_description = validator("description", validate_text_length, max_len=75)
-    _validate_url = validator("url", validate_string_length, max_len=3000)
 
 
 class OptionGroup(Component):

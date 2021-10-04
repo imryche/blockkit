@@ -28,7 +28,6 @@ from blockkit.objects import MarkdownText, PlainText
 from blockkit.validators import (
     validate_list_size,
     validate_list_text_length,
-    validate_string_length,
     validate_text_length,
     validator,
     validators,
@@ -57,9 +56,7 @@ ActionElement = Union[
 
 
 class Block(Component):
-    block_id: Optional[str] = None
-
-    _validate_block_id = validator("block_id", validate_string_length, max_len=255)
+    block_id: Optional[str] = Field(None, min_length=1, max_length=255)
 
 
 class Actions(Block):
@@ -111,7 +108,7 @@ class Header(Block):
 class ImageBlock(Block):
     type: str = "image"
     image_url: HttpUrl
-    alt_text: str
+    alt_text: str = Field(..., min_length=1, max_length=2000)
     title: Optional[PlainText] = None
 
     def __init__(
@@ -126,7 +123,6 @@ class ImageBlock(Block):
             image_url=image_url, alt_text=alt_text, title=title, block_id=block_id
         )
 
-    _validate_alt_text = validator("alt_text", validate_string_length, max_len=2000)
     _validate_title = validator("title", validate_text_length, max_len=2000)
 
 
