@@ -18,7 +18,6 @@ from blockkit.validators import (
     SlackUrl,
     validate_choices,
     validate_date,
-    validate_int_range,
     validate_list_size,
     validate_text_length,
     validate_time,

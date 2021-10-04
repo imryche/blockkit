@@ -15,12 +15,6 @@ def validators(field, *validator_funcs):
     return pydantic_validator(field, allow_reuse=True)(lambda v: validate(v))
 
 
-def validate_int_range(v, *, min_value, max_value):
-    if v is not None and not min_value <= v <= max_value:
-        raise ValueError(f"Should be between {min_value} and {max_value}")
-    return v
-
-
 def validate_text_length(v, *, max_len):
     if v is not None and len(v.text) > max_len:
         raise ValueError(f"Maximum length is {max_len} characters")
