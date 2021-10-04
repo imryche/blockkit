@@ -26,7 +26,6 @@ from blockkit.elements import (
 )
 from blockkit.objects import MarkdownText, PlainText
 from blockkit.validators import (
-    validate_list_size,
     validate_list_text_length,
     validate_text_length,
     validator,
@@ -61,19 +60,19 @@ class Block(Component):
 
 class Actions(Block):
     type: str = "actions"
-    elements: List[ActionElement]
+    elements: List[ActionElement] = Field(..., min_items=1, max_items=5)
 
     def __init__(
         self, *, elements: List[ActionElement], block_id: Optional[str] = None
     ):
         super().__init__(elements=elements, block_id=block_id)
 
-    _validate_elements = validator("elements", validate_list_size, min_len=1, max_len=5)
-
 
 class Context(Block):
     type: str = "context"
-    elements: List[Union[Image, PlainText, MarkdownText]]
+    elements: List[Union[Image, PlainText, MarkdownText]] = Field(
+        ..., min_items=1, max_items=10
+    )
 
     def __init__(
         self,
@@ -82,10 +81,6 @@ class Context(Block):
         block_id: Optional[str] = None,
     ):
         super().__init__(elements=elements, block_id=block_id)
-
-    _validate_elements = validator(
-        "elements", validate_list_size, min_len=1, max_len=10
-    )
 
 
 class Divider(Block):
@@ -200,7 +195,7 @@ class Section(Block):
     type: str = "section"
     text: Optional[Union[PlainText, MarkdownText]] = None
     fields_: Optional[List[Union[PlainText, MarkdownText]]] = Field(
-        None, alias="fields"
+        None, alias="fields", min_items=1, max_items=10
     )
     accessory: Optional[AccessoryElement] = None
 
@@ -219,7 +214,6 @@ class Section(Block):
     _validate_text = validator("text", validate_text_length, max_len=3000)
     _validate_fields = validators(
         "fields_",
-        (validate_list_size, {"min_len": 1, "max_len": 10}),
         (validate_list_text_length, {"max_len": 2000}),
     )
 

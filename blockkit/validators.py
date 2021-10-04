@@ -29,29 +29,9 @@ def validate_list_text_length(v, *, max_len):
     return v
 
 
-def validate_choices(v, *, choices):
-    if v is not None and v not in choices:
-        raise ValueError(f"Allowed values are {choices}")
-    return v
-
-
 def validate_list_choices(v, *, choices):
     if v is not None and len(v) == 0 or set(v) - set(choices):
         raise ValueError(f"Allowed values are {choices}")
-    return v
-
-
-def validate_list_size(v, *, min_len, max_len):
-    if v is not None:
-        if len(v) < min_len:
-            raise ValueError(
-                f"Must contain at least {min_len} item" + ("s" if min_len > 1 else "")
-            )
-        if len(v) > max_len:
-            raise ValueError(
-                f"Must contain a maximum of {max_len} item"
-                + ("s" if max_len > 1 else "")
-            )
     return v
 
 

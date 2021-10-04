@@ -13,7 +13,7 @@ from blockkit.blocks import (
 )
 from blockkit.components import Component
 from blockkit.objects import PlainText
-from blockkit.validators import validate_list_size, validate_text_length, validator
+from blockkit.validators import validate_text_length, validator
 
 __all__ = ["Home", "Message", "Modal", "WorkflowStep"]
 
@@ -21,11 +21,9 @@ Block = Union[Actions, Context, Divider, Header, ImageBlock, Input, Section]
 
 
 class View(Component):
-    blocks: List[Block]
+    blocks: List[Block] = Field(..., min_items=1, max_items=100)
     private_metadata: Optional[str] = Field(None, min_length=1, max_length=3000)
     callback_id: Optional[str] = Field(None, min_length=1, max_length=255)
-
-    _validate_blocks = validator("blocks", validate_list_size, min_len=1, max_len=100)
 
 
 class Home(View):
@@ -120,9 +118,7 @@ class WorkflowStep(View):
 
 
 class Message(Component):
-    blocks: List[Block]
+    blocks: List[Block] = Field(..., min_items=1, max_items=50)
 
     def __init__(self, *, blocks: List[Block]):
         super().__init__(blocks=blocks)
-
-    _validate_blocks = validator("blocks", validate_list_size, min_len=1, max_len=50)
