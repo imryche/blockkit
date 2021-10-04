@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 
-from pydantic import root_validator
+from pydantic import Field, root_validator
 
 from blockkit.blocks import (
     Actions,
@@ -13,12 +13,7 @@ from blockkit.blocks import (
 )
 from blockkit.components import Component
 from blockkit.objects import PlainText
-from blockkit.validators import (
-    validate_list_size,
-    validate_string_length,
-    validate_text_length,
-    validator,
-)
+from blockkit.validators import validate_text_length, validator
 
 __all__ = ["Home", "Message", "Modal", "WorkflowStep"]
 
@@ -26,22 +21,14 @@ Block = Union[Actions, Context, Divider, Header, ImageBlock, Input, Section]
 
 
 class View(Component):
-    blocks: List[Block]
-    private_metadata: Optional[str] = None
-    callback_id: Optional[str] = None
-
-    _validate_blocks = validator("blocks", validate_list_size, min_len=1, max_len=100)
-    _validate_private_metadata = validator(
-        "private_metadata", validate_string_length, max_len=3000
-    )
-    _validate_callback_id = validator(
-        "callback_id", validate_string_length, max_len=255
-    )
+    blocks: List[Block] = Field(..., min_items=1, max_items=100)
+    private_metadata: Optional[str] = Field(None, min_length=1, max_length=3000)
+    callback_id: Optional[str] = Field(None, min_length=1, max_length=255)
 
 
 class Home(View):
     type: str = "home"
-    external_id: Optional[str] = None
+    external_id: Optional[str] = Field(None, min_length=1, max_length=255)
 
     def __init__(
         self,
@@ -58,10 +45,6 @@ class Home(View):
             external_id=external_id,
         )
 
-    _validate_external_id = validator(
-        "external_id", validate_string_length, max_len=255
-    )
-
 
 class Modal(View):
     type: str = "modal"
@@ -70,7 +53,7 @@ class Modal(View):
     submit: Optional[PlainText] = None
     clear_on_close: Optional[bool] = None
     notify_on_close: Optional[bool] = None
-    external_id: Optional[str] = None
+    external_id: Optional[str] = Field(None, min_length=1, max_length=255)
     submit_disabled: Optional[bool] = None
 
     def __init__(
@@ -103,18 +86,13 @@ class Modal(View):
     _validate_title = validator("title", validate_text_length, max_len=24)
     _validate_close = validator("close", validate_text_length, max_len=24)
     _validate_submit = validator("submit", validate_text_length, max_len=24)
-    _validate_external_id = validator(
-        "external_id", validate_string_length, max_len=255
-    )
 
     @root_validator
     def _validate_values(cls, values):
         blocks = values.get("blocks")
         submit = values.get("submit")
 
-        if blocks and not submit and Input in (
-            type(b) for b in values["blocks"]
-        ):
+        if blocks and not submit and Input in (type(b) for b in values["blocks"]):
             raise ValueError("submit is required when an Input is within blocks")
         return values
 
@@ -140,9 +118,7 @@ class WorkflowStep(View):
 
 
 class Message(Component):
-    blocks: List[Block]
+    blocks: List[Block] = Field(..., min_items=1, max_items=50)
 
     def __init__(self, *, blocks: List[Block]):
         super().__init__(blocks=blocks)
-
-    _validate_blocks = validator("blocks", validate_list_size, min_len=1, max_len=50)

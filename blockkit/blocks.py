@@ -26,12 +26,9 @@ from blockkit.elements import (
 )
 from blockkit.objects import MarkdownText, PlainText
 from blockkit.validators import (
-    validate_list_size,
     validate_list_text_length,
-    validate_string_length,
     validate_text_length,
     validator,
-    validators,
 )
 
 __all__ = ["Actions", "Context", "Divider", "Header", "ImageBlock", "Input", "Section"]
@@ -57,26 +54,24 @@ ActionElement = Union[
 
 
 class Block(Component):
-    block_id: Optional[str] = None
-
-    _validate_block_id = validator("block_id", validate_string_length, max_len=255)
+    block_id: Optional[str] = Field(None, min_length=1, max_length=255)
 
 
 class Actions(Block):
     type: str = "actions"
-    elements: List[ActionElement]
+    elements: List[ActionElement] = Field(..., min_items=1, max_items=5)
 
     def __init__(
         self, *, elements: List[ActionElement], block_id: Optional[str] = None
     ):
         super().__init__(elements=elements, block_id=block_id)
 
-    _validate_elements = validator("elements", validate_list_size, min_len=1, max_len=5)
-
 
 class Context(Block):
     type: str = "context"
-    elements: List[Union[Image, PlainText, MarkdownText]]
+    elements: List[Union[Image, PlainText, MarkdownText]] = Field(
+        ..., min_items=1, max_items=10
+    )
 
     def __init__(
         self,
@@ -85,10 +80,6 @@ class Context(Block):
         block_id: Optional[str] = None,
     ):
         super().__init__(elements=elements, block_id=block_id)
-
-    _validate_elements = validator(
-        "elements", validate_list_size, min_len=1, max_len=10
-    )
 
 
 class Divider(Block):
@@ -111,7 +102,7 @@ class Header(Block):
 class ImageBlock(Block):
     type: str = "image"
     image_url: HttpUrl
-    alt_text: str
+    alt_text: str = Field(..., min_length=1, max_length=2000)
     title: Optional[PlainText] = None
 
     def __init__(
@@ -126,7 +117,6 @@ class ImageBlock(Block):
             image_url=image_url, alt_text=alt_text, title=title, block_id=block_id
         )
 
-    _validate_alt_text = validator("alt_text", validate_string_length, max_len=2000)
     _validate_title = validator("title", validate_text_length, max_len=2000)
 
 
@@ -204,7 +194,7 @@ class Section(Block):
     type: str = "section"
     text: Optional[Union[PlainText, MarkdownText]] = None
     fields_: Optional[List[Union[PlainText, MarkdownText]]] = Field(
-        None, alias="fields"
+        None, alias="fields", min_items=1, max_items=10
     )
     accessory: Optional[AccessoryElement] = None
 
@@ -221,11 +211,7 @@ class Section(Block):
         )
 
     _validate_text = validator("text", validate_text_length, max_len=3000)
-    _validate_fields = validators(
-        "fields_",
-        (validate_list_size, {"min_len": 1, "max_len": 10}),
-        (validate_list_text_length, {"max_len": 2000}),
-    )
+    _validate_fields = validator("fields_", validate_list_text_length, max_len=2000)
 
     @root_validator
     def _validate_values(cls, values):

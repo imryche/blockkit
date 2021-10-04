@@ -1,9 +1,9 @@
 import itertools
 from datetime import date, time
-from typing import List, Optional
+from typing import List, Literal, Optional
 
-from pydantic import root_validator
-from pydantic.networks import AnyUrl, HttpUrl
+from pydantic import Field, root_validator
+from pydantic.networks import HttpUrl
 
 from blockkit.components import Component
 from blockkit.objects import (
@@ -15,11 +15,8 @@ from blockkit.objects import (
     PlainText,
 )
 from blockkit.validators import (
-    validate_choices,
+    SlackUrl,
     validate_date,
-    validate_int_range,
-    validate_list_size,
-    validate_string_length,
     validate_text_length,
     validate_time,
     validator,
@@ -48,17 +45,15 @@ __all__ = [
 
 
 class ActionableComponent(Component):
-    action_id: Optional[str] = None
-
-    _validate_action_id = validator("action_id", validate_string_length, max_len=255)
+    action_id: Optional[str] = Field(None, min_length=1, max_length=255)
 
 
 class Button(ActionableComponent):
     type: str = "button"
     text: PlainText
-    url: Optional[AnyUrl] = None
-    value: Optional[str] = None
-    style: Optional[str] = None
+    url: Optional[SlackUrl] = None
+    value: Optional[str] = Field(None, min_length=1, max_length=2000)
+    style: Optional[Literal["primary", "danger"]] = None
     confirm: Optional[Confirm] = None
 
     def __init__(
@@ -66,9 +61,9 @@ class Button(ActionableComponent):
         *,
         text: PlainText,
         action_id: Optional[str] = None,
-        url: Optional[AnyUrl] = None,
+        url: Optional[SlackUrl] = None,
         value: Optional[str] = None,
-        style: Optional[str] = None,
+        style: Optional[Literal["primary", "danger"]] = None,
         confirm: Optional[Confirm] = None,
     ):
         super().__init__(
@@ -81,17 +76,12 @@ class Button(ActionableComponent):
         )
 
     _validate_text = validator("text", validate_text_length, max_len=75)
-    _validate_url = validator("url", validate_string_length, max_len=3000)
-    _validate_value = validator("value", validate_string_length, max_len=2000)
-    _validate_style = validator(
-        "style", validate_choices, choices=("primary", "danger")
-    )
 
 
 class Checkboxes(ActionableComponent):
     type: str = "checkboxes"
-    options: List[Option]
-    initial_options: Optional[List[Option]] = None
+    options: List[Option] = Field(..., min_items=1, max_items=10)
+    initial_options: Optional[List[Option]] = Field(None, min_items=1, max_items=10)
     confirm: Optional[Confirm] = None
 
     def __init__(
@@ -108,11 +98,6 @@ class Checkboxes(ActionableComponent):
             initial_options=initial_options,
             confirm=confirm,
         )
-
-    _validate_options = validator("options", validate_list_size, min_len=1, max_len=10)
-    _validate_initial_options = validator(
-        "initial_options", validate_list_size, min_len=1, max_len=10
-    )
 
     @root_validator
     def _validate_values(cls, values):
@@ -154,12 +139,10 @@ class DatePicker(ActionableComponent):
 class Image(Component):
     type: str = "image"
     image_url: HttpUrl
-    alt_text: str
+    alt_text: str = Field(..., min_length=1, max_length=2000)
 
     def __init__(self, *, image_url: HttpUrl, alt_text: str):
         super().__init__(image_url=image_url, alt_text=alt_text)
-
-    _validate_alt_text = validator("alt_text", validate_string_length, max_len=2000)
 
 
 class Select(ActionableComponent):
@@ -170,13 +153,8 @@ class Select(ActionableComponent):
 
 
 class StaticSelectBase(Select):
-    options: Optional[List[Option]] = None
-    option_groups: Optional[List[OptionGroup]] = None
-
-    _validate_options = validator("options", validate_list_size, min_len=1, max_len=100)
-    _validate_option_groups = validator(
-        "option_groups", validate_list_size, min_len=1, max_len=100
-    )
+    options: Optional[List[Option]] = Field(None, min_items=1, max_items=100)
+    option_groups: Optional[List[OptionGroup]] = Field(None, min_items=1, max_items=100)
 
 
 class StaticSelect(StaticSelectBase):
@@ -228,7 +206,7 @@ class StaticSelect(StaticSelectBase):
 class MultiStaticSelect(StaticSelectBase):
     type: str = "multi_static_select"
     initial_options: Optional[List[Option]] = None
-    max_selected_items: Optional[int] = None
+    max_selected_items: Optional[int] = Field(..., gt=0)
 
     def __init__(
         self,
@@ -275,17 +253,9 @@ class MultiStaticSelect(StaticSelectBase):
 
         return values
 
-    _validate_max_selected_items = validator(
-        "max_selected_items", validate_int_range, min_value=1, max_value=999
-    )
-
 
 class ExternalSelectBase(Select):
-    min_query_length: Optional[int] = None
-
-    _validate_min_query_length = validator(
-        "min_query_length", validate_int_range, min_value=0, max_value=999
-    )
+    min_query_length: Optional[int] = Field(None, gt=0)
 
 
 class ExternalSelect(ExternalSelectBase):
@@ -313,7 +283,7 @@ class ExternalSelect(ExternalSelectBase):
 class MultiExternalSelect(ExternalSelectBase):
     type: str = "multi_external_select"
     initial_options: Optional[List[Option]] = None
-    max_selected_items: Optional[int] = None
+    max_selected_items: Optional[int] = Field(None, gt=0)
 
     def __init__(
         self,
@@ -334,14 +304,10 @@ class MultiExternalSelect(ExternalSelectBase):
             max_selected_items=max_selected_items,
         )
 
-    _validate_max_selected_items = validator(
-        "max_selected_items", validate_int_range, min_value=1, max_value=999
-    )
-
 
 class UsersSelect(Select):
     type: str = "users_select"
-    initial_user: Optional[str] = None
+    initial_user: Optional[str] = Field(None, min_length=1)
 
     def __init__(
         self,
@@ -362,7 +328,7 @@ class UsersSelect(Select):
 class MultiUsersSelect(Select):
     type: str = "multi_users_select"
     initial_users: Optional[List[str]] = None
-    max_selected_items: Optional[int] = None
+    max_selected_items: Optional[int] = Field(None, gt=0)
 
     def __init__(
         self,
@@ -381,14 +347,10 @@ class MultiUsersSelect(Select):
             max_selected_items=max_selected_items,
         )
 
-    _validate_max_selected_items = validator(
-        "max_selected_items", validate_int_range, min_value=1, max_value=999
-    )
-
 
 class ConversationsSelect(Select):
     type: str = "conversations_select"
-    initial_conversation: Optional[str] = None
+    initial_conversation: Optional[str] = Field(None, min_length=1)
     default_to_current_conversation: Optional[bool] = None
     response_url_enabled: Optional[bool] = None
     filter: Optional[Filter] = None
@@ -419,7 +381,7 @@ class MultiConversationsSelect(Select):
     type: str = "multi_conversations_select"
     initial_conversations: Optional[List[str]] = None
     default_to_current_conversation: Optional[bool] = None
-    max_selected_items: Optional[int] = None
+    max_selected_items: Optional[int] = Field(None, gt=0)
     filter: Optional[Filter] = None
 
     def __init__(
@@ -443,14 +405,10 @@ class MultiConversationsSelect(Select):
             filter=filter,
         )
 
-    _validate_max_selected_items = validator(
-        "max_selected_items", validate_int_range, min_value=1, max_value=999
-    )
-
 
 class ChannelsSelect(Select):
     type: str = "channels_select"
-    initial_channel: Optional[str] = None
+    initial_channel: Optional[str] = Field(None, min_length=1)
     response_url_enabled: Optional[bool] = None
 
     def __init__(
@@ -474,7 +432,7 @@ class ChannelsSelect(Select):
 class MultiChannelsSelect(Select):
     type: str = "multi_channels_select"
     initial_channels: Optional[List[str]] = None
-    max_selected_items: Optional[int] = None
+    max_selected_items: Optional[int] = Field(None, gt=0)
 
     def __init__(
         self,
@@ -493,14 +451,10 @@ class MultiChannelsSelect(Select):
             max_selected_items=max_selected_items,
         )
 
-    _validate_max_selected_items = validator(
-        "max_selected_items", validate_int_range, min_value=1, max_value=999
-    )
-
 
 class Overflow(ActionableComponent):
     type: str = "overflow"
-    options: List[Option]
+    options: List[Option] = Field(..., min_items=2, max_items=5)
     confirm: Optional[Confirm] = None
 
     def __init__(
@@ -512,16 +466,14 @@ class Overflow(ActionableComponent):
     ):
         super().__init__(action_id=action_id, options=options, confirm=confirm)
 
-    _validate_options = validator("options", validate_list_size, min_len=2, max_len=5)
-
 
 class PlainTextInput(ActionableComponent):
     type: str = "plain_text_input"
     placeholder: Optional[PlainText] = None
-    initial_value: Optional[str] = None
+    initial_value: Optional[str] = Field(None, min_length=1)
     multiline: Optional[bool] = None
-    min_length: Optional[int] = None
-    max_length: Optional[int] = None
+    min_length: Optional[int] = Field(None, ge=0, lt=3000)
+    max_length: Optional[int] = Field(None, ge=0, lt=3000)
     dispatch_action_config: Optional[DispatchActionConfig] = None
 
     def __init__(
@@ -546,17 +498,11 @@ class PlainTextInput(ActionableComponent):
         )
 
     _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
-    _validate_min_length = validator(
-        "min_length", validate_int_range, min_value=0, max_value=3000
-    )
-    _validate_max_length = validator(
-        "max_length", validate_int_range, min_value=0, max_value=3000
-    )
 
 
 class RadioButtons(ActionableComponent):
     type: str = "radio_buttons"
-    options: List[Option]
+    options: List[Option] = Field(..., min_items=1, max_items=10)
     initial_option: Optional[Option] = None
     confirm: Optional[Confirm] = None
 
@@ -574,8 +520,6 @@ class RadioButtons(ActionableComponent):
             initial_option=initial_option,
             confirm=confirm,
         )
-
-    _validate_options = validator("options", validate_list_size, min_len=1, max_len=10)
 
     @root_validator
     def _validate_values(cls, values):

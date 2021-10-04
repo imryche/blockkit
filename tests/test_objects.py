@@ -19,12 +19,22 @@ def test_builds_markdown_text():
     }
 
 
+def test_markdown_text_empty_text_raises_exception():
+    with pytest.raises(ValidationError):
+        MarkdownText(text="")
+
+
 def test_builds_plain_text():
     assert PlainText(text="plain text", emoji=True) == {
         "type": "plain_text",
         "text": "plain text",
         "emoji": True,
     }
+
+
+def test_plain_text_empty_text_raises_exception():
+    with pytest.raises(ValidationError):
+        PlainText(text="")
 
 
 def test_builds_confirm():
@@ -87,7 +97,7 @@ def test_confirm_excessive_deny_raises_exception():
         )
 
 
-def test_confirm_disallowed_style_raises_exception():
+def test_confirm_incorrect_style_raises_exception():
     with pytest.raises(ValidationError):
         Confirm(
             title=PlainText(text="title"),
@@ -120,6 +130,14 @@ def test_option_excessive_text_raises_exception():
         )
 
 
+def test_option_empty_value_raises_exception():
+    with pytest.raises(ValidationError):
+        Option(
+            text=PlainText(text="text"),
+            value="",
+        )
+
+
 def test_option_excessive_value_raises_exception():
     with pytest.raises(ValidationError):
         Option(
@@ -134,6 +152,15 @@ def test_option_excessive_description_raises_exception():
             text=PlainText(text="text"),
             value="value",
             description=PlainText(text="d" * 76),
+        )
+
+
+def test_option_empty_url_raises_exception():
+    with pytest.raises(ValidationError):
+        Option(
+            text=PlainText(text="text"),
+            value="value",
+            url="",
         )
 
 

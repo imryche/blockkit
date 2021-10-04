@@ -65,9 +65,19 @@ def test_button_excessive_text_raises_exception():
         Button(text=PlainText(text="t" * 76))
 
 
+def test_button_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Button(text=PlainText(text="text"), action_id="")
+
+
 def test_button_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         Button(text=PlainText(text="text"), action_id="a" * 256)
+
+
+def test_button_empty_url_raises_exception():
+    with pytest.raises(ValidationError):
+        Button(text=PlainText(text="text"), url="")
 
 
 def test_button_excessive_url_raises_exception():
@@ -77,6 +87,11 @@ def test_button_excessive_url_raises_exception():
             text=PlainText(text="text"),
             url=url + "u" * (3001 - len(url)),
         )
+
+
+def test_button_empty_value_raises_exception():
+    with pytest.raises(ValidationError):
+        Button(text=PlainText(text="text"), value="")
 
 
 def test_button_excessive_value_raises_exception():
@@ -120,6 +135,14 @@ def test_builds_checkboxes():
             "deny": {"type": "plain_text", "text": "deny"},
         },
     }
+
+
+def test_checkboxes_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Checkboxes(
+            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            action_id="",
+        )
 
 
 def test_checkboxes_excessive_action_id_raises_exception():
@@ -188,6 +211,11 @@ def test_builds_datepicker():
     }
 
 
+def test_datepicker_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        DatePicker(action_id="")
+
+
 def test_datepicker_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         DatePicker(action_id="a" * 256)
@@ -211,6 +239,11 @@ def test_builds_image():
         "image_url": "http://placekitten.com/100/100",
         "alt_text": "kitten",
     }
+
+
+def test_image_empty_alt_text_raises_exception():
+    with pytest.raises(ValidationError):
+        Image(image_url="http://placekitten.com/100/100", alt_text="")
 
 
 def test_image_excessive_alt_text_raises_exception():
@@ -322,6 +355,17 @@ def test_static_select_excessive_placeholder_raises_exception():
         )
 
 
+def test_static_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        StaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="",
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+            ],
+        )
+
+
 def test_static_select_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         StaticSelect(
@@ -374,8 +418,8 @@ def test_static_select_initial_option_isnt_within_options():
     with pytest.raises(ValidationError):
         StaticSelect(
             placeholder=PlainText(text="placeholder"),
-            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
-            initial_option=Option(text=PlainText(text=f"option 2"), value=f"value_2"),
+            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            initial_option=Option(text=PlainText(text="option 2"), value="value_2"),
         )
 
 
@@ -500,6 +544,17 @@ def test_multi_static_select_excessive_placeholder_raises_exception():
         )
 
 
+def test_multi_static_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiStaticSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="",
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+            ],
+        )
+
+
 def test_multi_static_select_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         MultiStaticSelect(
@@ -552,10 +607,8 @@ def test_multi_static_select_initial_options_arent_within_options():
     with pytest.raises(ValidationError):
         MultiStaticSelect(
             placeholder=PlainText(text="placeholder"),
-            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
-            initial_options=[
-                Option(text=PlainText(text=f"option 2"), value=f"value_2")
-            ],
+            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            initial_options=[Option(text=PlainText(text="option 2"), value="value_2")],
         )
 
 
@@ -578,7 +631,7 @@ def test_multi_static_select_zero_max_selected_items_raises_exception():
     with pytest.raises(ValidationError):
         MultiStaticSelect(
             placeholder=PlainText(text="placeholder"),
-            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
+            options=[Option(text=PlainText(text="option 1"), value="value_1")],
             max_selected_items=0,
         )
 
@@ -616,6 +669,14 @@ def test_builds_external_select():
 def test_external_select_excessive_placeholder_raises_exception():
     with pytest.raises(ValidationError):
         ExternalSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_external_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        ExternalSelect(
+            placeholder=PlainText(text="placeholder"),
+            action_id="",
+        )
 
 
 def test_external_select_excessive_action_id_raises_exception():
@@ -670,6 +731,11 @@ def test_multi_external_select_excessive_placeholder_raises_exception():
         MultiExternalSelect(placeholder=PlainText(text="p" * 151))
 
 
+def test_multi_external_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiExternalSelect(placeholder=PlainText(text="placeholder"), action_id="")
+
+
 def test_multi_external_select_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         MultiExternalSelect(
@@ -722,12 +788,22 @@ def test_users_select_excessive_placeholder_raises_exception():
         UsersSelect(placeholder=PlainText(text="p" * 151))
 
 
+def test_users_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        UsersSelect(placeholder=PlainText(text="placeholder"), action_id="")
+
+
 def test_users_select_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         UsersSelect(
             placeholder=PlainText(text="placeholder"),
             action_id="a" * 256,
         )
+
+
+def test_users_select_empty_initial_user_raises_exception():
+    with pytest.raises(ValidationError):
+        UsersSelect(placeholder=PlainText(text="placeholder"), initial_user="")
 
 
 def test_builds_multi_users_select():
@@ -760,6 +836,11 @@ def test_builds_multi_users_select():
 def test_multi_users_select_excessive_placeholder_raises_exception():
     with pytest.raises(ValidationError):
         MultiUsersSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_multi_users_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiUsersSelect(placeholder=PlainText(text="placeholder"), action_id="")
 
 
 def test_multi_users_select_excessive_action_id_raises_exception():
@@ -813,11 +894,23 @@ def test_conversations_select_excessive_placeholder_raises_exception():
         ConversationsSelect(placeholder=PlainText(text="p" * 151))
 
 
+def test_conversations_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        ConversationsSelect(placeholder=PlainText(text="placeholder"), action_id="")
+
+
 def test_conversations_select_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         ConversationsSelect(
             placeholder=PlainText(text="placeholder"),
             action_id="a" * 256,
+        )
+
+
+def test_conversations_select_empty_initial_conversation_raises_exception():
+    with pytest.raises(ValidationError):
+        ConversationsSelect(
+            placeholder=PlainText(text="placeholder"), initial_conversation=""
         )
 
 
@@ -855,6 +948,13 @@ def test_builds_multi_conversations_select():
 def test_multi_conversations_select_excessive_placeholder_raises_exception():
     with pytest.raises(ValidationError):
         MultiConversationsSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_multi_conversations_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiConversationsSelect(
+            placeholder=PlainText(text="placeholder"), action_id=""
+        )
 
 
 def test_multi_conversations_select_excessive_action_id_raises_exception():
@@ -904,12 +1004,22 @@ def test_channels_select_excessive_placeholder_raises_exception():
         ChannelsSelect(placeholder=PlainText(text="p" * 151))
 
 
+def test_channels_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        ChannelsSelect(placeholder=PlainText(text="placeholder"), action_id="")
+
+
 def test_channels_select_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         ChannelsSelect(
             placeholder=PlainText(text="placeholder"),
             action_id="a" * 256,
         )
+
+
+def test_channels_select_empty_initial_channel_raises_exception():
+    with pytest.raises(ValidationError):
+        ChannelsSelect(placeholder=PlainText(text="placeholder"), initial_channel="")
 
 
 def test_builds_multi_channels_select():
@@ -942,6 +1052,11 @@ def test_builds_multi_channels_select():
 def test_multi_channels_select_excessive_placeholder_raises_exception():
     with pytest.raises(ValidationError):
         MultiChannelsSelect(placeholder=PlainText(text="p" * 151))
+
+
+def test_multi_channels_select_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        MultiChannelsSelect(placeholder=PlainText(text="placeholder"), action_id="")
 
 
 def test_multi_channels_select_excessive_action_id_raises_exception():
@@ -988,13 +1103,22 @@ def test_builds_overflow():
     }
 
 
+def test_overflow_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Overflow(
+            action_id="",
+            options=[
+                Option(text=PlainText(text="option 1"), value="value_1"),
+            ],
+        )
+
+
 def test_overflow_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         Overflow(
             action_id="a" * 256,
             options=[
                 Option(text=PlainText(text="option 1"), value="value_1"),
-                Option(text=PlainText(text="option 2"), value="value_2"),
             ],
         )
 
@@ -1037,6 +1161,11 @@ def test_builds_plain_text_input():
     }
 
 
+def test_plain_text_input_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        PlainTextInput(action_id="")
+
+
 def test_plain_text_input_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         PlainTextInput(action_id="a" * 256)
@@ -1045,6 +1174,11 @@ def test_plain_text_input_excessive_action_id_raises_exception():
 def test_plain_text_input_excessive_placeholder_raises_exception():
     with pytest.raises(ValidationError):
         PlainTextInput(placeholder=PlainText(text="p" * 151))
+
+
+def test_plain_text_input_empty_initial_value_raises_exception():
+    with pytest.raises(ValidationError):
+        PlainTextInput(initial_value="")
 
 
 def test_plain_text_input_negative_min_length_raises_exception():
@@ -1101,6 +1235,14 @@ def test_builds_radio_buttons():
     }
 
 
+def test_radio_buttons_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        RadioButtons(
+            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            action_id="",
+        )
+
+
 def test_radio_buttons_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         RadioButtons(
@@ -1127,8 +1269,8 @@ def test_radio_buttons_excessive_options_raise_exception():
 def test_radio_buttons_initial_options_arent_within_options_raise_exception():
     with pytest.raises(ValidationError):
         RadioButtons(
-            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
-            initial_option=Option(text=PlainText(text=f"option 2"), value=f"value_2"),
+            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            initial_option=Option(text=PlainText(text="option 2"), value="value_2"),
         )
 
 
@@ -1155,6 +1297,11 @@ def test_builds_timepicker():
             "deny": {"type": "plain_text", "text": "deny"},
         },
     }
+
+
+def test_timepicker_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        Timepicker(action_id="")
 
 
 def test_timepicker_excessive_action_id_raises_exception():
