@@ -9,7 +9,6 @@ from blockkit.validators import (
     validate_list_choices,
     validate_text_length,
     validator,
-    validators,
 )
 
 __all__ = [
@@ -103,12 +102,10 @@ class DispatchActionConfig(Component):
     def __init__(self, *, trigger_actions_on: List[str]):
         super().__init__(trigger_actions_on=trigger_actions_on)
 
-    _validate_trigger_actions_on = validators(
+    _validate_trigger_actions_on = validator(
         "trigger_actions_on",
-        (
-            validate_list_choices,
-            dict(choices=("on_enter_pressed", "on_character_entered")),
-        ),
+        validate_list_choices,
+        choices=("on_enter_pressed", "on_character_entered"),
     )
 
 

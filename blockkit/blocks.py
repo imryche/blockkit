@@ -29,7 +29,6 @@ from blockkit.validators import (
     validate_list_text_length,
     validate_text_length,
     validator,
-    validators,
 )
 
 __all__ = ["Actions", "Context", "Divider", "Header", "ImageBlock", "Input", "Section"]
@@ -212,10 +211,7 @@ class Section(Block):
         )
 
     _validate_text = validator("text", validate_text_length, max_len=3000)
-    _validate_fields = validators(
-        "fields_",
-        (validate_list_text_length, {"max_len": 2000}),
-    )
+    _validate_fields = validator("fields_", validate_list_text_length, max_len=2000)
 
     @root_validator
     def _validate_values(cls, values):
