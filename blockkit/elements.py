@@ -1,6 +1,7 @@
+from blockkit.enums import Style
 import itertools
 from datetime import date, time
-from typing import List, Literal, Optional
+from typing import List, Optional
 
 from pydantic import Field, root_validator
 from pydantic.networks import HttpUrl
@@ -53,7 +54,7 @@ class Button(ActionableComponent):
     text: PlainText
     url: Optional[SlackUrl] = None
     value: Optional[str] = Field(None, min_length=1, max_length=2000)
-    style: Optional[Literal["primary", "danger"]] = None
+    style: Optional[Style] = None
     confirm: Optional[Confirm] = None
 
     def __init__(
@@ -63,7 +64,7 @@ class Button(ActionableComponent):
         action_id: Optional[str] = None,
         url: Optional[SlackUrl] = None,
         value: Optional[str] = None,
-        style: Optional[Literal["primary", "danger"]] = None,
+        style: Optional[Style] = None,
         confirm: Optional[Confirm] = None,
     ):
         super().__init__(
