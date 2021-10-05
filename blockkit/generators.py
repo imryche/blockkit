@@ -31,7 +31,7 @@ def generate(payload):
     classes = sorted(list(classes))
     imports = "from blockkit import " + ", ".join(classes)
     eval_components(code)
-    code = f"{imports}; {code}"
+    code = f"{imports}; payload = {code}.build()"
     return code
 
 
