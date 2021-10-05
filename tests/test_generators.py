@@ -17,7 +17,7 @@ def test_generates_section_plain_text():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])'  # noqa
+        == 'from blockkit import Message, PlainText, Section; Message(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])'  # noqa
     )
 
 
@@ -40,7 +40,7 @@ def test_generates_section_markdown_text():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="This is a mrkdwn section block :ghost: *this is bold*, and ~this is crossed out~, and <https://google.com|this is a link>"))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, Section; Message(blocks=[Section(text=MarkdownText(text="This is a mrkdwn section block :ghost: *this is bold*, and ~this is crossed out~, and <https://google.com|this is a link>"))])'  # noqa
     )
 
 
@@ -61,7 +61,7 @@ def test_generates_section_text_fields():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(fields=[PlainText(text="*this is plain_text text*", emoji=True)])])'  # noqa
+        == 'from blockkit import Message, PlainText, Section; Message(blocks=[Section(fields=[PlainText(text="*this is plain_text text*", emoji=True)])])'  # noqa
     )
 
 
@@ -98,7 +98,7 @@ def test_generates_section_static_select():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="Pick an item from the dropdown list"), accessory=StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="static_select-action"))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, Option, PlainText, Section, StaticSelect; Message(blocks=[Section(text=MarkdownText(text="Pick an item from the dropdown list"), accessory=StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="static_select-action"))])'  # noqa
     )
 
 
@@ -151,7 +151,7 @@ def test_generates_section_static_select_option_groups():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="Available options"), accessory=StaticSelect(placeholder=PlainText(emoji=True, text="Manage"), action_id="static_select-action", option_groups=[OptionGroup(label=PlainText(text="Group 1"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0")]), OptionGroup(label=PlainText(text="Group 2"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-3")])]))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, Option, OptionGroup, PlainText, Section, StaticSelect; Message(blocks=[Section(text=MarkdownText(text="Available options"), accessory=StaticSelect(placeholder=PlainText(emoji=True, text="Manage"), action_id="static_select-action", option_groups=[OptionGroup(label=PlainText(text="Group 1"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0")]), OptionGroup(label=PlainText(text="Group 2"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-3")])]))])'  # noqa
     )
 
 
@@ -178,7 +178,7 @@ def test_generates_section_users_select():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="Test block with users select"), accessory=UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="users_select-action"))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, PlainText, Section, UsersSelect; Message(blocks=[Section(text=MarkdownText(text="Test block with users select"), accessory=UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="users_select-action"))])'  # noqa
     )
 
 
@@ -205,7 +205,7 @@ def test_generates_section_channels_select():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick a channel from the dropdown list"), accessory=ChannelsSelect(action_id="text1234", placeholder=PlainText(text="Select an item")))])'  # noqa
+        == 'from blockkit import ChannelsSelect, MarkdownText, Message, PlainText, Section; Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick a channel from the dropdown list"), accessory=ChannelsSelect(action_id="text1234", placeholder=PlainText(text="Select an item")))])'  # noqa
     )
 
 
@@ -232,7 +232,7 @@ def test_generates_section_conversations():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick a conversation from the dropdown list"), accessory=ConversationsSelect(action_id="text1234", placeholder=PlainText(text="Select an item")))])'  # noqa
+        == 'from blockkit import ConversationsSelect, MarkdownText, Message, PlainText, Section; Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick a conversation from the dropdown list"), accessory=ConversationsSelect(action_id="text1234", placeholder=PlainText(text="Select an item")))])'  # noqa
     )
 
 
@@ -260,7 +260,7 @@ def test_generates_section_external_select():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick an item from the dropdown list"), accessory=ExternalSelect(action_id="text1234", placeholder=PlainText(text="Select an item"), min_query_length=3))])'  # noqa
+        == 'from blockkit import ExternalSelect, MarkdownText, Message, PlainText, Section; Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick an item from the dropdown list"), accessory=ExternalSelect(action_id="text1234", placeholder=PlainText(text="Select an item"), min_query_length=3))])'  # noqa
     )
 
 
@@ -300,7 +300,7 @@ def test_generates_section_multi_static():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiStaticSelect(action_id="text1234", placeholder=PlainText(text="Select items"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0"), Option(text=PlainText(text="*this is plain_text text*"), value="value-1")]))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, MultiStaticSelect, Option, PlainText, Section; Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiStaticSelect(action_id="text1234", placeholder=PlainText(text="Select items"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0"), Option(text=PlainText(text="*this is plain_text text*"), value="value-1")]))])'  # noqa
     )
 
 
@@ -324,7 +324,7 @@ def test_generates_section_multi_users_select():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick users from the list"), accessory=MultiUsersSelect(action_id="text1234", placeholder=PlainText(text="Select users")))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, MultiUsersSelect, PlainText, Section; Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick users from the list"), accessory=MultiUsersSelect(action_id="text1234", placeholder=PlainText(text="Select users")))])'  # noqa
     )
 
 
@@ -351,7 +351,7 @@ def test_generates_section_multi_channels_select():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick channels from the list"), accessory=MultiChannelsSelect(action_id="text1234", placeholder=PlainText(text="Select channels")))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, MultiChannelsSelect, PlainText, Section; Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick channels from the list"), accessory=MultiChannelsSelect(action_id="text1234", placeholder=PlainText(text="Select channels")))])'  # noqa
     )
 
 
@@ -378,7 +378,7 @@ def test_generates_section_multi_conversations():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="Test block with multi conversations select"), accessory=MultiConversationsSelect(placeholder=PlainText(text="Select conversations", emoji=True), action_id="multi_conversations_select-action"))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, MultiConversationsSelect, PlainText, Section; Message(blocks=[Section(text=MarkdownText(text="Test block with multi conversations select"), accessory=MultiConversationsSelect(placeholder=PlainText(text="Select conversations", emoji=True), action_id="multi_conversations_select-action"))])'  # noqa
     )
 
 
@@ -403,7 +403,7 @@ def test_generates_section_multi_external_select():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiExternalSelect(action_id="text1234", placeholder=PlainText(text="Select items"), min_query_length=3))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, MultiExternalSelect, PlainText, Section; Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiExternalSelect(action_id="text1234", placeholder=PlainText(text="Select items"), min_query_length=3))])'  # noqa
     )
 
 
@@ -431,7 +431,7 @@ def test_generates_section_button():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", action_id="button-action"))])'  # noqa
+        == 'from blockkit import Button, MarkdownText, Message, PlainText, Section; Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", action_id="button-action"))])'  # noqa
     )
 
 
@@ -474,7 +474,7 @@ def test_generates_section_button_confirm():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", action_id="button-action", confirm=Confirm(title=PlainText(text="Are you sure?"), text=MarkdownText(text="Wouldn\'t you prefer a good game of _chess_?"), confirm=PlainText(text="Do it"), deny=PlainText(text="Stop, I\'ve changed my mind!"))))])'  # noqa
+        == 'from blockkit import Button, Confirm, MarkdownText, Message, PlainText, Section; Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", action_id="button-action", confirm=Confirm(title=PlainText(text="Are you sure?"), text=MarkdownText(text="Wouldn\'t you prefer a good game of _chess_?"), confirm=PlainText(text="Do it"), deny=PlainText(text="Stop, I\'ve changed my mind!"))))])'  # noqa
     )
 
 
@@ -503,7 +503,7 @@ def test_generates_section_link_button():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", url="https://google.com", action_id="button-action"))])'  # noqa
+        == 'from blockkit import Button, MarkdownText, Message, PlainText, Section; Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", url="https://google.com", action_id="button-action"))])'  # noqa
     )
 
 
@@ -532,7 +532,7 @@ def test_generates_section_image():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", url="https://google.com", action_id="button-action"))])'  # noqa
+        == 'from blockkit import Button, MarkdownText, Message, PlainText, Section; Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", url="https://google.com", action_id="button-action"))])'  # noqa
     )
 
 
@@ -558,7 +558,7 @@ def test_generates_section_image():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with an accessory image."), accessory=Image(image_url="https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg", alt_text="cute cat"))])'  # noqa
+        == 'from blockkit import Image, MarkdownText, Message, Section; Message(blocks=[Section(text=MarkdownText(text="This is a section block with an accessory image."), accessory=Image(image_url="https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg", alt_text="cute cat"))])'  # noqa
     )
 
 
@@ -598,7 +598,7 @@ def test_generates_section_overflow():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with an overflow menu."), accessory=Overflow(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0"), Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-1")], action_id="overflow-action"))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, Option, Overflow, PlainText, Section; Message(blocks=[Section(text=MarkdownText(text="This is a section block with an overflow menu."), accessory=Overflow(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0"), Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-1")], action_id="overflow-action"))])'  # noqa
     )
 
 
@@ -626,7 +626,7 @@ def test_generates_section_datepicker():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="Pick a date for the deadline."), accessory=DatePicker(initial_date="1990-04-28", placeholder=PlainText(text="Select a date", emoji=True), action_id="datepicker-action"))])'  # noqa
+        == 'from blockkit import DatePicker, MarkdownText, Message, PlainText, Section; Message(blocks=[Section(text=MarkdownText(text="Pick a date for the deadline."), accessory=DatePicker(initial_date="1990-04-28", placeholder=PlainText(text="Select a date", emoji=True), action_id="datepicker-action"))])'  # noqa
     )
 
 
@@ -661,7 +661,7 @@ def test_generates_section_checkboxes():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="This is a section block with checkboxes."), accessory=Checkboxes(options=[Option(text=PlainText(text="this is plain text"), description=PlainText(text="this is plain text"), value="value-0")], action_id="checkboxes-action"))])'  # noqa
+        == 'from blockkit import Checkboxes, MarkdownText, Message, Option, PlainText, Section; Message(blocks=[Section(text=MarkdownText(text="This is a section block with checkboxes."), accessory=Checkboxes(options=[Option(text=PlainText(text="this is plain text"), description=PlainText(text="this is plain text"), value="value-0")], action_id="checkboxes-action"))])'  # noqa
     )
 
 
@@ -693,7 +693,7 @@ def test_generates_section_radio_buttons():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=MarkdownText(text="Section block with radio buttons"), accessory=RadioButtons(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="radio_buttons-action"))])'  # noqa
+        == 'from blockkit import MarkdownText, Message, Option, PlainText, RadioButtons, Section; Message(blocks=[Section(text=MarkdownText(text="Section block with radio buttons"), accessory=RadioButtons(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="radio_buttons-action"))])'  # noqa
     )
 
 
@@ -755,7 +755,7 @@ def test_generates_actions_all_selects():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), action_id="actionId-0"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), action_id="actionId-1"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="actionId-2"), StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="actionId-3")])])'  # noqa
+        == 'from blockkit import Actions, ChannelsSelect, ConversationsSelect, Message, Option, PlainText, StaticSelect, UsersSelect; Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), action_id="actionId-0"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), action_id="actionId-1"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="actionId-2"), StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="actionId-3")])])'  # noqa
     )
 
 
@@ -781,7 +781,7 @@ def test_generates_actions_filtered_conversations_select():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select private conversation", emoji=True), filter=Filter(include=["private"]), action_id="actionId-0")])])'  # noqa
+        == 'from blockkit import Actions, ConversationsSelect, Filter, Message, PlainText; Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select private conversation", emoji=True), filter=Filter(include=["private"]), action_id="actionId-0")])])'  # noqa
     )
 
 
@@ -827,12 +827,15 @@ def test_generates_actions_selects_with_initial():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), initial_conversation="G12345678", action_id="actionId-0"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), initial_user="U12345678", action_id="actionId-1"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), initial_channel="C12345678", action_id="actionId-2")])])'  # noqa
+        == 'from blockkit import Actions, ChannelsSelect, ConversationsSelect, Message, PlainText, UsersSelect; Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), initial_conversation="G12345678", action_id="actionId-0"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), initial_user="U12345678", action_id="actionId-1"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), initial_channel="C12345678", action_id="actionId-2")])])'  # noqa
     )
 
 
 def test_generates_divider():
-    assert generate({"blocks": [{"type": "divider"}]}) == "Message(blocks=[Divider()])"
+    assert (
+        generate({"blocks": [{"type": "divider"}]})
+        == "from blockkit import Divider, Message; Message(blocks=[Divider()])"
+    )
 
 
 def test_generates_image_title():
@@ -855,7 +858,7 @@ def test_generates_image_title():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[ImageBlock(title=PlainText(text="I Need a Marg", emoji=True), image_url="https://assets3.thrillist.com/v1/image/1682388/size/tl-horizontal_main.jpg", alt_text="marg")])'  # noqa
+        == 'from blockkit import ImageBlock, Message, PlainText; Message(blocks=[ImageBlock(title=PlainText(text="I Need a Marg", emoji=True), image_url="https://assets3.thrillist.com/v1/image/1682388/size/tl-horizontal_main.jpg", alt_text="marg")])'  # noqa
     )
 
 
@@ -874,7 +877,7 @@ def test_generates_image_no_title():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[ImageBlock(image_url="https://i1.wp.com/thetempest.co/wp-content/uploads/2017/08/The-wise-words-of-Michael-Scott-Imgur-2.jpg?w=1024&ssl=1", alt_text="inspiration")])'  # noqa
+        == 'from blockkit import ImageBlock, Message; Message(blocks=[ImageBlock(image_url="https://i1.wp.com/thetempest.co/wp-content/uploads/2017/08/The-wise-words-of-Michael-Scott-Imgur-2.jpg?w=1024&ssl=1", alt_text="inspiration")])'  # noqa
     )
 
 
@@ -895,7 +898,7 @@ def test_generates_context_plain_text():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Context(elements=[PlainText(text="Author: K A Applegate", emoji=True)])])'  # noqa
+        == 'from blockkit import Context, Message, PlainText; Message(blocks=[Context(elements=[PlainText(text="Author: K A Applegate", emoji=True)])])'  # noqa
     )
 
 
@@ -923,7 +926,7 @@ def test_generates_context_mrkdwn():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Context(elements=[Image(image_url="https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg", alt_text="cute cat"), MarkdownText(text="*Cat* has approved this message.")])])'  # noqa
+        == 'from blockkit import Context, Image, MarkdownText, Message; Message(blocks=[Context(elements=[Image(image_url="https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg", alt_text="cute cat"), MarkdownText(text="*Cat* has approved this message.")])])'  # noqa
     )
 
 
@@ -943,7 +946,7 @@ def test_generates_input_dispatches_actions():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Input(dispatch_action=True, element=PlainTextInput(action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
+        == 'from blockkit import Input, Message, PlainText, PlainTextInput; Message(blocks=[Input(dispatch_action=True, element=PlainTextInput(action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
     )
 
 
@@ -966,7 +969,7 @@ def test_generates_input_dispatches_custom_actions():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Input(dispatch_action=True, element=PlainTextInput(dispatch_action_config=DispatchActionConfig(trigger_actions_on=["on_character_entered"]), action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
+        == 'from blockkit import DispatchActionConfig, Input, Message, PlainText, PlainTextInput; Message(blocks=[Input(dispatch_action=True, element=PlainTextInput(dispatch_action_config=DispatchActionConfig(trigger_actions_on=["on_character_entered"]), action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
     )
 
 
@@ -986,7 +989,7 @@ def test_generates_input_multiline_plain_text():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Input(element=PlainTextInput(multiline=True, action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
+        == 'from blockkit import Input, Message, PlainText, PlainTextInput; Message(blocks=[Input(element=PlainTextInput(multiline=True, action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
     )
 
 
@@ -1005,7 +1008,7 @@ def test_generates_input_plain_text():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Input(element=PlainTextInput(action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
+        == 'from blockkit import Input, Message, PlainText, PlainTextInput; Message(blocks=[Input(element=PlainTextInput(action_id="plain_text_input-action"), label=PlainText(text="Label", emoji=True))])'  # noqa
     )
 
 
@@ -1024,7 +1027,7 @@ def test_generates_header():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Header(text=PlainText(text="This is a header block", emoji=True))])'  # noqa
+        == 'from blockkit import Header, Message, PlainText; Message(blocks=[Header(text=PlainText(text="This is a header block", emoji=True))])'  # noqa
     )
 
 
@@ -1047,7 +1050,7 @@ def test_generates_modal():
     }
     assert (
         generate(payload)
-        == 'Modal(title=PlainText(text="My App", emoji=True), submit=PlainText(text="Submit", emoji=True), close=PlainText(text="Cancel", emoji=True), blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])'  # noqa
+        == 'from blockkit import Modal, PlainText, Section; Modal(title=PlainText(text="My App", emoji=True), submit=PlainText(text="Submit", emoji=True), close=PlainText(text="Cancel", emoji=True), blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])'  # noqa
     )
 
 
@@ -1067,7 +1070,7 @@ def test_generates_app_home():
     }
     assert (
         generate(payload)
-        == 'Home(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])'  # noqa
+        == 'from blockkit import Home, PlainText, Section; Home(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))])'  # noqa
     )
 
 
@@ -1086,7 +1089,7 @@ def test_generates_escape():
     }
     assert (
         generate(payload)
-        == 'Message(blocks=[Section(text=PlainText(text="This is a plain\\n\\ttext section block.", emoji=True))])'  # noqa
+        == 'from blockkit import Message, PlainText, Section; Message(blocks=[Section(text=PlainText(text="This is a plain\\n\\ttext section block.", emoji=True))])'  # noqa
     )
 
 
