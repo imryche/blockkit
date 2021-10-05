@@ -76,7 +76,7 @@ class Button(ActionableComponent):
             confirm=confirm,
         )
 
-    _validate_text = validator("text", validate_text_length, max_len=75)
+    _validate_text = validator("text", validate_text_length, max_length=75)
 
 
 class Checkboxes(ActionableComponent):
@@ -133,7 +133,7 @@ class DatePicker(ActionableComponent):
             confirm=confirm,
         )
 
-    _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
     _validate_initial_date = validator("initial_date", validate_date)
 
 
@@ -150,7 +150,7 @@ class Select(ActionableComponent):
     placeholder: PlainText
     confirm: Optional[Confirm] = None
 
-    _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
 
 
 class StaticSelectBase(Select):
@@ -498,7 +498,7 @@ class PlainTextInput(ActionableComponent):
             dispatch_action_config=dispatch_action_config,
         )
 
-    _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
 
 
 class RadioButtons(ActionableComponent):
@@ -538,7 +538,7 @@ class Timepicker(ActionableComponent):
     initial_time: Optional[time] = None
     confirm: Optional[Confirm] = None
 
-    _validate_placeholder = validator("placeholder", validate_text_length, max_len=150)
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
     _validate_initial_time = validator("initial_time", validate_time)
 
     def __init__(

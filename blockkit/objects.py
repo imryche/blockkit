@@ -56,10 +56,10 @@ class Confirm(Component):
             title=title, text=text, confirm=confirm, deny=deny, style=style
         )
 
-    _validate_title = validator("title", validate_text_length, max_len=100)
-    _validate_text = validator("text", validate_text_length, max_len=300)
-    _validate_confirm = validator("confirm", validate_text_length, max_len=30)
-    _validate_deny = validator("deny", validate_text_length, max_len=30)
+    _validate_title = validator("title", validate_text_length, max_length=100)
+    _validate_text = validator("text", validate_text_length, max_length=300)
+    _validate_confirm = validator("confirm", validate_text_length, max_length=30)
+    _validate_deny = validator("deny", validate_text_length, max_length=30)
 
 
 class Option(Component):
@@ -78,8 +78,8 @@ class Option(Component):
     ):
         super().__init__(text=text, value=value, description=description, url=url)
 
-    _validate_text = validator("text", validate_text_length, max_len=75)
-    _validate_description = validator("description", validate_text_length, max_len=75)
+    _validate_text = validator("text", validate_text_length, max_length=75)
+    _validate_description = validator("description", validate_text_length, max_length=75)
 
 
 class OptionGroup(Component):
@@ -89,7 +89,7 @@ class OptionGroup(Component):
     def __init__(self, *, label: PlainText, options: List[Option]):
         super().__init__(label=label, options=options)
 
-    _validate_label = validator("label", validate_text_length, max_len=75)
+    _validate_label = validator("label", validate_text_length, max_length=75)
 
 
 class DispatchActionConfig(Component):

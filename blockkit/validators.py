@@ -6,17 +6,17 @@ def validator(field, func, **kwargs):
     return pydantic_validator(field, allow_reuse=True)(lambda v: func(v, **kwargs))
 
 
-def validate_text_length(v, *, max_len):
-    if v is not None and len(v.text) > max_len:
-        raise ValueError(f"Maximum length is {max_len} characters")
+def validate_text_length(v, *, max_length):
+    if v is not None and len(v.text) > max_length:
+        raise ValueError(f"Maximum length is {max_length} characters")
     return v
 
 
-def validate_list_text_length(v, *, max_len):
+def validate_list_text_length(v, *, max_length):
     if v is None:
         return
     for item in v:
-        validate_text_length(item, max_len=max_len)
+        validate_text_length(item, max_length=max_length)
     return v
 
 

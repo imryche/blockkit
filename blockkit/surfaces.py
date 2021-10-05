@@ -83,9 +83,9 @@ class Modal(View):
             submit_disabled=submit_disabled,
         )
 
-    _validate_title = validator("title", validate_text_length, max_len=24)
-    _validate_close = validator("close", validate_text_length, max_len=24)
-    _validate_submit = validator("submit", validate_text_length, max_len=24)
+    _validate_title = validator("title", validate_text_length, max_length=24)
+    _validate_close = validator("close", validate_text_length, max_length=24)
+    _validate_submit = validator("submit", validate_text_length, max_length=24)
 
     @root_validator
     def _validate_values(cls, values):

@@ -96,7 +96,7 @@ class Header(Block):
     def __init__(self, *, text: PlainText, block_id: Optional[str] = None):
         super().__init__(text=text, block_id=block_id)
 
-    _validate_text = validator("text", validate_text_length, max_len=150)
+    _validate_text = validator("text", validate_text_length, max_length=150)
 
 
 class ImageBlock(Block):
@@ -117,7 +117,7 @@ class ImageBlock(Block):
             image_url=image_url, alt_text=alt_text, title=title, block_id=block_id
         )
 
-    _validate_title = validator("title", validate_text_length, max_len=2000)
+    _validate_title = validator("title", validate_text_length, max_length=2000)
 
 
 InputElement = Union[
@@ -165,8 +165,8 @@ class Input(Block):
             optional=optional,
         )
 
-    _validate_label = validator("label", validate_text_length, max_len=2000)
-    _validate_hint = validator("hint", validate_text_length, max_len=2000)
+    _validate_label = validator("label", validate_text_length, max_length=2000)
+    _validate_hint = validator("hint", validate_text_length, max_length=2000)
 
 
 AccessoryElement = Union[
@@ -210,8 +210,8 @@ class Section(Block):
             text=text, block_id=block_id, fields=fields, accessory=accessory
         )
 
-    _validate_text = validator("text", validate_text_length, max_len=3000)
-    _validate_fields = validator("fields_", validate_list_text_length, max_len=2000)
+    _validate_text = validator("text", validate_text_length, max_length=3000)
+    _validate_fields = validator("fields_", validate_list_text_length, max_length=2000)
 
     @root_validator
     def _validate_values(cls, values):
