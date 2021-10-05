@@ -42,11 +42,12 @@ Here's the list of types of components and corresponding classes:
 
 ### Surfaces
 
-| Type  | Class   |
-| ----- | ------- |
-| home  | Home    |
-| modal | Modal   |
-|       | Message |
+| Type          | Class        |
+| ------------- | ------------ |
+| home          | Home         |
+| modal         | Modal        |
+|               | Message      |
+| workflow_step | WorkflowStep |
 
 ### Blocks
 
