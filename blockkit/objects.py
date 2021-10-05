@@ -1,15 +1,11 @@
-from typing import List, Literal, Optional, Union
+from typing import List, Optional, Union
 
 from pydantic import Field
 from pydantic.class_validators import root_validator
 
 from blockkit.components import Component
-from blockkit.validators import (
-    SlackUrl,
-    validate_list_choices,
-    validate_text_length,
-    validator,
-)
+from blockkit.enums import Include, Style, TriggerActionsOn
+from blockkit.validators import SlackUrl, validate_text_length, validator
 
 __all__ = [
     "Confirm",
@@ -45,7 +41,7 @@ class Confirm(Component):
     text: Union[PlainText, MarkdownText]
     confirm: PlainText
     deny: PlainText
-    style: Optional[Literal["primary", "danger"]] = None
+    style: Optional[Style] = None
 
     def __init__(
         self,
@@ -54,7 +50,7 @@ class Confirm(Component):
         text: Union[PlainText, MarkdownText],
         confirm: PlainText,
         deny: PlainText,
-        style: Optional[str] = None,
+        style: Optional[Style] = None,
     ):
         super().__init__(
             title=title, text=text, confirm=confirm, deny=deny, style=style
@@ -97,27 +93,21 @@ class OptionGroup(Component):
 
 
 class DispatchActionConfig(Component):
-    trigger_actions_on: List[str] = Field(..., min_items=1, max_items=2)
+    trigger_actions_on: List[TriggerActionsOn] = Field(..., min_items=1, max_items=2)
 
-    def __init__(self, *, trigger_actions_on: List[str]):
+    def __init__(self, *, trigger_actions_on: List[TriggerActionsOn]):
         super().__init__(trigger_actions_on=trigger_actions_on)
-
-    _validate_trigger_actions_on = validator(
-        "trigger_actions_on",
-        validate_list_choices,
-        choices=("on_enter_pressed", "on_character_entered"),
-    )
 
 
 class Filter(Component):
-    include: Optional[List[str]] = None
+    include: Optional[List[Include]] = None
     exclude_external_shared_channels: Optional[bool] = None
     exclude_bot_users: Optional[bool] = None
 
     def __init__(
         self,
         *,
-        include: Optional[List[str]] = None,
+        include: Optional[List[Include]] = None,
         exclude_external_shared_channels: Optional[bool] = None,
         exclude_bot_users: Optional[bool] = None,
     ):
@@ -126,10 +116,6 @@ class Filter(Component):
             exclude_external_shared_channels=exclude_external_shared_channels,
             exclude_bot_users=exclude_bot_users,
         )
-
-    _validate_include = validator(
-        "include", validate_list_choices, choices=("im", "mpim", "private", "public")
-    )
 
     @root_validator
     def _validate_values(cls, values):

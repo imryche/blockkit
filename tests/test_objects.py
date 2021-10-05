@@ -3,10 +3,12 @@ from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
     Filter,
+    Include,
     MarkdownText,
     Option,
     OptionGroup,
     PlainText,
+    TriggerActionsOn,
 )
 from pydantic import ValidationError
 
@@ -215,9 +217,15 @@ def test_option_group_empty_options_raise_exception():
 
 
 def test_builds_dispatch_action_config():
-    assert DispatchActionConfig(
-        trigger_actions_on=["on_enter_pressed", "on_character_entered"]
-    ).build() == {"trigger_actions_on": ["on_enter_pressed", "on_character_entered"]}
+    assert (
+        DispatchActionConfig(
+            trigger_actions_on=[
+                TriggerActionsOn.on_enter_pressed,
+                TriggerActionsOn.on_character_entered,
+            ]
+        ).build()
+        == {"trigger_actions_on": ["on_enter_pressed", "on_character_entered"]}
+    )
 
 
 def test_dispatch_action_config_incorrect_trigger_raises_exception():
@@ -234,16 +242,16 @@ def test_dispatch_action_config_excessive_triggers_raise_exception():
     with pytest.raises(ValidationError):
         DispatchActionConfig(
             trigger_actions_on=[
-                "on_enter_pressed",
-                "on_enter_pressed",
-                "on_enter_pressed",
+                TriggerActionsOn.on_enter_pressed,
+                TriggerActionsOn.on_enter_pressed,
+                TriggerActionsOn.on_enter_pressed,
             ]
         )
 
 
 def test_builds_filter():
     assert Filter(
-        include=["im", "mpim", "private", "public"],
+        include=[Include.im, Include.mpim, Include.private, Include.public],
         exclude_external_shared_channels=False,
         exclude_bot_users=False,
     ).build() == {

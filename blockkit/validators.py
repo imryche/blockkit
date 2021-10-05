@@ -20,12 +20,6 @@ def validate_list_text_length(v, *, max_len):
     return v
 
 
-def validate_list_choices(v, *, choices):
-    if v is not None and len(v) == 0 or set(v) - set(choices):
-        raise ValueError(f"Allowed values are {choices}")
-    return v
-
-
 def validate_date(v):
     if v is not None:
         return v.isoformat()
