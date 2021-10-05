@@ -25,11 +25,7 @@ from blockkit.elements import (
     UsersSelect,
 )
 from blockkit.objects import MarkdownText, PlainText
-from blockkit.validators import (
-    validate_list_text_length,
-    validate_text_length,
-    validator,
-)
+from blockkit.validators import validate_text_length, validator
 
 __all__ = ["Actions", "Context", "Divider", "Header", "ImageBlock", "Input", "Section"]
 
@@ -211,7 +207,9 @@ class Section(Block):
         )
 
     _validate_text = validator("text", validate_text_length, max_length=3000)
-    _validate_fields = validator("fields_", validate_list_text_length, max_length=2000)
+    _validate_fields = validator(
+        "fields_", validate_text_length, each_item=True, max_length=2000
+    )
 
     @root_validator
     def _validate_values(cls, values):
