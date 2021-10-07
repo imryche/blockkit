@@ -36,7 +36,7 @@ def generate(payload):
 
 
 def generate_pretty(payload):
-    return format_str(generate(payload), mode=FileMode())
+    return format_str(generate(payload), mode=FileMode()).rstrip()
 
 
 def _generate(payload, classes, component=None):

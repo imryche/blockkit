@@ -1,5 +1,10 @@
 import pytest
-from blockkit.generators import CodeGenerationError, eval_components, generate
+from blockkit.generators import (
+    CodeGenerationError,
+    eval_components,
+    generate,
+    generate_pretty,
+)
 
 
 def test_generates_section_plain_text():
@@ -1091,6 +1096,27 @@ def test_generates_escape():
         generate(payload)
         == 'from blockkit import Message, PlainText, Section; payload = Message(blocks=[Section(text=PlainText(text="This is a plain\\n\\ttext section block.", emoji=True))]).build()'  # noqa
     )
+
+
+def test_generates_pretty():
+    payload = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "plain_text",
+                    "text": "This is a plain text section block.",
+                },
+            }
+        ]
+    }
+    expected_code = """from blockkit import Message, PlainText, Section
+
+payload = Message(
+    blocks=[Section(text=PlainText(text="This is a plain text section block."))]
+).build()"""
+
+    assert generate_pretty(payload) == expected_code
 
 
 def test_raises_exception_on_incorrect_block_type():
