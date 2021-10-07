@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from pydantic import Field, root_validator
 
@@ -88,7 +88,7 @@ class Modal(View):
     _validate_submit = validator("submit", validate_text_length, max_length=24)
 
     @root_validator
-    def _validate_values(cls, values):
+    def _validate_values(cls, values: Dict) -> Dict:
         blocks = values.get("blocks")
         submit = values.get("submit")
 

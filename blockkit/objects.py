@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from pydantic import Field
 from pydantic.class_validators import root_validator
@@ -79,7 +79,9 @@ class Option(Component):
         super().__init__(text=text, value=value, description=description, url=url)
 
     _validate_text = validator("text", validate_text_length, max_length=75)
-    _validate_description = validator("description", validate_text_length, max_length=75)
+    _validate_description = validator(
+        "description", validate_text_length, max_length=75
+    )
 
 
 class OptionGroup(Component):
@@ -118,7 +120,7 @@ class Filter(Component):
         )
 
     @root_validator
-    def _validate_values(cls, values):
+    def _validate_values(cls, values: Dict) -> Dict:
         if not any(values.values()):
             raise ValueError("You should provide at least one argument.")
         return values

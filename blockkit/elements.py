@@ -1,12 +1,12 @@
-from blockkit.enums import Style
 import itertools
 from datetime import date, time
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import Field, root_validator
 from pydantic.networks import HttpUrl
 
 from blockkit.components import Component
+from blockkit.enums import Style
 from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
@@ -101,7 +101,7 @@ class Checkboxes(ActionableComponent):
         )
 
     @root_validator
-    def _validate_values(cls, values):
+    def _validate_values(cls, values: Dict) -> Dict:
         initial_options = values.get("initial_options")
         options = values.get("options")
 
@@ -133,7 +133,9 @@ class DatePicker(ActionableComponent):
             confirm=confirm,
         )
 
-    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
+    _validate_placeholder = validator(
+        "placeholder", validate_text_length, max_length=150
+    )
     _validate_initial_date = validator("initial_date", validate_date)
 
 
@@ -150,7 +152,9 @@ class Select(ActionableComponent):
     placeholder: PlainText
     confirm: Optional[Confirm] = None
 
-    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
+    _validate_placeholder = validator(
+        "placeholder", validate_text_length, max_length=150
+    )
 
 
 class StaticSelectBase(Select):
@@ -182,7 +186,7 @@ class StaticSelect(StaticSelectBase):
         )
 
     @root_validator
-    def _validate_values(cls, values):
+    def _validate_values(cls, values: Dict) -> Dict:
         initial_option = values.get("initial_option")
         options = values.get("options")
         option_groups = values.get("option_groups")
@@ -231,7 +235,7 @@ class MultiStaticSelect(StaticSelectBase):
         )
 
     @root_validator
-    def _validate_values(cls, values):
+    def _validate_values(cls, values: Dict) -> Dict:
         initial_options = values.get("initial_options")
         options = values.get("options")
         option_groups = values.get("option_groups")
@@ -498,7 +502,9 @@ class PlainTextInput(ActionableComponent):
             dispatch_action_config=dispatch_action_config,
         )
 
-    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
+    _validate_placeholder = validator(
+        "placeholder", validate_text_length, max_length=150
+    )
 
 
 class RadioButtons(ActionableComponent):
@@ -538,7 +544,9 @@ class Timepicker(ActionableComponent):
     initial_time: Optional[time] = None
     confirm: Optional[Confirm] = None
 
-    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
+    _validate_placeholder = validator(
+        "placeholder", validate_text_length, max_length=150
+    )
     _validate_initial_time = validator("initial_time", validate_time)
 
     def __init__(

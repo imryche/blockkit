@@ -1,3 +1,5 @@
+from typing import Dict, List, Optional, Set, Type, TypeVar, cast
+
 from black import FileMode, format_str
 
 from blockkit.components import Component
@@ -5,12 +7,14 @@ from blockkit.elements import Image, Option, OptionGroup
 from blockkit.objects import Confirm, DispatchActionConfig, Filter
 from blockkit.surfaces import Message
 
+T = TypeVar("T")
+
 
 class CodeGenerationError(Exception):
     pass
 
 
-def get_subclasses(cls):
+def get_subclasses(cls: Type[T]) -> List[Type[T]]:
     all_subclasses = []
     for subclass in cls.__subclasses__():
         all_subclasses.append(subclass)
@@ -18,28 +22,29 @@ def get_subclasses(cls):
     return all_subclasses
 
 
-components = {
+components: Dict[str, Type[Component]] = {
     c.schema()["properties"].get("type", {}).get("default"): c
     for c in get_subclasses(Component)
 }
 del components[None]
 
 
-def generate(payload):
-    classes = set()
+def generate(payload: Dict) -> str:
+    classes: Set[str] = set()
     code = _generate(payload, classes)
-    classes = sorted(list(classes))
-    imports = "from blockkit import " + ", ".join(classes)
+    imports = "from blockkit import " + ", ".join(sorted(classes))
     eval_components(code)
     code = f"{imports}; payload = {code}.build()"
     return code
 
 
-def generate_pretty(payload):
+def generate_pretty(payload: Dict) -> str:
     return format_str(generate(payload), mode=FileMode()).rstrip()
 
 
-def _generate(payload, classes, component=None):
+def _generate(
+    payload: Dict, classes: Set[str], component: Optional[Type[Component]] = None
+) -> str:
     kwargs = []
     for name, value in payload.items():
         if name == "type":
@@ -52,7 +57,7 @@ def _generate(payload, classes, component=None):
                 )
             kwarg = f'{name}="{value}"'
         elif type(value) == dict:
-            subcomponent = None
+            subcomponent: Optional[Type[Component]] = None
             if name == "filter":
                 subcomponent = Filter
             elif name == "dispatch_action_config":
@@ -79,8 +84,8 @@ def _generate(payload, classes, component=None):
             else:
                 items = [_generate(v, classes) for v in value]
 
-            items = ", ".join(items)
-            kwarg = f"{name}=[{items}]"
+            joined_items = ", ".join(items)
+            kwarg = f"{name}=[{joined_items}]"
         else:
             kwarg = f"{name}={value}"
 
@@ -99,18 +104,18 @@ def _generate(payload, classes, component=None):
                 )
 
     class_name = component.__name__
-    kwargs = ", ".join(kwargs)
+    joined_kwargs = ", ".join(kwargs)
 
     classes.add(class_name)
 
-    return f"{class_name}({kwargs})"
+    return f"{class_name}({joined_kwargs})"
 
 
-allowed_names = {c.__name__: c for c in components.values()}
+allowed_names: Dict[str, Type[Component]] = {c.__name__: c for c in components.values()}
 allowed_names.update(
     {
-        c.__name__: c
-        for c in (
+        c.__name__: cast(Type[Component], c)
+        for c in [
             Message,
             Filter,
             DispatchActionConfig,
@@ -118,12 +123,12 @@ allowed_names.update(
             Image,
             Option,
             OptionGroup,
-        )
+        ]
     }
 )
 
 
-def eval_components(code):
+def eval_components(code: str) -> Dict:
     compiled_code = compile(code, "<string>", "eval")
     for name in compiled_code.co_names:
         if name not in allowed_names:

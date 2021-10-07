@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from pydantic import Field, root_validator
 from pydantic.networks import HttpUrl
@@ -212,7 +212,7 @@ class Section(Block):
     )
 
     @root_validator
-    def _validate_values(cls, values):
+    def _validate_values(cls, values: Dict) -> Dict:
         text = values.get("text")
         fields = values.get("fields_")
 
