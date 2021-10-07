@@ -62,13 +62,15 @@ def _generate(
                 subcomponent = Filter
             elif name == "dispatch_action_config":
                 subcomponent = DispatchActionConfig
+            elif name == "initial_option":
+                subcomponent = Option
             elif name == "confirm" and "confirm" in value:
                 subcomponent = Confirm
             elif name == "accessory" and value.get("type") == "image":
                 subcomponent = Image
             kwarg = f"{name}=" + _generate(value, classes, subcomponent)
         elif type(value) == list:
-            if name == "options":
+            if name in ["options", "initial_options"]:
                 items = [_generate(v, classes, Option) for v in value]
             elif name == "option_groups":
                 items = [_generate(v, classes, OptionGroup) for v in value]

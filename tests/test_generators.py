@@ -107,6 +107,51 @@ def test_generates_section_static_select():
     )
 
 
+def test_generates_section_static_select_initial_option():
+    payload = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "Pick an item from the dropdown list",
+                },
+                "accessory": {
+                    "type": "static_select",
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select an item",
+                        "emoji": True,
+                    },
+                    "initial_option": {
+                        "text": {
+                            "type": "plain_text",
+                            "text": "*this is plain_text text*",
+                            "emoji": True,
+                        },
+                        "value": "value-0",
+                    },
+                    "options": [
+                        {
+                            "text": {
+                                "type": "plain_text",
+                                "text": "*this is plain_text text*",
+                                "emoji": True,
+                            },
+                            "value": "value-0",
+                        }
+                    ],
+                    "action_id": "static_select-action",
+                },
+            }
+        ]
+    }
+    assert (
+        generate(payload)
+        == 'from blockkit import MarkdownText, Message, Option, PlainText, Section, StaticSelect; payload = Message(blocks=[Section(text=MarkdownText(text="Pick an item from the dropdown list"), accessory=StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), initial_option=Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0"), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="static_select-action"))]).build()'  # noqa
+    )
+
+
 def test_generates_section_static_select_option_groups():
     payload = {
         "blocks": [
@@ -667,6 +712,57 @@ def test_generates_section_checkboxes():
     assert (
         generate(payload)
         == 'from blockkit import Checkboxes, MarkdownText, Message, Option, PlainText, Section; payload = Message(blocks=[Section(text=MarkdownText(text="This is a section block with checkboxes."), accessory=Checkboxes(options=[Option(text=PlainText(text="this is plain text"), description=PlainText(text="this is plain text"), value="value-0")], action_id="checkboxes-action"))]).build()'  # noqa
+    )
+
+
+def test_generates_checkboxes_with_initial_options():
+    payload = {
+        "blocks": [
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "checkboxes",
+                        "initial_options": [
+                            {
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": "~*Get into the garden :house_with_garden:*~",  # noqa
+                                },
+                                "value": "option 1",
+                            }
+                        ],
+                        "options": [
+                            {
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": "~*Get into the garden :house_with_garden:*~",  # noqa
+                                },
+                                "value": "option 1",
+                            },
+                            {
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": "*Have a picnic :knife_fork_plate:*",
+                                },
+                                "value": "option 6",
+                                "description": {
+                                    "type": "plain_text",
+                                    "text": (
+                                        "Bring to the picnic: sandwich, apple, "
+                                        "pumpkin, carrot, basket"
+                                    ),
+                                },
+                            },
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    assert (
+        generate(payload)
+        == 'from blockkit import Actions, Checkboxes, MarkdownText, Message, Option, PlainText; payload = Message(blocks=[Actions(elements=[Checkboxes(initial_options=[Option(text=MarkdownText(text="~*Get into the garden :house_with_garden:*~"), value="option 1")], options=[Option(text=MarkdownText(text="~*Get into the garden :house_with_garden:*~"), value="option 1"), Option(text=MarkdownText(text="*Have a picnic :knife_fork_plate:*"), value="option 6", description=PlainText(text="Bring to the picnic: sandwich, apple, pumpkin, carrot, basket"))])])]).build()'  # noqa
     )
 
 
