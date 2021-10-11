@@ -37,19 +37,19 @@ class PlainText(Component):
 
 
 class Confirm(Component):
-    title: PlainText
-    text: Union[PlainText, MarkdownText]
-    confirm: PlainText
-    deny: PlainText
+    title: Union[PlainText, str]
+    text: Union[PlainText, MarkdownText, str]
+    confirm: Union[PlainText, str]
+    deny: Union[PlainText, str]
     style: Optional[Style] = None
 
     def __init__(
         self,
         *,
-        title: PlainText,
-        text: Union[PlainText, MarkdownText],
-        confirm: PlainText,
-        deny: PlainText,
+        title: Union[PlainText, str],
+        text: Union[PlainText, MarkdownText, str],
+        confirm: Union[PlainText, str],
+        deny: Union[PlainText, str],
         style: Optional[Style] = None,
     ):
         super().__init__(
@@ -63,17 +63,17 @@ class Confirm(Component):
 
 
 class Option(Component):
-    text: Union[PlainText, MarkdownText]
+    text: Union[PlainText, MarkdownText, str]
     value: str = Field(..., min_length=1, max_length=75)
-    description: Optional[PlainText] = None
+    description: Union[PlainText, str, None] = None
     url: Optional[SlackUrl] = None
 
     def __init__(
         self,
         *,
-        text: Union[PlainText, MarkdownText],
+        text: Union[PlainText, MarkdownText, str],
         value: str,
-        description: Optional[PlainText] = None,
+        description: Optional[Union[PlainText, str]] = None,
         url: Optional[SlackUrl] = None,
     ):
         super().__init__(text=text, value=value, description=description, url=url)
@@ -85,10 +85,10 @@ class Option(Component):
 
 
 class OptionGroup(Component):
-    label: PlainText
+    label: Union[PlainText, str]
     options: List[Option] = Field(..., min_items=1, max_items=100)
 
-    def __init__(self, *, label: PlainText, options: List[Option]):
+    def __init__(self, *, label: Union[PlainText, str], options: List[Option]):
         super().__init__(label=label, options=options)
 
     _validate_label = validator("label", validate_text_length, max_length=75)

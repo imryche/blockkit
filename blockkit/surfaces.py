@@ -48,9 +48,9 @@ class Home(View):
 
 class Modal(View):
     type: str = "modal"
-    title: PlainText
-    close: Optional[PlainText] = None
-    submit: Optional[PlainText] = None
+    title: Union[PlainText, str]
+    close: Union[PlainText, str, None] = None
+    submit: Union[PlainText, str, None] = None
     clear_on_close: Optional[bool] = None
     notify_on_close: Optional[bool] = None
     external_id: Optional[str] = Field(None, min_length=1, max_length=255)
@@ -59,10 +59,10 @@ class Modal(View):
     def __init__(
         self,
         *,
-        title: PlainText,
+        title: Union[PlainText, str],
         blocks: List[Block],
-        close: Optional[PlainText] = None,
-        submit: Optional[PlainText] = None,
+        close: Union[PlainText, str, None] = None,
+        submit: Union[PlainText, str, None] = None,
         private_metadata: Optional[str] = None,
         callback_id: Optional[str] = None,
         clear_on_close: Optional[bool] = None,

@@ -87,9 +87,9 @@ class Divider(Block):
 
 class Header(Block):
     type: str = "header"
-    text: PlainText
+    text: Union[PlainText, str]
 
-    def __init__(self, *, text: PlainText, block_id: Optional[str] = None):
+    def __init__(self, *, text: Union[PlainText, str], block_id: Optional[str] = None):
         super().__init__(text=text, block_id=block_id)
 
     _validate_text = validator("text", validate_text_length, max_length=150)
@@ -99,14 +99,14 @@ class ImageBlock(Block):
     type: str = "image"
     image_url: HttpUrl
     alt_text: str = Field(..., min_length=1, max_length=2000)
-    title: Optional[PlainText] = None
+    title: Union[PlainText, str, None] = None
 
     def __init__(
         self,
         *,
         image_url: HttpUrl,
         alt_text: str,
-        title: Optional[PlainText] = None,
+        title: Union[PlainText, str, None] = None,
         block_id: Optional[str] = None,
     ):
         super().__init__(
@@ -136,20 +136,20 @@ InputElement = Union[
 
 class Input(Block):
     type: str = "input"
-    label: PlainText
+    label: Union[PlainText, str]
     element: InputElement
     dispatch_action: Optional[bool] = None
-    hint: Optional[PlainText] = None
+    hint: Union[PlainText, str, None] = None
     optional: Optional[bool] = None
 
     def __init__(
         self,
         *,
-        label: PlainText,
+        label: Union[PlainText, str],
         element: InputElement,
         block_id: Optional[str] = None,
         dispatch_action: Optional[bool] = None,
-        hint: Optional[PlainText] = None,
+        hint: Union[PlainText, str, None] = None,
         optional: Optional[bool] = None,
     ):
         super().__init__(
@@ -188,7 +188,7 @@ AccessoryElement = Union[
 
 class Section(Block):
     type: str = "section"
-    text: Optional[Union[PlainText, MarkdownText]] = None
+    text: Union[PlainText, MarkdownText, str, None] = None
     fields_: Optional[List[Union[PlainText, MarkdownText]]] = Field(
         None, alias="fields", min_items=1, max_items=10
     )
@@ -197,7 +197,7 @@ class Section(Block):
     def __init__(
         self,
         *,
-        text: Optional[Union[PlainText, MarkdownText]] = None,
+        text: Union[PlainText, MarkdownText, str, None] = None,
         block_id: Optional[str] = None,
         fields: Optional[List[Union[PlainText, MarkdownText]]] = None,
         accessory: Optional[AccessoryElement] = None,

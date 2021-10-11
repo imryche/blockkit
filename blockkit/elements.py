@@ -1,6 +1,6 @@
 import itertools
 from datetime import date, time
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from pydantic import Field, root_validator
 from pydantic.networks import HttpUrl
@@ -51,7 +51,7 @@ class ActionableComponent(Component):
 
 class Button(ActionableComponent):
     type: str = "button"
-    text: PlainText
+    text: Union[PlainText]
     url: Optional[SlackUrl] = None
     value: Optional[str] = Field(None, min_length=1, max_length=2000)
     style: Optional[Style] = None
@@ -60,7 +60,7 @@ class Button(ActionableComponent):
     def __init__(
         self,
         *,
-        text: PlainText,
+        text: Union[PlainText],
         action_id: Optional[str] = None,
         url: Optional[SlackUrl] = None,
         value: Optional[str] = None,
@@ -114,7 +114,7 @@ class Checkboxes(ActionableComponent):
 
 class DatePicker(ActionableComponent):
     type: str = "datepicker"
-    placeholder: Optional[PlainText] = None
+    placeholder: Union[PlainText, str, None] = None
     initial_date: Optional[date] = None
     confirm: Optional[Confirm] = None
 
@@ -122,7 +122,7 @@ class DatePicker(ActionableComponent):
         self,
         *,
         action_id: Optional[str] = None,
-        placeholder: Optional[PlainText] = None,
+        placeholder: Union[PlainText, str, None] = None,
         initial_date: Optional[date] = None,
         confirm: Optional[Confirm] = None,
     ):
@@ -149,7 +149,7 @@ class Image(Component):
 
 
 class Select(ActionableComponent):
-    placeholder: PlainText
+    placeholder: Union[PlainText, str]
     confirm: Optional[Confirm] = None
 
     _validate_placeholder = validator(
@@ -169,7 +169,7 @@ class StaticSelect(StaticSelectBase):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         options: Optional[List[Option]] = None,
         option_groups: Optional[List[OptionGroup]] = None,
@@ -216,7 +216,7 @@ class MultiStaticSelect(StaticSelectBase):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         options: Optional[List[Option]] = None,
         option_groups: Optional[List[OptionGroup]] = None,
@@ -270,7 +270,7 @@ class ExternalSelect(ExternalSelectBase):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         initial_option: Optional[Option] = None,
         min_query_length: Optional[int] = None,
@@ -293,7 +293,7 @@ class MultiExternalSelect(ExternalSelectBase):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         min_query_length: Optional[int] = None,
         initial_options: Optional[List[Option]] = None,
@@ -317,7 +317,7 @@ class UsersSelect(Select):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         initial_user: Optional[str] = None,
         confirm: Optional[Confirm] = None,
@@ -338,7 +338,7 @@ class MultiUsersSelect(Select):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         initial_users: Optional[str] = None,
         confirm: Optional[Confirm] = None,
@@ -363,7 +363,7 @@ class ConversationsSelect(Select):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         initial_conversation: Optional[str] = None,
         default_to_current_conversation: Optional[bool] = None,
@@ -392,7 +392,7 @@ class MultiConversationsSelect(Select):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         initial_conversations: Optional[List[str]] = None,
         default_to_current_conversation: Optional[bool] = None,
@@ -419,7 +419,7 @@ class ChannelsSelect(Select):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         initial_channel: Optional[str] = None,
         confirm: Optional[Confirm] = None,
@@ -442,7 +442,7 @@ class MultiChannelsSelect(Select):
     def __init__(
         self,
         *,
-        placeholder: PlainText,
+        placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         initial_channels: Optional[str] = None,
         confirm: Optional[Confirm] = None,
@@ -474,7 +474,7 @@ class Overflow(ActionableComponent):
 
 class PlainTextInput(ActionableComponent):
     type: str = "plain_text_input"
-    placeholder: Optional[PlainText] = None
+    placeholder: Union[PlainText, str, None] = None
     initial_value: Optional[str] = Field(None, min_length=1)
     multiline: Optional[bool] = None
     min_length: Optional[int] = Field(None, ge=0, lt=3000)
@@ -485,7 +485,7 @@ class PlainTextInput(ActionableComponent):
         self,
         *,
         action_id: Optional[str] = None,
-        placeholder: Optional[PlainText] = None,
+        placeholder: Union[PlainText, str, None] = None,
         initial_value: Optional[str] = None,
         multiline: Optional[bool] = None,
         min_length: Optional[int] = None,
@@ -540,7 +540,7 @@ class RadioButtons(ActionableComponent):
 
 class Timepicker(ActionableComponent):
     type: str = "timepicker"
-    placeholder: Optional[PlainText] = None
+    placeholder: Union[PlainText, str, None] = None
     initial_time: Optional[time] = None
     confirm: Optional[Confirm] = None
 
@@ -553,7 +553,7 @@ class Timepicker(ActionableComponent):
         self,
         *,
         action_id: Optional[str] = None,
-        placeholder: Optional[PlainText] = None,
+        placeholder: Union[PlainText, str, None] = None,
         initial_time: Optional[time] = None,
         confirm: Optional[Confirm] = None,
     ):
