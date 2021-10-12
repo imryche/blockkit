@@ -4,7 +4,13 @@ from black import FileMode, format_str
 
 from blockkit.components import Component
 from blockkit.elements import Image, Option, OptionGroup
-from blockkit.objects import Confirm, DispatchActionConfig, Filter
+from blockkit.objects import (
+    Confirm,
+    DispatchActionConfig,
+    Filter,
+    MarkdownText,
+    PlainText,
+)
 from blockkit.surfaces import Message
 
 T = TypeVar("T")
@@ -29,9 +35,9 @@ components: Dict[str, Type[Component]] = {
 del components[None]
 
 
-def generate(payload: Dict) -> str:
+def generate(payload: Dict, compact: bool = False) -> str:
     classes: Set[str] = set()
-    code = _generate(payload, classes)
+    code = _generate(payload, classes, compact=compact)
     imports = "from blockkit import " + ", ".join(sorted(classes))
     eval_components(code)
     code = f"{imports}; payload = {code}.build()"
@@ -43,19 +49,29 @@ def generate_pretty(payload: Dict) -> str:
 
 
 def _generate(
-    payload: Dict, classes: Set[str], component: Optional[Type[Component]] = None
+    payload: Dict,
+    classes: Set[str],
+    component: Optional[Type[Component]] = None,
+    compact: bool = False,
 ) -> str:
+    text, emoji, verbatim = None, None, None
     kwargs = []
+
     for name, value in payload.items():
         if name == "type":
             continue
+
+        emoji = value if name == "emoji" else None
+        verbatim = value if name == "verbatim" else None
 
         if type(value) == str:
             if name == "text":
                 value = (
                     value.replace("\n", "\\n").replace("\t", "\\t").replace('"', '\\"')
                 )
+                text = value
             kwarg = f'{name}="{value}"'
+
         elif type(value) == dict:
             subcomponent: Optional[Type[Component]] = None
             if name == "filter":
@@ -68,26 +84,32 @@ def _generate(
                 subcomponent = Confirm
             elif name == "accessory" and value.get("type") == "image":
                 subcomponent = Image
-            kwarg = f"{name}=" + _generate(value, classes, subcomponent)
+            kwarg = f"{name}=" + _generate(
+                value, classes, subcomponent, compact=compact
+            )
+
         elif type(value) == list:
             if name in ["options", "initial_options"]:
-                items = [_generate(v, classes, Option) for v in value]
+                items = [_generate(v, classes, Option, compact) for v in value]
             elif name == "option_groups":
-                items = [_generate(v, classes, OptionGroup) for v in value]
+                items = [
+                    _generate(v, classes, OptionGroup, compact=compact) for v in value
+                ]
             elif name in ("include", "trigger_actions_on"):
                 items = [f'"{v}"' for v in value]
             elif name == "elements":
                 items = [
-                    _generate(v, classes, Image)
+                    _generate(v, classes, Image, compact)
                     if v.get("type") == "image"
-                    else _generate(v, classes)
+                    else _generate(v, classes, compact=compact)
                     for v in value
                 ]
             else:
-                items = [_generate(v, classes) for v in value]
+                items = [_generate(v, classes, compact=compact) for v in value]
 
             joined_items = ", ".join(items)
             kwarg = f"{name}=[{joined_items}]"
+
         else:
             kwarg = f"{name}={value}"
 
@@ -104,6 +126,15 @@ def _generate(
                 raise CodeGenerationError(
                     f'Can\'t _generate component of type "{type_}."'
                 )
+
+    if compact:
+        if (
+            component is PlainText
+            and emoji is not False
+            or component is MarkdownText
+            and verbatim is not True
+        ):
+            return f'"{text}"'
 
     class_name = component.__name__
     joined_kwargs = ", ".join(kwargs)

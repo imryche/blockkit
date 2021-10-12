@@ -14,7 +14,7 @@ def test_generates_section_plain_text():
                 "type": "section",
                 "text": {
                     "type": "plain_text",
-                    "text": "This is a plain text section block.",
+                    "text": "this is plain text",
                     "emoji": True,
                 },
             }
@@ -22,7 +22,44 @@ def test_generates_section_plain_text():
     }
     assert (
         generate(payload)
-        == 'from blockkit import Message, PlainText, Section; payload = Message(blocks=[Section(text=PlainText(text="This is a plain text section block.", emoji=True))]).build()'  # noqa
+        == 'from blockkit import Message, PlainText, Section; payload = Message(blocks=[Section(text=PlainText(text="this is plain text", emoji=True))]).build()'  # noqa
+    )
+
+
+def test_generates_section_with_compact_plain_text():
+    payload = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "plain_text",
+                    "text": "this is plain text",
+                },
+            }
+        ]
+    }
+    assert (
+        generate(payload, compact=True)
+        == 'from blockkit import Message, Section; payload = Message(blocks=[Section(text="this is plain text")]).build()'  # noqa
+    )
+
+
+def test_doesnt_compact_plain_text():
+    payload = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "plain_text",
+                    "text": "this is plain text",
+                    "emoji": False,
+                },
+            }
+        ]
+    }
+    assert (
+        generate(payload, compact=True)
+        == 'from blockkit import Message, PlainText, Section; payload = Message(blocks=[Section(text=PlainText(text="this is plain text", emoji=False))]).build()'  # noqa
     )
 
 
@@ -33,19 +70,47 @@ def test_generates_section_markdown_text():
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": (
-                        "This is a mrkdwn section "
-                        "block :ghost: *this is bold*, "
-                        "and ~this is crossed out~, "
-                        "and <https://google.com|this is a link>"
-                    ),
+                    "text": "*this is bold*",
                 },
             }
         ]
     }
     assert (
         generate(payload)
-        == 'from blockkit import MarkdownText, Message, Section; payload = Message(blocks=[Section(text=MarkdownText(text="This is a mrkdwn section block :ghost: *this is bold*, and ~this is crossed out~, and <https://google.com|this is a link>"))]).build()'  # noqa
+        == 'from blockkit import MarkdownText, Message, Section; payload = Message(blocks=[Section(text=MarkdownText(text="*this is bold*"))]).build()'  # noqa
+    )
+
+
+def test_generates_section_with_compact_markdown_text():
+    payload = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*this is bold*",
+                },
+            }
+        ]
+    }
+    assert (
+        generate(payload, compact=True)
+        == 'from blockkit import Message, Section; payload = Message(blocks=[Section(text="*this is bold*")]).build()'  # noqa
+    )
+
+
+def test_doesnt_compact_markdown_text():
+    payload = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*this is bold*", "verbatim": True},
+            }
+        ]
+    }
+    assert (
+        generate(payload, compact=True)
+        == 'from blockkit import MarkdownText, Message, Section; payload = Message(blocks=[Section(text=MarkdownText(text="*this is bold*", verbatim=True))]).build()'  # noqa
     )
 
 
