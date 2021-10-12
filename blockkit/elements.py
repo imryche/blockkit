@@ -51,7 +51,7 @@ class ActionableComponent(Component):
 
 class Button(ActionableComponent):
     type: str = "button"
-    text: Union[PlainText]
+    text: Union[PlainText, str]
     url: Optional[SlackUrl] = None
     value: Optional[str] = Field(None, min_length=1, max_length=2000)
     style: Optional[Style] = None
