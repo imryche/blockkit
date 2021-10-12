@@ -70,7 +70,8 @@ def _generate(
                     value.replace("\n", "\\n").replace("\t", "\\t").replace('"', '\\"')
                 )
                 text = value
-            kwarg = f'{name}="{value}"'
+            quote = "'" if '"' in value else '"'
+            kwarg = f"{name}={quote}{value}{quote}"
 
         elif type(value) == dict:
             subcomponent: Optional[Type[Component]] = None

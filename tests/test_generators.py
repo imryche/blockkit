@@ -1240,7 +1240,7 @@ def test_generates_app_home():
     )
 
 
-def test_generates_escape():
+def test_escapes_special_characters():
     payload = {
         "blocks": [
             {
@@ -1256,6 +1256,34 @@ def test_generates_escape():
     assert (
         generate(payload)
         == 'from blockkit import Message, PlainText, Section; payload = Message(blocks=[Section(text=PlainText(text="This is a plain\\n\\ttext section block.", emoji=True))]).build()'  # noqa
+    )
+
+
+def test_uses_single_quotes():
+    payload = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "This is a section block with a button.",
+                },
+                "accessory": {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Click Me",
+                        "emoji": True,
+                    },
+                    "value": "click_me_123",
+                    "action_id": "{\"action\":\"render-faqs\"}",
+                },
+            }
+        ]
+    }
+    assert (
+        generate(payload)
+        == 'from blockkit import Button, MarkdownText, Message, PlainText, Section; payload = Message(blocks=[Section(text=MarkdownText(text="This is a section block with a button."), accessory=Button(text=PlainText(text="Click Me", emoji=True), value="click_me_123", action_id=\'{\"action\":\"render-faqs\"}\'))]).build()'  # noqa
     )
 
 
