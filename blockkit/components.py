@@ -1,6 +1,9 @@
-from typing import Union
+from typing import TYPE_CHECKING, Any, List, Type, Union
 
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from blockkit.objects import MarkdownText, PlainText
 
 
 class Component(BaseModel):
@@ -9,20 +12,36 @@ class Component(BaseModel):
             value = kwargs.get(field.alias)
             origin = getattr(field.type_, "__origin__", None)
 
-            if value and type(value) is str and origin is Union:
+            if value and type(value) in (str, list) and origin is Union:
                 types = field.type_.__args__
-                literal_types = [t.__name__ for t in types]
 
-                if "MarkdownText" in literal_types:
-                    idx = literal_types.index("MarkdownText")
-                    value = types[idx](text=value)
-                elif "PlainText" in literal_types:
-                    idx = literal_types.index("PlainText")
-                    value = types[idx](text=value, emoji=True)
+                if type(value) is str:
+                    value = self._expand_str(value, types)
+                elif type(value) is list:
+                    items = []
+                    for v in value:
+                        if type(v) is str:
+                            v = self._expand_str(v, types)
+                        items.append(v)
+                    value = items
 
                 kwargs[name] = value
 
         super().__init__(*args, **kwargs)
+
+    def _expand_str(
+        self, value: str, types: List[Type[Any]]
+    ) -> Union["PlainText", "MarkdownText", str]:
+        literal_types = [t.__name__ for t in types]
+
+        if "MarkdownText" in literal_types:
+            idx = literal_types.index("MarkdownText")
+            return types[idx](text=value)
+        elif "PlainText" in literal_types:
+            idx = literal_types.index("PlainText")
+            return types[idx](text=value, emoji=True)
+
+        return value
 
     def build(self) -> dict:
         return self.dict(by_alias=True, exclude_none=True)

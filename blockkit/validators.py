@@ -1,12 +1,11 @@
 from datetime import date, time
-from typing import Callable, Optional, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Optional, Union
 
 from pydantic import AnyUrl
 from pydantic import validator as pydantic_validator
 
-
 if TYPE_CHECKING:
-    from blockkit.objects import PlainText, MarkdownText
+    from blockkit.objects import MarkdownText, PlainText
 
 
 def validator(
@@ -18,10 +17,14 @@ def validator(
 
 
 def validate_text_length(
-    v: Union['PlainText', 'MarkdownText'], *, max_length: int
-) -> Union['PlainText', 'MarkdownText']:
-    if v is not None and len(v.text) > max_length:
-        raise ValueError(f"Maximum length is {max_length} characters")
+    v: Union["PlainText", "MarkdownText", str], *, max_length: int
+) -> Union["PlainText", "MarkdownText", str]:
+    if v is not None:
+        e = ValueError(f"Maximum length is {max_length} characters")
+        if type(v) == str and len(v) > max_length:
+            raise e
+        elif type(v) != str and len(getattr(v, "text")) > max_length:
+            raise e
     return v
 
 

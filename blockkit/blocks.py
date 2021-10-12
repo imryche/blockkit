@@ -65,14 +65,14 @@ class Actions(Block):
 
 class Context(Block):
     type: str = "context"
-    elements: List[Union[Image, PlainText, MarkdownText]] = Field(
+    elements: List[Union[Image, PlainText, MarkdownText, str]] = Field(
         ..., min_items=1, max_items=10
     )
 
     def __init__(
         self,
         *,
-        elements: List[Union[Image, PlainText, MarkdownText]],
+        elements: List[Union[Image, PlainText, MarkdownText, str]],
         block_id: Optional[str] = None,
     ):
         super().__init__(elements=elements, block_id=block_id)
@@ -189,7 +189,7 @@ AccessoryElement = Union[
 class Section(Block):
     type: str = "section"
     text: Union[PlainText, MarkdownText, str, None] = None
-    fields_: Optional[List[Union[PlainText, MarkdownText]]] = Field(
+    fields_: Optional[List[Union[PlainText, MarkdownText, str]]] = Field(
         None, alias="fields", min_items=1, max_items=10
     )
     accessory: Optional[AccessoryElement] = None
@@ -199,7 +199,7 @@ class Section(Block):
         *,
         text: Union[PlainText, MarkdownText, str, None] = None,
         block_id: Optional[str] = None,
-        fields: Optional[List[Union[PlainText, MarkdownText]]] = None,
+        fields: Optional[List[Union[PlainText, MarkdownText, str]]] = None,
         accessory: Optional[AccessoryElement] = None,
     ):
         super().__init__(
