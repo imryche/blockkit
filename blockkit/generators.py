@@ -44,8 +44,8 @@ def generate(payload: Dict, compact: bool = False) -> str:
     return code
 
 
-def generate_pretty(payload: Dict) -> str:
-    return format_str(generate(payload), mode=FileMode()).rstrip()
+def generate_pretty(payload: Dict, compact: bool = False) -> str:
+    return format_str(generate(payload, compact=compact), mode=FileMode()).rstrip()
 
 
 def _generate(
