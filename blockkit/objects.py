@@ -12,7 +12,8 @@ __all__ = [
     "DispatchActionConfig",
     "Filter",
     "MarkdownText",
-    "Option",
+    "PlainOption",
+    "MarkdownOption",
     "OptionGroup",
     "PlainText",
 ]
@@ -62,8 +63,7 @@ class Confirm(Component):
     _validate_deny = validator("deny", validate_text_length, max_length=30)
 
 
-class Option(Component):
-    text: Union[PlainText, MarkdownText, str]
+class BaseOption(Component):
     value: str = Field(..., min_length=1, max_length=75)
     description: Union[PlainText, str, None] = None
     url: Optional[SlackUrl] = None
@@ -78,17 +78,48 @@ class Option(Component):
     ):
         super().__init__(text=text, value=value, description=description, url=url)
 
-    _validate_text = validator("text", validate_text_length, max_length=75)
     _validate_description = validator(
         "description", validate_text_length, max_length=75
     )
 
 
+class PlainOption(BaseOption):
+    text: Union[PlainText, str]
+
+    def __init__(
+        self,
+        *,
+        text: Union[PlainText, str],
+        value: str,
+        description: Optional[Union[PlainText, str]] = None,
+        url: Optional[SlackUrl] = None,
+    ):
+        super().__init__(text=text, value=value, description=description, url=url)
+
+    _validate_text = validator("text", validate_text_length, max_length=75)
+
+
+class MarkdownOption(BaseOption):
+    text: Union[MarkdownText, str]
+
+    def __init__(
+        self,
+        *,
+        text: Union[MarkdownText, str],
+        value: str,
+        description: Optional[Union[PlainText, str]] = None,
+        url: Optional[SlackUrl] = None,
+    ):
+        super().__init__(text=text, value=value, description=description, url=url)
+
+    _validate_text = validator("text", validate_text_length, max_length=75)
+
+
 class OptionGroup(Component):
     label: Union[PlainText, str]
-    options: List[Option] = Field(..., min_items=1, max_items=100)
+    options: List[PlainOption] = Field(..., min_items=1, max_items=100)
 
-    def __init__(self, *, label: Union[PlainText, str], options: List[Option]):
+    def __init__(self, *, label: Union[PlainText, str], options: List[PlainOption]):
         super().__init__(label=label, options=options)
 
     _validate_label = validator("label", validate_text_length, max_length=75)

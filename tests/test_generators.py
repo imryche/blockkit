@@ -168,7 +168,7 @@ def test_generates_section_static_select():
     }
     assert (
         generate(payload)
-        == 'from blockkit import MarkdownText, Message, Option, PlainText, Section, StaticSelect; payload = Message(blocks=[Section(text=MarkdownText(text="Pick an item from the dropdown list"), accessory=StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="static_select-action"))]).build()'  # noqa
+        == 'from blockkit import MarkdownText, Message, PlainOption, PlainText, Section, StaticSelect; payload = Message(blocks=[Section(text=MarkdownText(text="Pick an item from the dropdown list"), accessory=StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[PlainOption(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="static_select-action"))]).build()'  # noqa
     )
 
 
@@ -213,7 +213,7 @@ def test_generates_section_static_select_initial_option():
     }
     assert (
         generate(payload)
-        == 'from blockkit import MarkdownText, Message, Option, PlainText, Section, StaticSelect; payload = Message(blocks=[Section(text=MarkdownText(text="Pick an item from the dropdown list"), accessory=StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), initial_option=Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0"), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="static_select-action"))]).build()'  # noqa
+        == 'from blockkit import MarkdownText, Message, PlainOption, PlainText, Section, StaticSelect; payload = Message(blocks=[Section(text=MarkdownText(text="Pick an item from the dropdown list"), accessory=StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), initial_option=PlainOption(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0"), options=[PlainOption(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="static_select-action"))]).build()'  # noqa
     )
 
 
@@ -266,7 +266,7 @@ def test_generates_section_static_select_option_groups():
     }
     assert (
         generate(payload)
-        == 'from blockkit import MarkdownText, Message, Option, OptionGroup, PlainText, Section, StaticSelect; payload = Message(blocks=[Section(text=MarkdownText(text="Available options"), accessory=StaticSelect(placeholder=PlainText(emoji=True, text="Manage"), action_id="static_select-action", option_groups=[OptionGroup(label=PlainText(text="Group 1"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0")]), OptionGroup(label=PlainText(text="Group 2"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-3")])]))]).build()'  # noqa
+        == 'from blockkit import MarkdownText, Message, OptionGroup, PlainOption, PlainText, Section, StaticSelect; payload = Message(blocks=[Section(text=MarkdownText(text="Available options"), accessory=StaticSelect(placeholder=PlainText(emoji=True, text="Manage"), action_id="static_select-action", option_groups=[OptionGroup(label=PlainText(text="Group 1"), options=[PlainOption(text=PlainText(text="*this is plain_text text*"), value="value-0")]), OptionGroup(label=PlainText(text="Group 2"), options=[PlainOption(text=PlainText(text="*this is plain_text text*"), value="value-3")])]))]).build()'  # noqa
     )
 
 
@@ -415,7 +415,7 @@ def test_generates_section_multi_static():
     }
     assert (
         generate(payload)
-        == 'from blockkit import MarkdownText, Message, MultiStaticSelect, Option, PlainText, Section; payload = Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiStaticSelect(action_id="text1234", placeholder=PlainText(text="Select items"), options=[Option(text=PlainText(text="*this is plain_text text*"), value="value-0"), Option(text=PlainText(text="*this is plain_text text*"), value="value-1")]))]).build()'  # noqa
+        == 'from blockkit import MarkdownText, Message, MultiStaticSelect, PlainOption, PlainText, Section; payload = Message(blocks=[Section(block_id="section678", text=MarkdownText(text="Pick items from the list"), accessory=MultiStaticSelect(action_id="text1234", placeholder=PlainText(text="Select items"), options=[PlainOption(text=PlainText(text="*this is plain_text text*"), value="value-0"), PlainOption(text=PlainText(text="*this is plain_text text*"), value="value-1")]))]).build()'  # noqa
     )
 
 
@@ -713,7 +713,7 @@ def test_generates_section_overflow():
     }
     assert (
         generate(payload)
-        == 'from blockkit import MarkdownText, Message, Option, Overflow, PlainText, Section; payload = Message(blocks=[Section(text=MarkdownText(text="This is a section block with an overflow menu."), accessory=Overflow(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0"), Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-1")], action_id="overflow-action"))]).build()'  # noqa
+        == 'from blockkit import MarkdownText, Message, Overflow, PlainOption, PlainText, Section; payload = Message(blocks=[Section(text=MarkdownText(text="This is a section block with an overflow menu."), accessory=Overflow(options=[PlainOption(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0"), PlainOption(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-1")], action_id="overflow-action"))]).build()'  # noqa
     )
 
 
@@ -776,7 +776,7 @@ def test_generates_section_checkboxes():
     }
     assert (
         generate(payload)
-        == 'from blockkit import Checkboxes, MarkdownText, Message, Option, PlainText, Section; payload = Message(blocks=[Section(text=MarkdownText(text="This is a section block with checkboxes."), accessory=Checkboxes(options=[Option(text=PlainText(text="this is plain text"), description=PlainText(text="this is plain text"), value="value-0")], action_id="checkboxes-action"))]).build()'  # noqa
+        == 'from blockkit import Checkboxes, MarkdownText, Message, PlainOption, PlainText, Section; payload = Message(blocks=[Section(text=MarkdownText(text="This is a section block with checkboxes."), accessory=Checkboxes(options=[PlainOption(text=PlainText(text="this is plain text"), description=PlainText(text="this is plain text"), value="value-0")], action_id="checkboxes-action"))]).build()'  # noqa
     )
 
 
@@ -827,7 +827,7 @@ def test_generates_checkboxes_with_initial_options():
     }
     assert (
         generate(payload)
-        == 'from blockkit import Actions, Checkboxes, MarkdownText, Message, Option, PlainText; payload = Message(blocks=[Actions(elements=[Checkboxes(initial_options=[Option(text=MarkdownText(text="~*Get into the garden :house_with_garden:*~"), value="option 1")], options=[Option(text=MarkdownText(text="~*Get into the garden :house_with_garden:*~"), value="option 1"), Option(text=MarkdownText(text="*Have a picnic :knife_fork_plate:*"), value="option 6", description=PlainText(text="Bring to the picnic: sandwich, apple, pumpkin, carrot, basket"))])])]).build()'  # noqa
+        == 'from blockkit import Actions, Checkboxes, MarkdownOption, MarkdownText, Message, PlainText; payload = Message(blocks=[Actions(elements=[Checkboxes(initial_options=[MarkdownOption(text=MarkdownText(text="~*Get into the garden :house_with_garden:*~"), value="option 1")], options=[MarkdownOption(text=MarkdownText(text="~*Get into the garden :house_with_garden:*~"), value="option 1"), MarkdownOption(text=MarkdownText(text="*Have a picnic :knife_fork_plate:*"), value="option 6", description=PlainText(text="Bring to the picnic: sandwich, apple, pumpkin, carrot, basket"))])])]).build()'  # noqa
     )
 
 
@@ -859,7 +859,7 @@ def test_generates_section_radio_buttons():
     }
     assert (
         generate(payload)
-        == 'from blockkit import MarkdownText, Message, Option, PlainText, RadioButtons, Section; payload = Message(blocks=[Section(text=MarkdownText(text="Section block with radio buttons"), accessory=RadioButtons(options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="radio_buttons-action"))]).build()'  # noqa
+        == 'from blockkit import MarkdownText, Message, PlainOption, PlainText, RadioButtons, Section; payload = Message(blocks=[Section(text=MarkdownText(text="Section block with radio buttons"), accessory=RadioButtons(options=[PlainOption(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="radio_buttons-action"))]).build()'  # noqa
     )
 
 
@@ -921,7 +921,7 @@ def test_generates_actions_all_selects():
     }
     assert (
         generate(payload)
-        == 'from blockkit import Actions, ChannelsSelect, ConversationsSelect, Message, Option, PlainText, StaticSelect, UsersSelect; payload = Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), action_id="actionId-0"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), action_id="actionId-1"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="actionId-2"), StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[Option(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="actionId-3")])]).build()'  # noqa
+        == 'from blockkit import Actions, ChannelsSelect, ConversationsSelect, Message, PlainOption, PlainText, StaticSelect, UsersSelect; payload = Message(blocks=[Actions(elements=[ConversationsSelect(placeholder=PlainText(text="Select a conversation", emoji=True), action_id="actionId-0"), ChannelsSelect(placeholder=PlainText(text="Select a channel", emoji=True), action_id="actionId-1"), UsersSelect(placeholder=PlainText(text="Select a user", emoji=True), action_id="actionId-2"), StaticSelect(placeholder=PlainText(text="Select an item", emoji=True), options=[PlainOption(text=PlainText(text="*this is plain_text text*", emoji=True), value="value-0")], action_id="actionId-3")])]).build()'  # noqa
     )
 
 

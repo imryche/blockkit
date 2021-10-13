@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Set, Type, TypeVar, cast
 from black import FileMode, format_str
 
 from blockkit.components import Component
-from blockkit.elements import Image, Option, OptionGroup
+from blockkit.elements import Image, MarkdownOption, OptionGroup, PlainOption
 from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
@@ -80,7 +80,11 @@ def _generate(
             elif name == "dispatch_action_config":
                 subcomponent = DispatchActionConfig
             elif name == "initial_option":
-                subcomponent = Option
+                subcomponent = (
+                    PlainOption
+                    if value["text"]["type"] == "plain_text"
+                    else MarkdownOption
+                )
             elif name == "confirm" and "confirm" in value:
                 subcomponent = Confirm
             elif name == "accessory" and value.get("type") == "image":
@@ -91,7 +95,14 @@ def _generate(
 
         elif type(value) == list:
             if name in ["options", "initial_options"]:
-                items = [_generate(v, classes, Option, compact) for v in value]
+                items = []
+                for v in value:
+                    subcomponent = (
+                        PlainOption
+                        if v["text"]["type"] == "plain_text"
+                        else MarkdownOption
+                    )
+                    items.append(_generate(v, classes, subcomponent, compact))
             elif name == "option_groups":
                 items = [
                     _generate(v, classes, OptionGroup, compact=compact) for v in value
@@ -155,7 +166,8 @@ allowed_names.update(
             DispatchActionConfig,
             Confirm,
             Image,
-            Option,
+            PlainOption,
+            MarkdownOption,
             OptionGroup,
         ]
     }

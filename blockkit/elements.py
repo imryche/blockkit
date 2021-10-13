@@ -11,8 +11,9 @@ from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
     Filter,
-    Option,
+    MarkdownOption,
     OptionGroup,
+    PlainOption,
     PlainText,
 )
 from blockkit.validators import (
@@ -81,16 +82,20 @@ class Button(ActionableComponent):
 
 class Checkboxes(ActionableComponent):
     type: str = "checkboxes"
-    options: List[Option] = Field(..., min_items=1, max_items=10)
-    initial_options: Optional[List[Option]] = Field(None, min_items=1, max_items=10)
+    options: List[Union[MarkdownOption, PlainOption]] = Field(
+        ..., min_items=1, max_items=10
+    )
+    initial_options: Optional[List[Union[MarkdownOption, PlainOption]]] = Field(
+        None, min_items=1, max_items=10
+    )
     confirm: Optional[Confirm] = None
 
     def __init__(
         self,
         *,
-        options: List[Option],
+        options: List[Union[MarkdownOption, PlainOption]],
         action_id: Optional[str] = None,
-        initial_options: Optional[List[Option]] = None,
+        initial_options: Optional[List[Union[MarkdownOption, PlainOption]]] = None,
         confirm: Optional[Confirm] = None,
     ):
         super().__init__(
@@ -158,22 +163,22 @@ class Select(ActionableComponent):
 
 
 class StaticSelectBase(Select):
-    options: Optional[List[Option]] = Field(None, min_items=1, max_items=100)
+    options: Optional[List[PlainOption]] = Field(None, min_items=1, max_items=100)
     option_groups: Optional[List[OptionGroup]] = Field(None, min_items=1, max_items=100)
 
 
 class StaticSelect(StaticSelectBase):
     type: str = "static_select"
-    initial_option: Optional[Option] = None
+    initial_option: Optional[PlainOption] = None
 
     def __init__(
         self,
         *,
         placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
-        options: Optional[List[Option]] = None,
+        options: Optional[List[PlainOption]] = None,
         option_groups: Optional[List[OptionGroup]] = None,
-        initial_option: Optional[Option] = None,
+        initial_option: Optional[PlainOption] = None,
         confirm: Optional[Confirm] = None,
     ):
         super().__init__(
@@ -210,7 +215,7 @@ class StaticSelect(StaticSelectBase):
 
 class MultiStaticSelect(StaticSelectBase):
     type: str = "multi_static_select"
-    initial_options: Optional[List[Option]] = None
+    initial_options: Optional[List[PlainOption]] = None
     max_selected_items: Optional[int] = Field(..., gt=0)
 
     def __init__(
@@ -218,9 +223,9 @@ class MultiStaticSelect(StaticSelectBase):
         *,
         placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
-        options: Optional[List[Option]] = None,
+        options: Optional[List[PlainOption]] = None,
         option_groups: Optional[List[OptionGroup]] = None,
-        initial_options: Optional[Option] = None,
+        initial_options: Optional[PlainOption] = None,
         confirm: Optional[Confirm] = None,
         max_selected_items: Optional[int] = None,
     ):
@@ -265,14 +270,14 @@ class ExternalSelectBase(Select):
 
 class ExternalSelect(ExternalSelectBase):
     type: str = "external_select"
-    initial_option: Optional[Option] = None
+    initial_option: Optional[PlainOption] = None
 
     def __init__(
         self,
         *,
         placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
-        initial_option: Optional[Option] = None,
+        initial_option: Optional[PlainOption] = None,
         min_query_length: Optional[int] = None,
         confirm: Optional[Confirm] = None,
     ):
@@ -287,7 +292,7 @@ class ExternalSelect(ExternalSelectBase):
 
 class MultiExternalSelect(ExternalSelectBase):
     type: str = "multi_external_select"
-    initial_options: Optional[List[Option]] = None
+    initial_options: Optional[List[PlainOption]] = None
     max_selected_items: Optional[int] = Field(None, gt=0)
 
     def __init__(
@@ -296,7 +301,7 @@ class MultiExternalSelect(ExternalSelectBase):
         placeholder: Union[PlainText, str],
         action_id: Optional[str] = None,
         min_query_length: Optional[int] = None,
-        initial_options: Optional[List[Option]] = None,
+        initial_options: Optional[List[PlainOption]] = None,
         confirm: Optional[Confirm] = None,
         max_selected_items: Optional[int] = None,
     ):
@@ -459,14 +464,14 @@ class MultiChannelsSelect(Select):
 
 class Overflow(ActionableComponent):
     type: str = "overflow"
-    options: List[Option] = Field(..., min_items=2, max_items=5)
+    options: List[PlainOption] = Field(..., min_items=2, max_items=5)
     confirm: Optional[Confirm] = None
 
     def __init__(
         self,
         *,
         action_id: Optional[str] = None,
-        options: List[Option],
+        options: List[PlainOption],
         confirm: Optional[Confirm] = None,
     ):
         super().__init__(action_id=action_id, options=options, confirm=confirm)
@@ -509,16 +514,18 @@ class PlainTextInput(ActionableComponent):
 
 class RadioButtons(ActionableComponent):
     type: str = "radio_buttons"
-    options: List[Option] = Field(..., min_items=1, max_items=10)
-    initial_option: Optional[Option] = None
+    options: List[Union[MarkdownOption, PlainOption]] = Field(
+        ..., min_items=1, max_items=10
+    )
+    initial_option: Union[MarkdownOption, PlainOption, None] = None
     confirm: Optional[Confirm] = None
 
     def __init__(
         self,
         *,
-        options: List[Option],
+        options: List[Union[MarkdownOption, PlainOption]],
         action_id: Optional[str] = None,
-        initial_option: Optional[Option] = None,
+        initial_option: Union[MarkdownOption, PlainOption, None] = None,
         confirm: Optional[Confirm] = None,
     ):
         super().__init__(

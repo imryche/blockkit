@@ -5,7 +5,8 @@ from blockkit.objects import (
     Filter,
     Include,
     MarkdownText,
-    Option,
+    PlainOption,
+    MarkdownOption,
     OptionGroup,
     PlainText,
     TriggerActionsOn,
@@ -111,7 +112,7 @@ def test_confirm_incorrect_style_raises_exception():
 
 
 def test_builds_option():
-    assert Option(
+    assert PlainOption(
         text=PlainText(text="text"),
         value="value",
         description=PlainText(text="description"),
@@ -126,7 +127,7 @@ def test_builds_option():
 
 def test_option_excessive_text_raises_exception():
     with pytest.raises(ValidationError):
-        Option(
+        PlainOption(
             text=PlainText(text="t" * 76),
             value="value",
         )
@@ -134,7 +135,7 @@ def test_option_excessive_text_raises_exception():
 
 def test_option_empty_value_raises_exception():
     with pytest.raises(ValidationError):
-        Option(
+        PlainOption(
             text=PlainText(text="text"),
             value="",
         )
@@ -142,7 +143,7 @@ def test_option_empty_value_raises_exception():
 
 def test_option_excessive_value_raises_exception():
     with pytest.raises(ValidationError):
-        Option(
+        PlainOption(
             text=PlainText(text="text"),
             value="v" * 76,
         )
@@ -150,7 +151,7 @@ def test_option_excessive_value_raises_exception():
 
 def test_option_excessive_description_raises_exception():
     with pytest.raises(ValidationError):
-        Option(
+        PlainOption(
             text=PlainText(text="text"),
             value="value",
             description=PlainText(text="d" * 76),
@@ -159,7 +160,7 @@ def test_option_excessive_description_raises_exception():
 
 def test_option_empty_url_raises_exception():
     with pytest.raises(ValidationError):
-        Option(
+        PlainOption(
             text=PlainText(text="text"),
             value="value",
             url="",
@@ -169,7 +170,7 @@ def test_option_empty_url_raises_exception():
 def test_option_excessive_url_raises_exception():
     with pytest.raises(ValidationError):
         url = "https://example.com/"
-        Option(
+        PlainOption(
             text=PlainText(text="text"),
             value="value",
             url=url + "u" * (3001 - len(url)),
@@ -180,8 +181,8 @@ def test_builds_option_group():
     assert OptionGroup(
         label=PlainText(text="label"),
         options=[
-            Option(text=PlainText(text="option 1"), value="value_1"),
-            Option(text=PlainText(text="option 2"), value="value_2"),
+            PlainOption(text=PlainText(text="option 1"), value="value_1"),
+            PlainOption(text=PlainText(text="option 2"), value="value_2"),
         ],
     ).build() == {
         "label": {"type": "plain_text", "text": "label"},
@@ -196,7 +197,7 @@ def test_option_group_excessive_label_raises_exception():
     with pytest.raises(ValidationError):
         OptionGroup(
             label=PlainText(text="l" * 76),
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
         )
 
 
@@ -205,7 +206,7 @@ def test_option_group_excessive_options_raise_exception():
         OptionGroup(
             label=PlainText(text="label"),
             options=[
-                Option(text=PlainText(text=f"option {o}"), value=f"value_{0}")
+                PlainOption(text=PlainText(text=f"option {o}"), value=f"value_{0}")
                 for o in range(101)
             ],
         )

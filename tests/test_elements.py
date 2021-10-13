@@ -23,9 +23,10 @@ from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
     Filter,
+    MarkdownOption,
     MarkdownText,
-    Option,
     OptionGroup,
+    PlainOption,
     PlainText,
 )
 from pydantic import ValidationError
@@ -108,10 +109,10 @@ def test_builds_checkboxes():
     assert Checkboxes(
         action_id="action_id",
         options=[
-            Option(text=PlainText(text="option 1"), value="value_1"),
-            Option(text=PlainText(text="option 2"), value="value_2"),
+            PlainOption(text=PlainText(text="option 1"), value="value_1"),
+            MarkdownOption(text=MarkdownText(text="_option 2_"), value="value_2"),
         ],
-        initial_options=[Option(text=PlainText(text="option 1"), value="value_1")],
+        initial_options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),
@@ -123,7 +124,7 @@ def test_builds_checkboxes():
         "action_id": "action_id",
         "options": [
             {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
-            {"text": {"type": "plain_text", "text": "option 2"}, "value": "value_2"},
+            {"text": {"type": "mrkdwn", "text": "_option 2_"}, "value": "value_2"},
         ],
         "initial_options": [
             {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
@@ -140,7 +141,7 @@ def test_builds_checkboxes():
 def test_checkboxes_empty_action_id_raises_exception():
     with pytest.raises(ValidationError):
         Checkboxes(
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
             action_id="",
         )
 
@@ -148,7 +149,7 @@ def test_checkboxes_empty_action_id_raises_exception():
 def test_checkboxes_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         Checkboxes(
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
             action_id="a" * 256,
         )
 
@@ -162,7 +163,7 @@ def test_checkboxes_excessive_options_raise_exception():
     with pytest.raises(ValidationError):
         Checkboxes(
             options=[
-                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                PlainOption(text=PlainText(text=f"option {o}"), value=f"value_{o}")
                 for o in range(11)
             ]
         )
@@ -171,7 +172,7 @@ def test_checkboxes_excessive_options_raise_exception():
 def test_checkboxes_empty_initial_options_raise_exception():
     with pytest.raises(ValidationError):
         Checkboxes(
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
             initial_options=[],
         )
 
@@ -179,9 +180,9 @@ def test_checkboxes_empty_initial_options_raise_exception():
 def test_checkboxes_initial_options_arent_within_options_raise_exception():
     with pytest.raises(ValidationError):
         Checkboxes(
-            options=[Option(text=PlainText(text=f"option 1"), value=f"value_1")],
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
             initial_options=[
-                Option(text=PlainText(text=f"option 2"), value=f"value_2")
+                PlainOption(text=PlainText(text="option 2"), value="value_2")
             ],
         )
 
@@ -256,10 +257,10 @@ def test_builds_static_select_with_options():
         placeholder=PlainText(text="placeholder"),
         action_id="action_id",
         options=[
-            Option(text=PlainText(text="option 1"), value="value_1"),
-            Option(text=PlainText(text="option 2"), value="value_2"),
+            PlainOption(text=PlainText(text="option 1"), value="value_1"),
+            PlainOption(text=PlainText(text="option 2"), value="value_2"),
         ],
-        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
+        initial_option=PlainOption(text=PlainText(text="option 1"), value="value_1"),
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),
@@ -294,10 +295,10 @@ def test_builds_static_select_with_option_groups():
         option_groups=[
             OptionGroup(
                 label=PlainText(text="group 1"),
-                options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
             ),
         ],
-        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
+        initial_option=PlainOption(text=PlainText(text="option 1"), value="value_1"),
     ).build() == {
         "type": "static_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -330,16 +331,20 @@ def test_static_select_with_options_and_option_groups_raises_exception():
         StaticSelect(
             placeholder=PlainText(text="placeholder"),
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
             option_groups=[
                 OptionGroup(
                     label=PlainText(text="group 1"),
-                    options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                    options=[
+                        PlainOption(text=PlainText(text="option 1"), value="value_1")
+                    ],
                 ),
                 OptionGroup(
                     label=PlainText(text="group 2"),
-                    options=[Option(text=PlainText(text="option 2"), value="value_2")],
+                    options=[
+                        PlainOption(text=PlainText(text="option 2"), value="value_2")
+                    ],
                 ),
             ],
         )
@@ -350,7 +355,7 @@ def test_static_select_excessive_placeholder_raises_exception():
         StaticSelect(
             placeholder=PlainText(text="p" * 151),
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
         )
 
@@ -361,7 +366,7 @@ def test_static_select_empty_action_id_raises_exception():
             placeholder=PlainText(text="placeholder"),
             action_id="",
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
         )
 
@@ -372,7 +377,7 @@ def test_static_select_excessive_action_id_raises_exception():
             placeholder=PlainText(text="placeholder"),
             action_id="a" * 256,
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
         )
 
@@ -387,7 +392,7 @@ def test_static_select_excessive_options_raise_exception():
         StaticSelect(
             placeholder=PlainText(text="placeholder"),
             options=[
-                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                PlainOption(text=PlainText(text=f"option {o}"), value=f"value_{o}")
                 for o in range(101)
             ],
         )
@@ -406,7 +411,9 @@ def test_static_select_excessive_option_groups_raise_exception():
                 OptionGroup(
                     label=PlainText(text=f"group {o}"),
                     options=[
-                        Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                        PlainOption(
+                            text=PlainText(text=f"option {o}"), value=f"value_{o}"
+                        )
                     ],
                 )
                 for o in range(101)
@@ -418,8 +425,10 @@ def test_static_select_initial_option_isnt_within_options():
     with pytest.raises(ValidationError):
         StaticSelect(
             placeholder=PlainText(text="placeholder"),
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
-            initial_option=Option(text=PlainText(text="option 2"), value="value_2"),
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
+            initial_option=PlainOption(
+                text=PlainText(text="option 2"), value="value_2"
+            ),
         )
 
 
@@ -431,10 +440,14 @@ def test_static_select_initial_option_isnt_within_option_groups():
             option_groups=[
                 OptionGroup(
                     label=PlainText(text="group 1"),
-                    options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                    options=[
+                        PlainOption(text=PlainText(text="option 1"), value="value_1")
+                    ],
                 ),
             ],
-            initial_option=Option(text=PlainText(text="option 2"), value="value_2"),
+            initial_option=PlainOption(
+                text=PlainText(text="option 2"), value="value_2"
+            ),
         )
 
 
@@ -443,10 +456,10 @@ def test_builds_multi_static_select_with_options():
         placeholder=PlainText(text="placeholder"),
         action_id="action_id",
         options=[
-            Option(text=PlainText(text="option 1"), value="value_1"),
-            Option(text=PlainText(text="option 2"), value="value_2"),
+            PlainOption(text=PlainText(text="option 1"), value="value_1"),
+            PlainOption(text=PlainText(text="option 2"), value="value_2"),
         ],
-        initial_options=[Option(text=PlainText(text="option 1"), value="value_1")],
+        initial_options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),
@@ -485,10 +498,10 @@ def test_builds_multi_static_select_with_option_groups():
         option_groups=[
             OptionGroup(
                 label=PlainText(text="group 1"),
-                options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
             ),
         ],
-        initial_options=[Option(text=PlainText(text="option 1"), value="value_1")],
+        initial_options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
     ).build() == {
         "type": "multi_static_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -523,12 +536,14 @@ def test_multi_static_select_with_options_and_option_groups_raises_exception():
         MultiStaticSelect(
             placeholder=PlainText(text="placeholder"),
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
             option_groups=[
                 OptionGroup(
                     label=PlainText(text="group 1"),
-                    options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                    options=[
+                        PlainOption(text=PlainText(text="option 1"), value="value_1")
+                    ],
                 )
             ],
         )
@@ -539,7 +554,7 @@ def test_multi_static_select_excessive_placeholder_raises_exception():
         MultiStaticSelect(
             placeholder=PlainText(text="p" * 151),
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
         )
 
@@ -550,7 +565,7 @@ def test_multi_static_select_empty_action_id_raises_exception():
             placeholder=PlainText(text="placeholder"),
             action_id="",
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
         )
 
@@ -561,7 +576,7 @@ def test_multi_static_select_excessive_action_id_raises_exception():
             placeholder=PlainText(text="placeholder"),
             action_id="a" * 256,
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
         )
 
@@ -576,7 +591,7 @@ def test_multi_static_select_excessive_options_raise_exception():
         MultiStaticSelect(
             placeholder=PlainText(text="placeholder"),
             options=[
-                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                PlainOption(text=PlainText(text=f"option {o}"), value=f"value_{o}")
                 for o in range(101)
             ],
         )
@@ -595,7 +610,9 @@ def test_multi_static_select_excessive_option_groups_raise_exception():
                 OptionGroup(
                     label=PlainText(text=f"group {o}"),
                     options=[
-                        Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                        PlainOption(
+                            text=PlainText(text=f"option {o}"), value=f"value_{o}"
+                        )
                     ],
                 )
                 for o in range(101)
@@ -607,8 +624,10 @@ def test_multi_static_select_initial_options_arent_within_options():
     with pytest.raises(ValidationError):
         MultiStaticSelect(
             placeholder=PlainText(text="placeholder"),
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
-            initial_options=[Option(text=PlainText(text="option 2"), value="value_2")],
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
+            initial_options=[
+                PlainOption(text=PlainText(text="option 2"), value="value_2")
+            ],
         )
 
 
@@ -620,10 +639,14 @@ def test_multi_static_select_initial_options_arent_within_option_groups():
             option_groups=[
                 OptionGroup(
                     label=PlainText(text="group 1"),
-                    options=[Option(text=PlainText(text="option 1"), value="value_1")],
+                    options=[
+                        PlainOption(text=PlainText(text="option 1"), value="value_1")
+                    ],
                 ),
             ],
-            initial_options=[Option(text=PlainText(text="option 2"), value="value_2")],
+            initial_options=[
+                PlainOption(text=PlainText(text="option 2"), value="value_2")
+            ],
         )
 
 
@@ -631,7 +654,7 @@ def test_multi_static_select_zero_max_selected_items_raises_exception():
     with pytest.raises(ValidationError):
         MultiStaticSelect(
             placeholder=PlainText(text="placeholder"),
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
             max_selected_items=0,
         )
 
@@ -641,7 +664,7 @@ def test_builds_external_select():
         placeholder=PlainText(text="placeholder"),
         action_id="action_id",
         min_query_length=2,
-        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
+        initial_option=PlainOption(text=PlainText(text="option 1"), value="value_1"),
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),
@@ -697,7 +720,7 @@ def test_builds_multi_external_select():
         placeholder=PlainText(text="placeholder"),
         action_id="action_id",
         min_query_length=2,
-        initial_options=[Option(text=PlainText(text="option 1"), value="value_1")],
+        initial_options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),
@@ -1078,8 +1101,8 @@ def test_builds_overflow():
     assert Overflow(
         action_id="action_id",
         options=[
-            Option(text=PlainText(text="option 1"), value="value_1"),
-            Option(text=PlainText(text="option 2"), value="value_2"),
+            PlainOption(text=PlainText(text="option 1"), value="value_1"),
+            PlainOption(text=PlainText(text="option 2"), value="value_2"),
         ],
         confirm=Confirm(
             title=PlainText(text="title"),
@@ -1108,7 +1131,7 @@ def test_overflow_empty_action_id_raises_exception():
         Overflow(
             action_id="",
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
         )
 
@@ -1118,21 +1141,23 @@ def test_overflow_excessive_action_id_raises_exception():
         Overflow(
             action_id="a" * 256,
             options=[
-                Option(text=PlainText(text="option 1"), value="value_1"),
+                PlainOption(text=PlainText(text="option 1"), value="value_1"),
             ],
         )
 
 
 def test_overflow_lacking_options_raise_exception():
     with pytest.raises(ValidationError):
-        Overflow(options=[Option(text=PlainText(text="option 1"), value="value_1")])
+        Overflow(
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")]
+        )
 
 
 def test_overflow_excessive_options_raise_exception():
     with pytest.raises(ValidationError):
         Overflow(
             options=[
-                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                PlainOption(text=PlainText(text=f"option {o}"), value=f"value_{o}")
                 for o in range(6)
             ]
         )
@@ -1205,10 +1230,10 @@ def test_builds_radio_buttons():
     assert RadioButtons(
         action_id="action_id",
         options=[
-            Option(text=PlainText(text="option 1"), value="value_1"),
-            Option(text=PlainText(text="option 2"), value="value_2"),
+            PlainOption(text=PlainText(text="option 1"), value="value_1"),
+            MarkdownOption(text=MarkdownText(text="_option 2_"), value="value_2"),
         ],
-        initial_option=Option(text=PlainText(text="option 1"), value="value_1"),
+        initial_option=PlainOption(text=PlainText(text="option 1"), value="value_1"),
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),
@@ -1220,7 +1245,7 @@ def test_builds_radio_buttons():
         "action_id": "action_id",
         "options": [
             {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
-            {"text": {"type": "plain_text", "text": "option 2"}, "value": "value_2"},
+            {"text": {"type": "mrkdwn", "text": "_option 2_"}, "value": "value_2"},
         ],
         "initial_option": {
             "text": {"type": "plain_text", "text": "option 1"},
@@ -1238,7 +1263,7 @@ def test_builds_radio_buttons():
 def test_radio_buttons_empty_action_id_raises_exception():
     with pytest.raises(ValidationError):
         RadioButtons(
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
             action_id="",
         )
 
@@ -1246,7 +1271,7 @@ def test_radio_buttons_empty_action_id_raises_exception():
 def test_radio_buttons_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
         RadioButtons(
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
             action_id="a" * 256,
         )
 
@@ -1260,7 +1285,7 @@ def test_radio_buttons_excessive_options_raise_exception():
     with pytest.raises(ValidationError):
         RadioButtons(
             options=[
-                Option(text=PlainText(text=f"option {o}"), value=f"value_{o}")
+                PlainOption(text=PlainText(text=f"option {o}"), value=f"value_{o}")
                 for o in range(11)
             ]
         )
@@ -1269,8 +1294,10 @@ def test_radio_buttons_excessive_options_raise_exception():
 def test_radio_buttons_initial_options_arent_within_options_raise_exception():
     with pytest.raises(ValidationError):
         RadioButtons(
-            options=[Option(text=PlainText(text="option 1"), value="value_1")],
-            initial_option=Option(text=PlainText(text="option 2"), value="value_2"),
+            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
+            initial_option=PlainOption(
+                text=PlainText(text="option 2"), value="value_2"
+            ),
         )
 
 
