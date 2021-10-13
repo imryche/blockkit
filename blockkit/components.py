@@ -25,7 +25,7 @@ class Component(BaseModel):
                         items.append(v)
                     value = items
 
-                kwargs[name] = value
+                kwargs[field.alias] = value
 
         super().__init__(*args, **kwargs)
 
