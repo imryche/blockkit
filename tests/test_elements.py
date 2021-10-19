@@ -1146,11 +1146,9 @@ def test_overflow_excessive_action_id_raises_exception():
         )
 
 
-def test_overflow_lacking_options_raise_exception():
+def test_overflow_empty_options_raise_exception():
     with pytest.raises(ValidationError):
-        Overflow(
-            options=[PlainOption(text=PlainText(text="option 1"), value="value_1")]
-        )
+        Overflow(options=[])
 
 
 def test_overflow_excessive_options_raise_exception():

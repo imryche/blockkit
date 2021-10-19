@@ -464,7 +464,7 @@ class MultiChannelsSelect(Select):
 
 class Overflow(ActionableComponent):
     type: str = "overflow"
-    options: List[PlainOption] = Field(..., min_items=2, max_items=5)
+    options: List[PlainOption] = Field(..., min_items=1, max_items=5)
     confirm: Optional[Confirm] = None
 
     def __init__(
