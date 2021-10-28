@@ -225,7 +225,7 @@ class MultiStaticSelect(StaticSelectBase):
         action_id: Optional[str] = None,
         options: Optional[List[PlainOption]] = None,
         option_groups: Optional[List[OptionGroup]] = None,
-        initial_options: Optional[PlainOption] = None,
+        initial_options: Optional[List[PlainOption]] = None,
         confirm: Optional[Confirm] = None,
         max_selected_items: Optional[int] = None,
     ):

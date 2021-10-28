@@ -15,7 +15,7 @@ URL = "https://github.com/imryche/blockkit"
 EMAIL = "imryche13@gmail.com"
 AUTHOR = "Dmitry Chernyshov"
 REQUIRES_PYTHON = ">=3.6.0"
-VERSION = "1.3.2"
+VERSION = "1.3.3"
 
 REQUIRED = ["pydantic", "black"]
 EXTRAS = {}
