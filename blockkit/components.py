@@ -1,3 +1,4 @@
+import json
 from typing import TYPE_CHECKING, Any, List, Type, Union
 
 from pydantic import BaseModel
@@ -44,4 +45,4 @@ class Component(BaseModel):
         return value
 
     def build(self) -> dict:
-        return self.dict(by_alias=True, exclude_none=True)
+        return json.loads(self.json(by_alias=True, exclude_none=True))
