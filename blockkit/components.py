@@ -13,7 +13,12 @@ class Component(BaseModel):
             value = kwargs.get(field.alias)
             origin = getattr(field.type_, "__origin__", None)
 
-            if value and type(value) in (str, list) and origin is Union:
+            if (
+                value
+                and type(value) in (str, list)
+                and origin is Union
+                and self.__class__.__name__ != "Message"
+            ):
                 types = field.type_.__args__
 
                 if type(value) is str:
