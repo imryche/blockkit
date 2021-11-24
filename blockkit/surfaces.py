@@ -118,7 +118,20 @@ class WorkflowStep(View):
 
 
 class Message(Component):
-    blocks: List[Block] = Field(..., min_items=1, max_items=50)
+    text: Optional[str] = Field(None, min_length=1, max_length=3000)
+    blocks: Optional[List[Block]] = Field(..., min_items=1, max_items=50)
 
-    def __init__(self, *, blocks: List[Block]):
-        super().__init__(blocks=blocks)
+    def __init__(
+        self, *, text: Optional[str] = None, blocks: Optional[List[Block]] = None
+    ):
+        super().__init__(text=text, blocks=blocks)
+
+    @root_validator
+    def _validate_values(cls, values: Dict) -> Dict:
+        text = values.get("text")
+        fields = values.get("blocks")
+
+        if text is None and fields is None:
+            raise ValueError("You must provide either text or blocks")
+
+        return values

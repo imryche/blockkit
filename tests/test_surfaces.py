@@ -74,29 +74,6 @@ def test_home_excessive_external_id_raise_exception():
         )
 
 
-def test_builds_message():
-    assert Message(
-        blocks=[
-            Section(
-                text=MarkdownText(text="*markdown* text"),
-                accessory=Button(text=PlainText(text="button"), action_id="action_id"),
-            )
-        ],
-    ).build() == {
-        "blocks": [
-            {
-                "type": "section",
-                "text": {"type": "mrkdwn", "text": "*markdown* text"},
-                "accessory": {
-                    "type": "button",
-                    "text": {"type": "plain_text", "text": "button"},
-                    "action_id": "action_id",
-                },
-            }
-        ],
-    }
-
-
 def test_builds_modal():
     assert Modal(
         title=PlainText(text="title"),
@@ -213,6 +190,36 @@ def test_modal_excessive_external_id_raises_exception():
             blocks=[Section(text=MarkdownText(text="*markdown* text"))],
             external_id="c" * 256,
         )
+
+
+def test_builds_message():
+    assert Message(
+        text="message text",
+        blocks=[
+            Section(
+                text=MarkdownText(text="*markdown* text"),
+                accessory=Button(text=PlainText(text="button"), action_id="action_id"),
+            )
+        ],
+    ).build() == {
+        "text": "message text",
+        "blocks": [
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*markdown* text"},
+                "accessory": {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "button"},
+                    "action_id": "action_id",
+                },
+            }
+        ],
+    }
+
+
+def test_empty_message_raises_exception():
+    with pytest.raises(ValidationError):
+        Message()
 
 
 def test_message_empty_blocks_raise_exception():
