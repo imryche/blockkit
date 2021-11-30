@@ -1138,7 +1138,6 @@ def test_builds_overflow():
             confirm=PlainText(text="confirm"),
             deny=PlainText(text="deny"),
         ),
-        focus_on_load=True,
     ).build() == {
         "type": "overflow",
         "action_id": "action_id",
@@ -1152,7 +1151,6 @@ def test_builds_overflow():
             "confirm": {"type": "plain_text", "text": "confirm"},
             "deny": {"type": "plain_text", "text": "deny"},
         },
-        "focus_on_load": True,
     }
 
 
