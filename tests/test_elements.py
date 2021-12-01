@@ -119,6 +119,7 @@ def test_builds_checkboxes():
             confirm=PlainText(text="confirm"),
             deny=PlainText(text="deny"),
         ),
+        focus_on_load=True,
     ).build() == {
         "type": "checkboxes",
         "action_id": "action_id",
@@ -135,6 +136,7 @@ def test_builds_checkboxes():
             "confirm": {"type": "plain_text", "text": "confirm"},
             "deny": {"type": "plain_text", "text": "deny"},
         },
+        "focus_on_load": True,
     }
 
 
@@ -198,6 +200,7 @@ def test_builds_datepicker():
             confirm=PlainText(text="confirm"),
             deny=PlainText(text="deny"),
         ),
+        focus_on_load=True,
     ).build() == {
         "type": "datepicker",
         "action_id": "action_id",
@@ -209,6 +212,7 @@ def test_builds_datepicker():
             "confirm": {"type": "plain_text", "text": "confirm"},
             "deny": {"type": "plain_text", "text": "deny"},
         },
+        "focus_on_load": True,
     }
 
 
@@ -267,6 +271,7 @@ def test_builds_static_select_with_options():
             confirm=PlainText(text="confirm"),
             deny=PlainText(text="deny"),
         ),
+        focus_on_load=True,
     ).build() == {
         "type": "static_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -285,6 +290,7 @@ def test_builds_static_select_with_options():
             "confirm": {"type": "plain_text", "text": "confirm"},
             "deny": {"type": "plain_text", "text": "deny"},
         },
+        "focus_on_load": True,
     }
 
 
@@ -299,6 +305,7 @@ def test_builds_static_select_with_option_groups():
             ),
         ],
         initial_option=PlainOption(text=PlainText(text="option 1"), value="value_1"),
+        focus_on_load=True,
     ).build() == {
         "type": "static_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -318,6 +325,7 @@ def test_builds_static_select_with_option_groups():
             "text": {"type": "plain_text", "text": "option 1"},
             "value": "value_1",
         },
+        "focus_on_load": True,
     }
 
 
@@ -467,6 +475,7 @@ def test_builds_multi_static_select_with_options():
             deny=PlainText(text="deny"),
         ),
         max_selected_items=5,
+        focus_on_load=True,
     ).build() == {
         "type": "multi_static_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -488,6 +497,7 @@ def test_builds_multi_static_select_with_options():
             "deny": {"type": "plain_text", "text": "deny"},
         },
         "max_selected_items": 5,
+        "focus_on_load": True,
     }
 
 
@@ -502,6 +512,7 @@ def test_builds_multi_static_select_with_option_groups():
             ),
         ],
         initial_options=[PlainOption(text=PlainText(text="option 1"), value="value_1")],
+        focus_on_load=True,
     ).build() == {
         "type": "multi_static_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -523,6 +534,7 @@ def test_builds_multi_static_select_with_option_groups():
                 "value": "value_1",
             }
         ],
+        "focus_on_load": True,
     }
 
 
@@ -671,6 +683,7 @@ def test_builds_external_select():
             confirm=PlainText(text="confirm"),
             deny=PlainText(text="deny"),
         ),
+        focus_on_load=True,
     ).build() == {
         "type": "external_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -686,6 +699,7 @@ def test_builds_external_select():
             "confirm": {"type": "plain_text", "text": "confirm"},
             "deny": {"type": "plain_text", "text": "deny"},
         },
+        "focus_on_load": True,
     }
 
 
@@ -728,6 +742,7 @@ def test_builds_multi_external_select():
             deny=PlainText(text="deny"),
         ),
         max_selected_items=5,
+        focus_on_load=True,
     ).build() == {
         "type": "multi_external_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -746,6 +761,7 @@ def test_builds_multi_external_select():
             "deny": {"type": "plain_text", "text": "deny"},
         },
         "max_selected_items": 5,
+        "focus_on_load": True,
     }
 
 
@@ -792,6 +808,7 @@ def test_builds_users_select():
             confirm=PlainText(text="confirm"),
             deny=PlainText(text="deny"),
         ),
+        focus_on_load=True,
     ).build() == {
         "type": "users_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -803,6 +820,7 @@ def test_builds_users_select():
             "confirm": {"type": "plain_text", "text": "confirm"},
             "deny": {"type": "plain_text", "text": "deny"},
         },
+        "focus_on_load": True,
     }
 
 
@@ -841,6 +859,7 @@ def test_builds_multi_users_select():
             deny=PlainText(text="deny"),
         ),
         max_selected_items=5,
+        focus_on_load=True,
     ).build() == {
         "type": "multi_users_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -853,6 +872,7 @@ def test_builds_multi_users_select():
             "deny": {"type": "plain_text", "text": "deny"},
         },
         "max_selected_items": 5,
+        "focus_on_load": True,
     }
 
 
@@ -895,6 +915,7 @@ def test_builds_conversations_select():
         ),
         response_url_enabled=True,
         filter=Filter(include=["public"]),
+        focus_on_load=True,
     ).build() == {
         "type": "conversations_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -909,6 +930,7 @@ def test_builds_conversations_select():
         },
         "response_url_enabled": True,
         "filter": {"include": ["public"]},
+        "focus_on_load": True,
     }
 
 
@@ -951,6 +973,7 @@ def test_builds_multi_conversations_select():
         ),
         max_selected_items=5,
         filter=Filter(include=["public"]),
+        focus_on_load=True,
     ).build() == {
         "type": "multi_conversations_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -965,6 +988,7 @@ def test_builds_multi_conversations_select():
         },
         "max_selected_items": 5,
         "filter": {"include": ["public"]},
+        "focus_on_load": True,
     }
 
 
@@ -1007,6 +1031,7 @@ def test_builds_channels_select():
             deny=PlainText(text="deny"),
         ),
         response_url_enabled=True,
+        focus_on_load=True,
     ).build() == {
         "type": "channels_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -1019,6 +1044,7 @@ def test_builds_channels_select():
             "deny": {"type": "plain_text", "text": "deny"},
         },
         "response_url_enabled": True,
+        "focus_on_load": True,
     }
 
 
@@ -1057,6 +1083,7 @@ def test_builds_multi_channels_select():
             deny=PlainText(text="deny"),
         ),
         max_selected_items=5,
+        focus_on_load=True,
     ).build() == {
         "type": "multi_channels_select",
         "placeholder": {"type": "plain_text", "text": "placeholder"},
@@ -1069,6 +1096,7 @@ def test_builds_multi_channels_select():
             "deny": {"type": "plain_text", "text": "deny"},
         },
         "max_selected_items": 5,
+        "focus_on_load": True,
     }
 
 
@@ -1172,6 +1200,7 @@ def test_builds_plain_text_input():
         dispatch_action_config=DispatchActionConfig(
             trigger_actions_on=["on_character_entered"]
         ),
+        focus_on_load=True,
     ).build() == {
         "type": "plain_text_input",
         "action_id": "action_id",
@@ -1181,6 +1210,7 @@ def test_builds_plain_text_input():
         "min_length": 5,
         "max_length": 500,
         "dispatch_action_config": {"trigger_actions_on": ["on_character_entered"]},
+        "focus_on_load": True,
     }
 
 
@@ -1238,6 +1268,7 @@ def test_builds_radio_buttons():
             confirm=PlainText(text="confirm"),
             deny=PlainText(text="deny"),
         ),
+        focus_on_load=True,
     ).build() == {
         "type": "radio_buttons",
         "action_id": "action_id",
@@ -1255,6 +1286,7 @@ def test_builds_radio_buttons():
             "confirm": {"type": "plain_text", "text": "confirm"},
             "deny": {"type": "plain_text", "text": "deny"},
         },
+        "focus_on_load": True,
     }
 
 
@@ -1310,6 +1342,7 @@ def test_builds_timepicker():
             confirm=PlainText(text="confirm"),
             deny=PlainText(text="deny"),
         ),
+        focus_on_load=True,
     ).build() == {
         "type": "timepicker",
         "action_id": "action_id",
@@ -1321,6 +1354,7 @@ def test_builds_timepicker():
             "confirm": {"type": "plain_text", "text": "confirm"},
             "deny": {"type": "plain_text", "text": "deny"},
         },
+        "focus_on_load": True,
     }
 
 

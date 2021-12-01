@@ -89,6 +89,7 @@ class Checkboxes(ActionableComponent):
         None, min_items=1, max_items=10
     )
     confirm: Optional[Confirm] = None
+    focus_on_load: Optional[bool] = None
 
     def __init__(
         self,
@@ -97,12 +98,14 @@ class Checkboxes(ActionableComponent):
         action_id: Optional[str] = None,
         initial_options: Optional[List[Union[MarkdownOption, PlainOption]]] = None,
         confirm: Optional[Confirm] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             options=options,
             action_id=action_id,
             initial_options=initial_options,
             confirm=confirm,
+            focus_on_load=focus_on_load,
         )
 
     @root_validator
@@ -122,6 +125,7 @@ class DatePicker(ActionableComponent):
     placeholder: Union[PlainText, str, None] = None
     initial_date: Optional[date] = None
     confirm: Optional[Confirm] = None
+    focus_on_load: Optional[bool] = None
 
     def __init__(
         self,
@@ -130,12 +134,14 @@ class DatePicker(ActionableComponent):
         placeholder: Union[PlainText, str, None] = None,
         initial_date: Optional[date] = None,
         confirm: Optional[Confirm] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             action_id=action_id,
             placeholder=placeholder,
             initial_date=initial_date,
             confirm=confirm,
+            focus_on_load=focus_on_load,
         )
 
     _validate_placeholder = validator(
@@ -156,6 +162,7 @@ class Image(Component):
 class Select(ActionableComponent):
     placeholder: Union[PlainText, str]
     confirm: Optional[Confirm] = None
+    focus_on_load: Optional[bool] = None
 
     _validate_placeholder = validator(
         "placeholder", validate_text_length, max_length=150
@@ -180,6 +187,7 @@ class StaticSelect(StaticSelectBase):
         option_groups: Optional[List[OptionGroup]] = None,
         initial_option: Optional[PlainOption] = None,
         confirm: Optional[Confirm] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
@@ -188,6 +196,7 @@ class StaticSelect(StaticSelectBase):
             option_groups=option_groups,
             initial_option=initial_option,
             confirm=confirm,
+            focus_on_load=focus_on_load,
         )
 
     @root_validator
@@ -228,6 +237,7 @@ class MultiStaticSelect(StaticSelectBase):
         initial_options: Optional[List[PlainOption]] = None,
         confirm: Optional[Confirm] = None,
         max_selected_items: Optional[int] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
@@ -237,6 +247,7 @@ class MultiStaticSelect(StaticSelectBase):
             initial_options=initial_options,
             confirm=confirm,
             max_selected_items=max_selected_items,
+            focus_on_load=focus_on_load,
         )
 
     @root_validator
@@ -280,6 +291,7 @@ class ExternalSelect(ExternalSelectBase):
         initial_option: Optional[PlainOption] = None,
         min_query_length: Optional[int] = None,
         confirm: Optional[Confirm] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
@@ -287,6 +299,7 @@ class ExternalSelect(ExternalSelectBase):
             initial_option=initial_option,
             min_query_length=min_query_length,
             confirm=confirm,
+            focus_on_load=focus_on_load,
         )
 
 
@@ -304,6 +317,7 @@ class MultiExternalSelect(ExternalSelectBase):
         initial_options: Optional[List[PlainOption]] = None,
         confirm: Optional[Confirm] = None,
         max_selected_items: Optional[int] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
@@ -312,6 +326,7 @@ class MultiExternalSelect(ExternalSelectBase):
             initial_options=initial_options,
             confirm=confirm,
             max_selected_items=max_selected_items,
+            focus_on_load=focus_on_load,
         )
 
 
@@ -326,12 +341,14 @@ class UsersSelect(Select):
         action_id: Optional[str] = None,
         initial_user: Optional[str] = None,
         confirm: Optional[Confirm] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
             action_id=action_id,
             initial_user=initial_user,
             confirm=confirm,
+            focus_on_load=focus_on_load,
         )
 
 
@@ -348,6 +365,7 @@ class MultiUsersSelect(Select):
         initial_users: Optional[str] = None,
         confirm: Optional[Confirm] = None,
         max_selected_items: Optional[int] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
@@ -355,6 +373,7 @@ class MultiUsersSelect(Select):
             initial_users=initial_users,
             confirm=confirm,
             max_selected_items=max_selected_items,
+            focus_on_load=focus_on_load,
         )
 
 
@@ -375,6 +394,7 @@ class ConversationsSelect(Select):
         confirm: Optional[Confirm] = None,
         response_url_enabled: Optional[bool] = None,
         filter: Optional[Filter] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
@@ -384,6 +404,7 @@ class ConversationsSelect(Select):
             confirm=confirm,
             response_url_enabled=response_url_enabled,
             filter=filter,
+            focus_on_load=focus_on_load,
         )
 
 
@@ -404,6 +425,7 @@ class MultiConversationsSelect(Select):
         confirm: Optional[Confirm] = None,
         max_selected_items: Optional[int] = None,
         filter: Optional[Filter] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
@@ -413,6 +435,7 @@ class MultiConversationsSelect(Select):
             confirm=confirm,
             max_selected_items=max_selected_items,
             filter=filter,
+            focus_on_load=focus_on_load,
         )
 
 
@@ -429,6 +452,7 @@ class ChannelsSelect(Select):
         initial_channel: Optional[str] = None,
         confirm: Optional[Confirm] = None,
         response_url_enabled: Optional[bool] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
@@ -436,6 +460,7 @@ class ChannelsSelect(Select):
             initial_channel=initial_channel,
             confirm=confirm,
             response_url_enabled=response_url_enabled,
+            focus_on_load=focus_on_load,
         )
 
 
@@ -452,6 +477,7 @@ class MultiChannelsSelect(Select):
         initial_channels: Optional[str] = None,
         confirm: Optional[Confirm] = None,
         max_selected_items: Optional[int] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             placeholder=placeholder,
@@ -459,6 +485,7 @@ class MultiChannelsSelect(Select):
             initial_channels=initial_channels,
             confirm=confirm,
             max_selected_items=max_selected_items,
+            focus_on_load=focus_on_load,
         )
 
 
@@ -485,6 +512,7 @@ class PlainTextInput(ActionableComponent):
     min_length: Optional[int] = Field(None, ge=0, lt=3000)
     max_length: Optional[int] = Field(None, ge=0, lt=3000)
     dispatch_action_config: Optional[DispatchActionConfig] = None
+    focus_on_load: Optional[bool] = None
 
     def __init__(
         self,
@@ -496,6 +524,7 @@ class PlainTextInput(ActionableComponent):
         min_length: Optional[int] = None,
         max_length: Optional[int] = None,
         dispatch_action_config: Optional[DispatchActionConfig] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             action_id=action_id,
@@ -505,6 +534,7 @@ class PlainTextInput(ActionableComponent):
             min_length=min_length,
             max_length=max_length,
             dispatch_action_config=dispatch_action_config,
+            focus_on_load=focus_on_load,
         )
 
     _validate_placeholder = validator(
@@ -519,6 +549,7 @@ class RadioButtons(ActionableComponent):
     )
     initial_option: Union[MarkdownOption, PlainOption, None] = None
     confirm: Optional[Confirm] = None
+    focus_on_load: Optional[bool] = None
 
     def __init__(
         self,
@@ -527,12 +558,14 @@ class RadioButtons(ActionableComponent):
         action_id: Optional[str] = None,
         initial_option: Union[MarkdownOption, PlainOption, None] = None,
         confirm: Optional[Confirm] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             options=options,
             action_id=action_id,
             initial_option=initial_option,
             confirm=confirm,
+            focus_on_load=focus_on_load,
         )
 
     @root_validator
@@ -550,6 +583,7 @@ class Timepicker(ActionableComponent):
     placeholder: Union[PlainText, str, None] = None
     initial_time: Optional[time] = None
     confirm: Optional[Confirm] = None
+    focus_on_load: Optional[bool] = None
 
     _validate_placeholder = validator(
         "placeholder", validate_text_length, max_length=150
@@ -563,10 +597,12 @@ class Timepicker(ActionableComponent):
         placeholder: Union[PlainText, str, None] = None,
         initial_time: Optional[time] = None,
         confirm: Optional[Confirm] = None,
+        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             action_id=action_id,
             placeholder=placeholder,
             initial_time=initial_time,
             confirm=confirm,
+            focus_on_load=focus_on_load,
         )
