@@ -50,6 +50,10 @@ class ActionableComponent(Component):
     action_id: Optional[str] = Field(None, min_length=1, max_length=255)
 
 
+class FocusableElement(ActionableComponent):
+    focus_on_load: Optional[bool] = None
+
+
 class Button(ActionableComponent):
     type: str = "button"
     text: Union[PlainText, str]
@@ -80,7 +84,7 @@ class Button(ActionableComponent):
     _validate_text = validator("text", validate_text_length, max_length=75)
 
 
-class Checkboxes(ActionableComponent):
+class Checkboxes(FocusableElement):
     type: str = "checkboxes"
     options: List[Union[MarkdownOption, PlainOption]] = Field(
         ..., min_items=1, max_items=10
@@ -89,7 +93,6 @@ class Checkboxes(ActionableComponent):
         None, min_items=1, max_items=10
     )
     confirm: Optional[Confirm] = None
-    focus_on_load: Optional[bool] = None
 
     def __init__(
         self,
@@ -120,12 +123,11 @@ class Checkboxes(ActionableComponent):
         return values
 
 
-class DatePicker(ActionableComponent):
+class DatePicker(FocusableElement):
     type: str = "datepicker"
     placeholder: Union[PlainText, str, None] = None
     initial_date: Optional[date] = None
     confirm: Optional[Confirm] = None
-    focus_on_load: Optional[bool] = None
 
     def __init__(
         self,
@@ -159,10 +161,9 @@ class Image(Component):
         super().__init__(image_url=image_url, alt_text=alt_text)
 
 
-class Select(ActionableComponent):
+class Select(FocusableElement):
     placeholder: Union[PlainText, str]
     confirm: Optional[Confirm] = None
-    focus_on_load: Optional[bool] = None
 
     _validate_placeholder = validator(
         "placeholder", validate_text_length, max_length=150
@@ -504,7 +505,7 @@ class Overflow(ActionableComponent):
         super().__init__(action_id=action_id, options=options, confirm=confirm)
 
 
-class PlainTextInput(ActionableComponent):
+class PlainTextInput(FocusableElement):
     type: str = "plain_text_input"
     placeholder: Union[PlainText, str, None] = None
     initial_value: Optional[str] = Field(None, min_length=1)
@@ -512,7 +513,6 @@ class PlainTextInput(ActionableComponent):
     min_length: Optional[int] = Field(None, ge=0, lt=3000)
     max_length: Optional[int] = Field(None, ge=0, lt=3000)
     dispatch_action_config: Optional[DispatchActionConfig] = None
-    focus_on_load: Optional[bool] = None
 
     def __init__(
         self,
@@ -542,14 +542,13 @@ class PlainTextInput(ActionableComponent):
     )
 
 
-class RadioButtons(ActionableComponent):
+class RadioButtons(FocusableElement):
     type: str = "radio_buttons"
     options: List[Union[MarkdownOption, PlainOption]] = Field(
         ..., min_items=1, max_items=10
     )
     initial_option: Union[MarkdownOption, PlainOption, None] = None
     confirm: Optional[Confirm] = None
-    focus_on_load: Optional[bool] = None
 
     def __init__(
         self,
@@ -578,12 +577,11 @@ class RadioButtons(ActionableComponent):
         return values
 
 
-class Timepicker(ActionableComponent):
+class Timepicker(FocusableElement):
     type: str = "timepicker"
     placeholder: Union[PlainText, str, None] = None
     initial_time: Optional[time] = None
     confirm: Optional[Confirm] = None
-    focus_on_load: Optional[bool] = None
 
     _validate_placeholder = validator(
         "placeholder", validate_text_length, max_length=150
