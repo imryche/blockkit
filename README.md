@@ -87,11 +87,12 @@ Here's the list of types of components and corresponding classes:
 ### Composition objects
 
 | Type       | Class                |
-| ---------- | -------------------- |
+|------------|----------------------|
 | plain_text | PlainText            |
 | mrkdwn     | MarkdownText         |
 |            | Confirm              |
-|            | Option               |
+|            | PlainOption          |
+|            | MarkdownOption       |
 |            | OptionGroup          |
 |            | Filter               |
 |            | DispatchActionConfig |
