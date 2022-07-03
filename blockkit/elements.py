@@ -277,7 +277,7 @@ class MultiStaticSelect(StaticSelectBase):
 
 
 class ExternalSelectBase(Select):
-    min_query_length: Optional[int] = Field(None, gt=0)
+    min_query_length: Optional[int] = Field(None, ge=0)
 
 
 class ExternalSelect(ExternalSelectBase):
