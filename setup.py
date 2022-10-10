@@ -15,10 +15,10 @@ URL = "https://github.com/imryche/blockkit"
 EMAIL = "imryche13@gmail.com"
 AUTHOR = "Dmitry Chernyshov"
 REQUIRES_PYTHON = ">=3.6.0"
-VERSION = "1.5.1"
+VERSION = "1.5.2"
 
-REQUIRED = ["pydantic", "black"]
-EXTRAS = {}
+REQUIRED = ["pydantic"]
+EXTRAS = {"gen": ["black"]}
 
 here = os.path.abspath(os.path.dirname(__file__))
 
