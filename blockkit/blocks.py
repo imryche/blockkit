@@ -23,6 +23,7 @@ from blockkit.elements import (
     StaticSelect,
     Timepicker,
     UsersSelect,
+    NumberInput,
 )
 from blockkit.objects import MarkdownText, PlainText
 from blockkit.validators import validate_text_length, validator
@@ -131,6 +132,7 @@ InputElement = Union[
     ChannelsSelect,
     MultiChannelsSelect,
     DatePicker,
+    NumberInput,
 ]
 
 

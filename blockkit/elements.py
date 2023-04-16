@@ -43,6 +43,7 @@ __all__ = [
     "StaticSelect",
     "Timepicker",
     "UsersSelect",
+    "NumberInput",
 ]
 
 
@@ -604,3 +605,40 @@ class Timepicker(FocusableElement):
             confirm=confirm,
             focus_on_load=focus_on_load,
         )
+
+
+class NumberInput(FocusableElement):
+    type: str = "number_input"
+    placeholder: Union[PlainText, str, None] = None
+    initial_value: Optional[str] = Field(None, min_length=1)
+    is_decimal_allowed: bool = True
+    min_value: Optional[str] = Field(None)
+    max_value: Optional[str] = Field(None)
+    dispatch_action_config: Optional[DispatchActionConfig] = None
+
+    def __init__(
+        self,
+        *,
+        action_id: Optional[str] = None,
+        placeholder: Union[PlainText, str, None] = None,
+        initial_value: Optional[str] = None,
+        is_decimal_allowed: bool,
+        min_value: Optional[str] = None,
+        max_value: Optional[str] = None,
+        dispatch_action_config: Optional[DispatchActionConfig] = None,
+        focus_on_load: Optional[bool] = None,
+    ):
+        super().__init__(
+            action_id=action_id,
+            placeholder=placeholder,
+            initial_value=initial_value,
+            is_decimal_allowed=is_decimal_allowed,
+            min_value=min_value,
+            max_value=max_value,
+            dispatch_action_config=dispatch_action_config,
+            focus_on_load=focus_on_load,
+        )
+
+    _validate_placeholder = validator(
+        "placeholder", validate_text_length, max_length=150
+    )
