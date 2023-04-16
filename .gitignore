@@ -108,4 +108,7 @@ dmypy.json
 
 message_test.py
 
+# venv
+venv/
+
 # End of https://www.gitignore.io/api/python
