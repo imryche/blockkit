@@ -82,7 +82,7 @@ Here's the list of types of components and corresponding classes:
 | channels_select            | ChannelsSelect           |
 | conversations_select       | ConversationsSelect      |
 | external_select            | ExternalSelect           |
-| timepicker                 | Timepicker               |
+| timepicker                 | TimePicker               |
 
 ### Composition objects
 

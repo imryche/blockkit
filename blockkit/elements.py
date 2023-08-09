@@ -41,7 +41,7 @@ __all__ = [
     "PlainTextInput",
     "RadioButtons",
     "StaticSelect",
-    "Timepicker",
+    "TimePicker",
     "UsersSelect",
     "NumberInput",
 ]
@@ -578,7 +578,7 @@ class RadioButtons(FocusableElement):
         return values
 
 
-class Timepicker(FocusableElement):
+class TimePicker(FocusableElement):
     type: str = "timepicker"
     placeholder: Union[PlainText, str, None] = None
     initial_time: Optional[time] = None
