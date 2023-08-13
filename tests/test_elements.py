@@ -255,7 +255,6 @@ def test_builds_datetimepicker():
     ).build() == {
         "type": "datetimepicker",
         "action_id": "action_id",
-        "placeholder": {"type": "plain_text", "text": "placeholder"},
         "initial_date_time": 1672646640,
         "confirm": {
             "title": {"type": "plain_text", "text": "title"},
