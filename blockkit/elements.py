@@ -1,5 +1,5 @@
 import itertools
-from datetime import date, time
+from datetime import date, time, datetime
 from typing import Dict, List, Optional, Union
 
 from pydantic import Field, root_validator
@@ -19,6 +19,7 @@ from blockkit.objects import (
 from blockkit.validators import (
     SlackUrl,
     validate_date,
+    validate_datetime,
     validate_text_length,
     validate_time,
     validator,
@@ -30,6 +31,7 @@ __all__ = [
     "Checkboxes",
     "ConversationsSelect",
     "DatePicker",
+    "DatetimePicker",
     "ExternalSelect",
     "Image",
     "MultiChannelsSelect",
@@ -152,6 +154,28 @@ class DatePicker(FocusableElement):
     )
     _validate_initial_date = validator("initial_date", validate_date)
 
+
+class DatetimePicker(FocusableElement):
+    type: str = "datetimepicker"
+    initial_date_time: Union[int, datetime, None] = None
+    confirm: Optional[Confirm] = None
+
+    _validate_initial_datetime = validator("initial_date_time", validate_datetime)
+
+    def __init__(
+        self,
+        *,
+        action_id: Optional[str] = None,
+        initial_date_time: Optional[Union[int, datetime]] = None,
+        confirm: Optional[Confirm] = None,
+        focus_on_load: Optional[bool] = None,
+    ):
+        super().__init__(
+            action_id=action_id,
+            initial_date_time=initial_date_time,
+            confirm=confirm,
+            focus_on_load=focus_on_load,
+        )
 
 class Image(Component):
     type: str = "image"

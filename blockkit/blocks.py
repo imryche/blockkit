@@ -10,6 +10,7 @@ from blockkit.elements import (
     Checkboxes,
     ConversationsSelect,
     DatePicker,
+    DatetimePicker,
     ExternalSelect,
     Image,
     MultiChannelsSelect,
@@ -34,6 +35,7 @@ ActionElement = Union[
     Button,
     Checkboxes,
     DatePicker,
+    DatetimePicker,
     StaticSelect,
     MultiStaticSelect,
     ExternalSelect,
@@ -132,6 +134,7 @@ InputElement = Union[
     ChannelsSelect,
     MultiChannelsSelect,
     DatePicker,
+    DatetimePicker,
     NumberInput,
 ]
 

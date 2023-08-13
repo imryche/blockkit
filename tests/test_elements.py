@@ -1,10 +1,13 @@
+from datetime import datetime
 import pytest
+from dateutil.tz import gettz
 from blockkit.elements import (
     Button,
     ChannelsSelect,
     Checkboxes,
     ConversationsSelect,
     DatePicker,
+    DatetimePicker,
     ExternalSelect,
     Image,
     MultiChannelsSelect,
@@ -234,6 +237,49 @@ def test_datepicker_excessive_placeholder_raises_exception():
 def test_datepicker_invalid_initial_date_raises_exception():
     with pytest.raises(ValidationError):
         DatePicker(initial_date="YEAR-MON-DAY")
+
+
+def test_builds_datetimepicker():
+    assert DatetimePicker(
+        action_id="action_id",
+        initial_date_time=datetime(
+            year=2023, month=1, day=2, hour=3, minute=4, tzinfo=gettz("America/New_York"),
+        ),
+        confirm=Confirm(
+            title=PlainText(text="title"),
+            text=MarkdownText(text="text"),
+            confirm=PlainText(text="confirm"),
+            deny=PlainText(text="deny"),
+        ),
+        focus_on_load=True,
+    ).build() == {
+        "type": "datetimepicker",
+        "action_id": "action_id",
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "initial_date_time": 1672646640,
+        "confirm": {
+            "title": {"type": "plain_text", "text": "title"},
+            "text": {"type": "mrkdwn", "text": "text"},
+            "confirm": {"type": "plain_text", "text": "confirm"},
+            "deny": {"type": "plain_text", "text": "deny"},
+        },
+        "focus_on_load": True,
+    }
+
+
+def test_datetimepicker_empty_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        DatetimePicker(action_id="")
+
+
+def test_datetimepicker_excessive_action_id_raises_exception():
+    with pytest.raises(ValidationError):
+        DatetimePicker(action_id="a" * 256)
+
+
+def test_datetimepicker_invalid_initial_datetime_raises_exception():
+    with pytest.raises(ValidationError):
+        DatetimePicker(initial_date_time=1672646640123)
 
 
 def test_builds_image():
