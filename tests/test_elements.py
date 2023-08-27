@@ -19,7 +19,7 @@ from blockkit.elements import (
     PlainTextInput,
     RadioButtons,
     StaticSelect,
-    Timepicker,
+    TimePicker,
     UsersSelect,
 )
 from blockkit.objects import (
@@ -1377,7 +1377,7 @@ def test_radio_buttons_initial_options_arent_within_options_raise_exception():
 
 
 def test_builds_timepicker():
-    assert Timepicker(
+    assert TimePicker(
         action_id="action_id",
         placeholder=PlainText(text="placeholder"),
         initial_time="22:55",
@@ -1405,14 +1405,14 @@ def test_builds_timepicker():
 
 def test_timepicker_empty_action_id_raises_exception():
     with pytest.raises(ValidationError):
-        Timepicker(action_id="")
+        TimePicker(action_id="")
 
 
 def test_timepicker_excessive_action_id_raises_exception():
     with pytest.raises(ValidationError):
-        Timepicker(action_id="a" * 256)
+        TimePicker(action_id="a" * 256)
 
 
 def test_timepicker_excessive_placeholder_raises_exception():
     with pytest.raises(ValidationError):
-        Timepicker(placeholder=PlainText(text="p" * 151))
+        TimePicker(placeholder=PlainText(text="p" * 151))

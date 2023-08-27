@@ -22,7 +22,7 @@ from blockkit.elements import (
     PlainTextInput,
     RadioButtons,
     StaticSelect,
-    Timepicker,
+    TimePicker,
     UsersSelect,
     NumberInput,
 )
@@ -48,7 +48,7 @@ ActionElement = Union[
     MultiChannelsSelect,
     Overflow,
     RadioButtons,
-    Timepicker,
+    TimePicker,
 ]
 
 
@@ -187,7 +187,7 @@ AccessoryElement = Union[
     MultiChannelsSelect,
     Overflow,
     RadioButtons,
-    Timepicker,
+    TimePicker,
 ]
 
 
