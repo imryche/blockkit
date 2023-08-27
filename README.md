@@ -68,6 +68,7 @@ Here's the list of types of components and corresponding classes:
 | button                     | Button                   |
 | checkboxes                 | Checkboxes               |
 | datepicker                 | DatePicker               |
+| datetimepicker             | DatetimePicker           |
 | type                       | Image                    |
 | multi_static_select        | MultiStaticSelect        |
 | multi_users_select         | MultiUsersSelect         |

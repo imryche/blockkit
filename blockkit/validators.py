@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import date, time, datetime
 from typing import TYPE_CHECKING, Callable, Optional, Union
 
 from pydantic import AnyUrl
@@ -37,6 +37,16 @@ def validate_date(v: date) -> Optional[str]:
 def validate_time(v: time) -> Optional[str]:
     if v is not None:
         return v.strftime("%H:%M")
+    return v
+
+
+def validate_datetime(v: Union[int, datetime]) -> Optional[int]:
+    if v is not None:
+        if type(v) == datetime:
+            return int(v.timestamp())
+        else:
+            _ = datetime.fromtimestamp(v)
+            return v
     return v
 
 
