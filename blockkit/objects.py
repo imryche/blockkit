@@ -1,11 +1,10 @@
 from typing import Dict, List, Optional, Union
 
-from pydantic import Field
-from pydantic.class_validators import root_validator
+from pydantic import AnyUrl, Field, model_validator
 
 from blockkit.components import Component
 from blockkit.enums import Include, Style, TriggerActionsOn
-from blockkit.validators import SlackUrl, validate_text_length, validator
+from blockkit.validators import validate_text_length, validator
 
 __all__ = [
     "Confirm",
@@ -66,7 +65,7 @@ class Confirm(Component):
 class BaseOption(Component):
     value: str = Field(..., min_length=1, max_length=75)
     description: Union[PlainText, str, None] = None
-    url: Optional[SlackUrl] = None
+    url: Optional[AnyUrl] = Field(None, max_length=3000)
 
     def __init__(
         self,
@@ -74,7 +73,7 @@ class BaseOption(Component):
         text: Union[PlainText, MarkdownText, str],
         value: str,
         description: Optional[Union[PlainText, str]] = None,
-        url: Optional[SlackUrl] = None,
+        url: Optional[AnyUrl] = None,
     ):
         super().__init__(text=text, value=value, description=description, url=url)
 
@@ -92,7 +91,7 @@ class PlainOption(BaseOption):
         text: Union[PlainText, str],
         value: str,
         description: Optional[Union[PlainText, str]] = None,
-        url: Optional[SlackUrl] = None,
+        url: Optional[AnyUrl] = None,
     ):
         super().__init__(text=text, value=value, description=description, url=url)
 
@@ -108,7 +107,7 @@ class MarkdownOption(BaseOption):
         text: Union[MarkdownText, str],
         value: str,
         description: Optional[Union[PlainText, str]] = None,
-        url: Optional[SlackUrl] = None,
+        url: Optional[AnyUrl] = None,
     ):
         super().__init__(text=text, value=value, description=description, url=url)
 
@@ -117,7 +116,7 @@ class MarkdownOption(BaseOption):
 
 class OptionGroup(Component):
     label: Union[PlainText, str]
-    options: List[PlainOption] = Field(..., min_items=1, max_items=100)
+    options: List[PlainOption] = Field(..., min_length=1, max_length=100)
 
     def __init__(self, *, label: Union[PlainText, str], options: List[PlainOption]):
         super().__init__(label=label, options=options)
@@ -126,7 +125,7 @@ class OptionGroup(Component):
 
 
 class DispatchActionConfig(Component):
-    trigger_actions_on: List[TriggerActionsOn] = Field(..., min_items=1, max_items=2)
+    trigger_actions_on: List[TriggerActionsOn] = Field(..., min_length=1, max_length=2)
 
     def __init__(self, *, trigger_actions_on: List[TriggerActionsOn]):
         super().__init__(trigger_actions_on=trigger_actions_on)
@@ -150,7 +149,7 @@ class Filter(Component):
             exclude_bot_users=exclude_bot_users,
         )
 
-    @root_validator
+    @model_validator(mode="before")
     def _validate_values(cls, values: Dict) -> Dict:
         if not any(values.values()):
             raise ValueError("You should provide at least one argument.")

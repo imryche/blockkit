@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Union
 
-from pydantic import Field, root_validator
+from pydantic import Field, model_validator
 
 from blockkit.blocks import (
     Actions,
@@ -21,7 +21,7 @@ Block = Union[Actions, Context, Divider, Header, ImageBlock, Input, Section]
 
 
 class View(Component):
-    blocks: List[Block] = Field(..., min_items=1, max_items=100)
+    blocks: List[Block] = Field(..., min_length=1, max_length=100)
     private_metadata: Optional[str] = Field(None, min_length=1, max_length=3000)
     callback_id: Optional[str] = Field(None, min_length=1, max_length=255)
 
@@ -87,7 +87,7 @@ class Modal(View):
     _validate_close = validator("close", validate_text_length, max_length=24)
     _validate_submit = validator("submit", validate_text_length, max_length=24)
 
-    @root_validator
+    @model_validator(mode="before")
     def _validate_values(cls, values: Dict) -> Dict:
         blocks = values.get("blocks")
         submit = values.get("submit")
@@ -119,14 +119,14 @@ class WorkflowStep(View):
 
 class Message(Component):
     text: Optional[str] = Field(None, min_length=1, max_length=3000)
-    blocks: Optional[List[Block]] = Field(..., min_items=1, max_items=50)
+    blocks: Optional[List[Block]] = Field(None, min_length=1, max_length=50)
 
     def __init__(
         self, *, text: Optional[str] = None, blocks: Optional[List[Block]] = None
     ):
         super().__init__(text=text, blocks=blocks)
 
-    @root_validator
+    @model_validator(mode="before")
     def _validate_values(cls, values: Dict) -> Dict:
         text = values.get("text")
         fields = values.get("blocks")

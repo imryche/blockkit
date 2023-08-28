@@ -29,7 +29,7 @@ def get_subclasses(cls: Type[T]) -> List[Type[T]]:
 
 
 components: Dict[str, Type[Component]] = {
-    c.schema()["properties"].get("type", {}).get("default"): c
+    c.model_json_schema()["properties"].get("type", {}).get("default"): c
     for c in get_subclasses(Component)
 }
 del components[None]

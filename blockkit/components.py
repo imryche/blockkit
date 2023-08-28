@@ -9,18 +9,16 @@ if TYPE_CHECKING:
 
 class Component(BaseModel):
     def __init__(self, *args, **kwargs):
-        for name, field in self.__fields__.items():
-            value = kwargs.get(field.alias)
-            origin = getattr(field.type_, "__origin__", None)
-
+        for name, field in self.model_fields.items():
+            value = kwargs.get(name)
+            origin = getattr(field.annotation, "__origin__", None)
             if (
                 value
                 and type(value) in (str, list)
                 and origin is Union
                 and self.__class__.__name__ != "Message"
             ):
-                types = field.type_.__args__
-
+                types = field.annotation.__args__
                 if type(value) is str:
                     value = self._expand_str(value, types)
                 elif type(value) is list:
@@ -31,8 +29,7 @@ class Component(BaseModel):
                         items.append(v)
                     value = items
 
-                kwargs[field.alias] = value
-
+                kwargs[name] = value
         super().__init__(*args, **kwargs)
 
     def _expand_str(
@@ -50,4 +47,4 @@ class Component(BaseModel):
         return value
 
     def build(self) -> dict:
-        return json.loads(self.json(by_alias=True, exclude_none=True))
+        return json.loads(self.model_dump_json(by_alias=True, exclude_none=True))

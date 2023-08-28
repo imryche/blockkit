@@ -1,8 +1,8 @@
-from datetime import date, time, datetime
-from typing import TYPE_CHECKING, Callable, Optional, Union
+from collections.abc import Callable
+from datetime import date, datetime, time
+from typing import TYPE_CHECKING, Optional, Union
 
-from pydantic import AnyUrl
-from pydantic import validator as pydantic_validator
+from pydantic import field_validator
 
 if TYPE_CHECKING:
     from blockkit.objects import MarkdownText, PlainText
@@ -11,9 +11,7 @@ if TYPE_CHECKING:
 def validator(
     field: str, func: Callable, each_item: bool = False, **kwargs
 ) -> classmethod:
-    return pydantic_validator(field, allow_reuse=True, each_item=each_item)(
-        lambda v: func(v, **kwargs)
-    )
+    return field_validator(field)(lambda v: func(v, **kwargs))
 
 
 def validate_text_length(
@@ -25,6 +23,13 @@ def validate_text_length(
             raise e
         elif type(v) != str and len(getattr(v, "text")) > max_length:
             raise e
+    return v
+
+
+def validate_list_text_length(v, *, max_length: int):
+    if v is not None:
+        for item in v:
+            validate_text_length(item, max_length=max_length)
     return v
 
 
@@ -48,7 +53,3 @@ def validate_datetime(v: Union[int, datetime]) -> Optional[int]:
             _ = datetime.fromtimestamp(v)
             return v
     return v
-
-
-class SlackUrl(AnyUrl):
-    max_length = 3000

@@ -1,17 +1,17 @@
 import pytest
+from pydantic import ValidationError
+
 from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
     Filter,
     Include,
     MarkdownText,
-    PlainOption,
-    MarkdownOption,
     OptionGroup,
+    PlainOption,
     PlainText,
     TriggerActionsOn,
 )
-from pydantic import ValidationError
 
 
 def test_builds_markdown_text():
@@ -28,7 +28,7 @@ def test_markdown_text_empty_text_raises_exception():
 
 
 def test_builds_plain_text():
-    assert PlainText(text="plain text", emoji=True) == {
+    assert PlainText(text="plain text", emoji=True).build() == {
         "type": "plain_text",
         "text": "plain text",
         "emoji": True,
@@ -121,7 +121,7 @@ def test_builds_option():
         "text": {"type": "plain_text", "text": "text"},
         "value": "value",
         "description": {"type": "plain_text", "text": "description"},
-        "url": "https://example.com",
+        "url": "https://example.com/",
     }
 
 

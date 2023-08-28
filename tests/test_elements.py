@@ -1,6 +1,9 @@
-from datetime import datetime
+from datetime import date, datetime, time
+
 import pytest
 from dateutil.tz import gettz
+from pydantic import ValidationError
+
 from blockkit.elements import (
     Button,
     ChannelsSelect,
@@ -32,7 +35,6 @@ from blockkit.objects import (
     PlainOption,
     PlainText,
 )
-from pydantic import ValidationError
 
 
 def test_builds_button():
@@ -52,7 +54,7 @@ def test_builds_button():
         "type": "button",
         "text": {"type": "plain_text", "text": "text"},
         "action_id": "action_id",
-        "url": "https://example.com",
+        "url": "https://example.com/",
         "value": "value",
         "style": "primary",
         "confirm": {
@@ -196,7 +198,7 @@ def test_builds_datepicker():
     assert DatePicker(
         action_id="action_id",
         placeholder=PlainText(text="placeholder"),
-        initial_date="2021-09-14",
+        initial_date=date(2021, 9, 14),
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),
@@ -1380,7 +1382,7 @@ def test_builds_timepicker():
     assert TimePicker(
         action_id="action_id",
         placeholder=PlainText(text="placeholder"),
-        initial_time="22:55",
+        initial_time=time(hour=22, minute=55),
         confirm=Confirm(
             title=PlainText(text="title"),
             text=MarkdownText(text="text"),

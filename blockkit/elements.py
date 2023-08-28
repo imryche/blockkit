@@ -1,8 +1,8 @@
 import itertools
-from datetime import date, time, datetime
+from datetime import date, datetime, time
 from typing import Dict, List, Optional, Union
 
-from pydantic import Field, root_validator
+from pydantic import AnyUrl, Field, model_validator
 from pydantic.networks import HttpUrl
 
 from blockkit.components import Component
@@ -17,7 +17,6 @@ from blockkit.objects import (
     PlainText,
 )
 from blockkit.validators import (
-    SlackUrl,
     validate_date,
     validate_datetime,
     validate_text_length,
@@ -60,7 +59,7 @@ class FocusableElement(ActionableComponent):
 class Button(ActionableComponent):
     type: str = "button"
     text: Union[PlainText, str]
-    url: Optional[SlackUrl] = None
+    url: Optional[AnyUrl] = Field(None, max_length=3000)
     value: Optional[str] = Field(None, min_length=1, max_length=2000)
     style: Optional[Style] = None
     confirm: Optional[Confirm] = None
@@ -70,7 +69,7 @@ class Button(ActionableComponent):
         *,
         text: Union[PlainText],
         action_id: Optional[str] = None,
-        url: Optional[SlackUrl] = None,
+        url: Optional[AnyUrl] = None,
         value: Optional[str] = None,
         style: Optional[Style] = None,
         confirm: Optional[Confirm] = None,
@@ -90,10 +89,10 @@ class Button(ActionableComponent):
 class Checkboxes(FocusableElement):
     type: str = "checkboxes"
     options: List[Union[MarkdownOption, PlainOption]] = Field(
-        ..., min_items=1, max_items=10
+        ..., min_length=1, max_length=10
     )
     initial_options: Optional[List[Union[MarkdownOption, PlainOption]]] = Field(
-        None, min_items=1, max_items=10
+        None, min_length=1, max_length=10
     )
     confirm: Optional[Confirm] = None
 
@@ -114,7 +113,7 @@ class Checkboxes(FocusableElement):
             focus_on_load=focus_on_load,
         )
 
-    @root_validator
+    @model_validator(mode="before")
     def _validate_values(cls, values: Dict) -> Dict:
         initial_options = values.get("initial_options")
         options = values.get("options")
@@ -196,8 +195,8 @@ class Select(FocusableElement):
 
 
 class StaticSelectBase(Select):
-    options: Optional[List[PlainOption]] = Field(None, min_items=1, max_items=100)
-    option_groups: Optional[List[OptionGroup]] = Field(None, min_items=1, max_items=100)
+    options: Optional[List[PlainOption]] = Field(None, min_length=1, max_length=100)
+    option_groups: Optional[List[OptionGroup]] = Field(None, min_length=1, max_length=100)
 
 
 class StaticSelect(StaticSelectBase):
@@ -225,7 +224,7 @@ class StaticSelect(StaticSelectBase):
             focus_on_load=focus_on_load,
         )
 
-    @root_validator
+    @model_validator(mode="before")
     def _validate_values(cls, values: Dict) -> Dict:
         initial_option = values.get("initial_option")
         options = values.get("options")
@@ -276,7 +275,7 @@ class MultiStaticSelect(StaticSelectBase):
             focus_on_load=focus_on_load,
         )
 
-    @root_validator
+    @model_validator(mode="before")
     def _validate_values(cls, values: Dict) -> Dict:
         initial_options = values.get("initial_options")
         options = values.get("options")
@@ -517,7 +516,7 @@ class MultiChannelsSelect(Select):
 
 class Overflow(ActionableComponent):
     type: str = "overflow"
-    options: List[PlainOption] = Field(..., min_items=1, max_items=5)
+    options: List[PlainOption] = Field(..., min_length=1, max_length=5)
     confirm: Optional[Confirm] = None
 
     def __init__(
@@ -570,7 +569,7 @@ class PlainTextInput(FocusableElement):
 class RadioButtons(FocusableElement):
     type: str = "radio_buttons"
     options: List[Union[MarkdownOption, PlainOption]] = Field(
-        ..., min_items=1, max_items=10
+        ..., min_length=1, max_length=10
     )
     initial_option: Union[MarkdownOption, PlainOption, None] = None
     confirm: Optional[Confirm] = None
@@ -592,7 +591,7 @@ class RadioButtons(FocusableElement):
             focus_on_load=focus_on_load,
         )
 
-    @root_validator
+    @model_validator(mode="before")
     def _validate_values(cls, values):
         initial_option = values.get("initial_option")
         options = values.get("options")

@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Union
 
-from pydantic import Field, root_validator
+from pydantic import Field, model_validator
 from pydantic.networks import HttpUrl
 
 from blockkit.components import Component
@@ -18,16 +18,20 @@ from blockkit.elements import (
     MultiExternalSelect,
     MultiStaticSelect,
     MultiUsersSelect,
+    NumberInput,
     Overflow,
     PlainTextInput,
     RadioButtons,
     StaticSelect,
     TimePicker,
     UsersSelect,
-    NumberInput,
 )
 from blockkit.objects import MarkdownText, PlainText
-from blockkit.validators import validate_text_length, validator
+from blockkit.validators import (
+    validate_list_text_length,
+    validate_text_length,
+    validator,
+)
 
 __all__ = ["Actions", "Context", "Divider", "Header", "ImageBlock", "Input", "Section"]
 
@@ -58,7 +62,7 @@ class Block(Component):
 
 class Actions(Block):
     type: str = "actions"
-    elements: List[ActionElement] = Field(..., min_items=1, max_items=5)
+    elements: List[ActionElement] = Field(..., min_length=1, max_length=5)
 
     def __init__(
         self, *, elements: List[ActionElement], block_id: Optional[str] = None
@@ -69,7 +73,7 @@ class Actions(Block):
 class Context(Block):
     type: str = "context"
     elements: List[Union[Image, PlainText, MarkdownText, str]] = Field(
-        ..., min_items=1, max_items=10
+        ..., min_length=1, max_length=10
     )
 
     def __init__(
@@ -195,7 +199,7 @@ class Section(Block):
     type: str = "section"
     text: Union[PlainText, MarkdownText, str, None] = None
     fields_: Optional[List[Union[PlainText, MarkdownText, str]]] = Field(
-        None, alias="fields", min_items=1, max_items=10
+        None, alias="fields", min_length=1, max_length=10
     )
     accessory: Optional[AccessoryElement] = None
 
@@ -213,13 +217,13 @@ class Section(Block):
 
     _validate_text = validator("text", validate_text_length, max_length=3000)
     _validate_fields = validator(
-        "fields_", validate_text_length, each_item=True, max_length=2000
+        "fields_", validate_list_text_length, max_length=2000
     )
 
-    @root_validator
+    @model_validator(mode="before")
     def _validate_values(cls, values: Dict) -> Dict:
         text = values.get("text")
-        fields = values.get("fields_")
+        fields = values.get("fields")
 
         if text is None and fields is None:
             raise ValueError("You must provide either text or fields")
