@@ -106,8 +106,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-message_test.py
-
 # venv
 venv*/
 
