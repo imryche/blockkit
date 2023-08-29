@@ -19,6 +19,7 @@ class Component(BaseModel):
                 and self.__class__.__name__ != "Message"
             ):
                 types = field.annotation.__args__
+                # types = field.type_.__args__
                 if type(value) is str:
                     value = self._expand_str(value, types)
                 elif type(value) is list:
@@ -35,7 +36,7 @@ class Component(BaseModel):
     def _expand_str(
         self, value: str, types: List[Type[Any]]
     ) -> Union["PlainText", "MarkdownText", str]:
-        literal_types = [t.__name__ for t in types]
+        literal_types = [getattr(t, "__name__", None) for t in types]
 
         if "MarkdownText" in literal_types:
             idx = literal_types.index("MarkdownText")
