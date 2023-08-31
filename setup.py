@@ -1,12 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-import io
 import os
 import sys
 from shutil import rmtree
 
-from setuptools import find_packages, setup, Command
+from setuptools import Command, find_packages, setup
 
 # Package meta-data.
 NAME = "blockkit"
@@ -14,17 +12,17 @@ DESCRIPTION = "A fast way to build Block Kit interfaces in Python."
 URL = "https://github.com/imryche/blockkit"
 EMAIL = "imryche13@gmail.com"
 AUTHOR = "Dmitry Chernyshov"
-REQUIRES_PYTHON = ">=3.6.0"
-VERSION = "1.5.2"
+REQUIRES_PYTHON = ">=3.7.0"
+VERSION = "1.6.1"
 
-REQUIRED = ["pydantic"]
+REQUIRED = ["pydantic>=2"]
 EXTRAS = {"gen": ["black"]}
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
 try:
-    with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
         long_description = "\n" + f.read()
 except FileNotFoundError:
     long_description = DESCRIPTION
@@ -48,7 +46,7 @@ class UploadCommand(Command):
     @staticmethod
     def status(s):
         """Prints things in bold."""
-        print("\033[1m{0}\033[0m".format(s))
+        print(f"\033[1m{s}\033[0m")
 
     def initialize_options(self):
         pass
@@ -64,13 +62,13 @@ class UploadCommand(Command):
             pass
 
         self.status("Building Source and Wheel (universal) distribution…")
-        os.system("{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
+        os.system(f"{sys.executable} setup.py sdist bdist_wheel --universal")
 
         self.status("Uploading the package to PyPI via Twine…")
         os.system("twine upload dist/*")
 
         self.status("Pushing git tags…")
-        os.system("git tag v{0}".format(about["__version__"]))
+        os.system("git tag v{}".format(about["__version__"]))
         os.system("git push --tags")
 
         sys.exit()
