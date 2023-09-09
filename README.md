@@ -12,7 +12,7 @@ Blockkit performs validation at runtime and provides user-friendly errors when d
 
 ## Generate
 
-You don't even need to write code yourself. Go to [blockkit-generator.com](https://blockkit-generator.com) paste your JSON payload from [Block Kit Builder](https://api.slack.com/tools/block-kit-builder) and get corresponding Python code!
+You don't even need to write code yourself. Go to [https://blockkit.botsignals.co](https://blockkit.botsignals.co) paste your JSON payload from [Block Kit Builder](https://api.slack.com/tools/block-kit-builder) and get corresponding Python code!
 
 ![Screenshot](https://github.com/imryche/blockkit/raw/master/images/generator.png)
 
