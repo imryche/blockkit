@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 from pydantic import Field, model_validator
 
@@ -87,14 +87,11 @@ class Modal(View):
     _validate_close = validator("close", validate_text_length, max_length=24)
     _validate_submit = validator("submit", validate_text_length, max_length=24)
 
-    @model_validator(mode="before")
-    def _validate_values(cls, values: Dict) -> Dict:
-        blocks = values.get("blocks")
-        submit = values.get("submit")
-
-        if blocks and not submit and Input in (type(b) for b in values["blocks"]):
+    @model_validator(mode="after")
+    def _validate_values(self) -> "Modal":
+        if self.blocks and not self.submit and Input in (type(b) for b in self.blocks):
             raise ValueError("submit is required when an Input is within blocks")
-        return values
+        return self
 
 
 class WorkflowStep(View):
@@ -126,12 +123,8 @@ class Message(Component):
     ):
         super().__init__(text=text, blocks=blocks)
 
-    @model_validator(mode="before")
-    def _validate_values(cls, values: Dict) -> Dict:
-        text = values.get("text")
-        fields = values.get("blocks")
-
-        if text is None and fields is None:
+    @model_validator(mode="after")
+    def _validate_values(self) -> "Message":
+        if not self.text and not self.blocks:
             raise ValueError("You must provide either text or blocks")
-
-        return values
+        return self

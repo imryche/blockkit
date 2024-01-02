@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 from pydantic import Field, model_validator
 from pydantic.networks import HttpUrl
@@ -216,16 +216,10 @@ class Section(Block):
         )
 
     _validate_text = validator("text", validate_text_length, max_length=3000)
-    _validate_fields = validator(
-        "fields_", validate_list_text_length, max_length=2000
-    )
+    _validate_fields = validator("fields_", validate_list_text_length, max_length=2000)
 
-    @model_validator(mode="before")
-    def _validate_values(cls, values: Dict) -> Dict:
-        text = values.get("text")
-        fields = values.get("fields")
-
-        if text is None and fields is None:
-            raise ValueError("You must provide either text or fields")
-
-        return values
+    @model_validator(mode="after")
+    def _validate_values(self) -> "Section":
+        if not self.text and not self.fields_:
+            raise ValueError("You must provide either text or fields.")
+        return self

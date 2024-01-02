@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 from pydantic import AnyUrl, Field, model_validator
 
@@ -149,8 +149,14 @@ class Filter(Component):
             exclude_bot_users=exclude_bot_users,
         )
 
-    @model_validator(mode="before")
-    def _validate_values(cls, values: Dict) -> Dict:
-        if not any(values.values()):
+    @model_validator(mode="after")
+    def _validate_values(self) -> "Filter":
+        if not any(
+            [
+                self.include,
+                self.exclude_external_shared_channels,
+                self.exclude_bot_users,
+            ]
+        ):
             raise ValueError("You should provide at least one argument.")
-        return values
+        return self

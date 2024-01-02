@@ -15,7 +15,7 @@ AUTHOR = "Dmitry Chernyshov"
 REQUIRES_PYTHON = ">=3.7.0"
 VERSION = "1.6.1"
 
-REQUIRED = ["pydantic>=2"]
+REQUIRED = ["pydantic>=2,<3"]
 EXTRAS = {"gen": ["black"]}
 
 here = os.path.abspath(os.path.dirname(__file__))

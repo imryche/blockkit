@@ -245,7 +245,12 @@ def test_builds_datetimepicker():
     assert DatetimePicker(
         action_id="action_id",
         initial_date_time=datetime(
-            year=2023, month=1, day=2, hour=3, minute=4, tzinfo=gettz("America/New_York"),
+            year=2023,
+            month=1,
+            day=2,
+            hour=3,
+            minute=4,
+            tzinfo=gettz("America/New_York"),
         ),
         confirm=Confirm(
             title=PlainText(text="title"),

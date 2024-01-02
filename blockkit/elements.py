@@ -1,6 +1,6 @@
 import itertools
 from datetime import date, datetime, time
-from typing import Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 from pydantic import AnyUrl, Field, model_validator
 from pydantic.networks import HttpUrl
@@ -113,16 +113,15 @@ class Checkboxes(FocusableElement):
             focus_on_load=focus_on_load,
         )
 
-    @model_validator(mode="before")
-    def _validate_values(cls, values: Dict) -> Dict:
-        initial_options = values.get("initial_options")
-        options = values.get("options")
+    @model_validator(mode="after")
+    def _validate_values(self) -> "Checkboxes":
+        if not self.initial_options:
+            return self
 
-        if initial_options is not None:
-            for initial_option in initial_options:
-                if initial_option not in options:
-                    raise ValueError(f"Option {initial_option} isn't within {options}")
-        return values
+        for initial_option in self.initial_options:
+            if initial_option not in self.options:
+                raise ValueError(f"Option {initial_option} isn't within {self.options}")
+        return self
 
 
 class DatePicker(FocusableElement):
@@ -176,6 +175,7 @@ class DatetimePicker(FocusableElement):
             focus_on_load=focus_on_load,
         )
 
+
 class Image(Component):
     type: str = "image"
     image_url: HttpUrl
@@ -196,7 +196,9 @@ class Select(FocusableElement):
 
 class StaticSelectBase(Select):
     options: Optional[List[PlainOption]] = Field(None, min_length=1, max_length=100)
-    option_groups: Optional[List[OptionGroup]] = Field(None, min_length=1, max_length=100)
+    option_groups: Optional[List[OptionGroup]] = Field(
+        None, min_length=1, max_length=100
+    )
 
 
 class StaticSelect(StaticSelectBase):
@@ -224,27 +226,28 @@ class StaticSelect(StaticSelectBase):
             focus_on_load=focus_on_load,
         )
 
-    @model_validator(mode="before")
-    def _validate_values(cls, values: Dict) -> Dict:
-        initial_option = values.get("initial_option")
-        options = values.get("options")
-        option_groups = values.get("option_groups")
+    @model_validator(mode="after")
+    def _validate_values(self) -> "StaticSelect":
+        if bool(self.options) == bool(self.option_groups):
+            raise ValueError("You must provide either options or option_groups.")
 
-        if not any((options, option_groups)) or options and option_groups:
-            raise ValueError("You must provide either options or option_groups")
+        if (
+            self.initial_option
+            and self.options
+            and self.initial_option not in self.options
+        ):
+            raise ValueError(
+                f"Option {self.initial_option} isn't within {self.options}"
+            )
 
-        if None not in (initial_option, options) and initial_option not in options:
-            raise ValueError(f"Option {initial_option} isn't within {options}")
-
-        if None not in (initial_option, option_groups):
-            if initial_option not in itertools.chain(
-                *[og.options for og in option_groups]
+        if self.initial_option and self.option_groups:
+            if self.initial_option not in itertools.chain(
+                *[og.options for og in self.option_groups]
             ):
                 raise ValueError(
-                    f"Option {initial_option} isn't within {option_groups}"
+                    f"Option {self.initial_option} isn't within {self.option_groups}"
                 )
-
-        return values
+        return self
 
 
 class MultiStaticSelect(StaticSelectBase):
@@ -275,29 +278,26 @@ class MultiStaticSelect(StaticSelectBase):
             focus_on_load=focus_on_load,
         )
 
-    @model_validator(mode="before")
-    def _validate_values(cls, values: Dict) -> Dict:
-        initial_options = values.get("initial_options")
-        options = values.get("options")
-        option_groups = values.get("option_groups")
+    @model_validator(mode="after")
+    def _validate_values(self) -> "MultiStaticSelect":
+        if bool(self.options) == bool(self.option_groups):
+            raise ValueError("You must provide either options or option_groups.")
 
-        if not any((options, option_groups)) or options and option_groups:
-            raise ValueError("You must provide either options or option_groups")
-
-        if None not in (initial_options, options):
-            for initial_option in initial_options:
-                if initial_option not in options:
-                    raise ValueError(f"Option {initial_option} isn't within {options}")
-
-        if None not in (initial_options, option_groups):
-            groups_options = itertools.chain(*[og.options for og in option_groups])
-            for initial_option in initial_options:
-                if initial_option not in groups_options:
+        if self.initial_options and self.options:
+            for initial_option in self.initial_options:
+                if initial_option not in self.options:
                     raise ValueError(
-                        f"Option {initial_option} isn't within {option_groups}"
+                        f"Option {initial_option} isn't within {self.options}"
                     )
 
-        return values
+        if self.initial_options and self.option_groups:
+            groups_options = itertools.chain(*[og.options for og in self.option_groups])
+            for initial_option in self.initial_options:
+                if initial_option not in groups_options:
+                    raise ValueError(
+                        f"Option {initial_option} isn't within {self.option_groups}"
+                    )
+        return self
 
 
 class ExternalSelectBase(Select):
@@ -591,14 +591,17 @@ class RadioButtons(FocusableElement):
             focus_on_load=focus_on_load,
         )
 
-    @model_validator(mode="before")
-    def _validate_values(cls, values):
-        initial_option = values.get("initial_option")
-        options = values.get("options")
-
-        if initial_option is not None and initial_option not in options:
-            raise ValueError(f"Option {initial_option} isn't within {options}")
-        return values
+    @model_validator(mode="after")
+    def _validate_values(self) -> "RadioButtons":
+        if (
+            self.initial_option
+            and self.options
+            and self.initial_option not in self.options
+        ):
+            raise ValueError(
+                f"Option {self.initial_option} isn't within {self.options}"
+            )
+        return self
 
 
 class TimePicker(FocusableElement):
