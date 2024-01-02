@@ -139,6 +139,7 @@ InputElement = Union[
     MultiChannelsSelect,
     DatePicker,
     DatetimePicker,
+    TimePicker,
     NumberInput,
 ]
 
