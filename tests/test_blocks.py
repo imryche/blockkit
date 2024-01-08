@@ -8,11 +8,12 @@ from blockkit.blocks import (
     Input,
     PlainText,
     PlainTextInput,
+    RichText,
     Section,
     UsersSelect,
 )
-from blockkit.elements import Button, Image
-from blockkit.objects import MarkdownText
+from blockkit.elements import Button, Image, RichTextSection
+from blockkit.objects import MarkdownText, Style, Text
 from pydantic import ValidationError
 
 
@@ -264,6 +265,71 @@ def test_input_excessive_hint_raises_exception():
             element=PlainTextInput(action_id="action_id"),
             hint=PlainText(text="h" * 2001),
         )
+
+
+def test_builds_rich_text():
+    assert RichText(
+        elements=[
+            RichTextSection(
+                elements=[
+                    Text(text="plain"),
+                    Text(text="one style", style=Style(bold=True)),
+                    Text(text="two styles", style=Style(italic=True, bold=True)),
+                    Text(
+                        text="also two styles",
+                        style=Style(strike=True, italic=True, bold=False),
+                    ),
+                ]
+            )
+        ]
+    ).build() == {
+        "type": "rich_text",
+        "elements": [
+            {
+                "type": "rich_text_section",
+                "elements": [
+                    {"type": "text", "text": "plain"},
+                    {"type": "text", "text": "one style", "style": {"bold": True}},
+                    {
+                        "type": "text",
+                        "text": "two styles",
+                        "style": {"italic": True, "bold": True},
+                    },
+                    {
+                        "type": "text",
+                        "text": "also two styles",
+                        "style": {"strike": True, "italic": True, "bold": False},
+                    },
+                ],
+            }
+        ],
+    }
+
+
+def test_rich_text_empty_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        RichText(
+            elements=[RichTextSection(elements=[Text(text="text")])],
+            block_id="",
+        )
+
+
+def test_rich_text_excessive_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        RichText(
+            elements=[RichTextSection(elements=[Text(text="text")])],
+            block_id="b" * 256,
+        )
+
+
+def test_rich_text_empty_elements_raise_exception():
+    with pytest.raises(ValidationError):
+        RichText(elements=[])
+
+
+def test_rich_text_excessive_elements_raise_exception():
+    with pytest.raises(ValidationError):
+        RichText(elements=[MarkdownText(text="*markdown* text") for _ in range(11)])
 
 
 def test_builds_section():

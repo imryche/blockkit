@@ -15,6 +15,7 @@ from blockkit.objects import (
     OptionGroup,
     PlainOption,
     PlainText,
+    Text,
 )
 from blockkit.validators import (
     validate_date,
@@ -668,3 +669,23 @@ class NumberInput(FocusableElement):
     _validate_placeholder = validator(
         "placeholder", validate_text_length, max_length=150
     )
+
+
+class RichTextList(Component):
+    type: str = "rich_text_list"
+
+
+class RichTextPreformatted(Component):
+    type: str = "rich_text_preformatted"
+
+
+class RichTextQuote(Component):
+    type: str = "rich_text_quote"
+
+
+class RichTextSection(Component):
+    type: str = "rich_text_section"
+    elements: List[Text] = Field(..., min_length=1)
+
+    def __init__(self, *, elements: List[Text]):
+        super().__init__(elements=elements)

@@ -22,6 +22,10 @@ from blockkit.elements import (
     Overflow,
     PlainTextInput,
     RadioButtons,
+    RichTextList,
+    RichTextPreformatted,
+    RichTextQuote,
+    RichTextSection,
     StaticSelect,
     TimePicker,
     UsersSelect,
@@ -184,7 +188,12 @@ class Input(Block):
     _validate_hint = validator("hint", validate_text_length, max_length=2000)
 
 
-RichTextElement = Union[None, None]
+RichTextElement = Union[
+    RichTextList,
+    RichTextQuote,
+    RichTextPreformatted,
+    RichTextSection,
+]
 
 
 class RichText(Block):
