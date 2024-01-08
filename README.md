@@ -51,15 +51,16 @@ Here's the list of types of components and corresponding classes:
 
 ### Blocks
 
-| Type    | Class      |
-| ------- | ---------- |
-| actions | Actions    |
-| context | Context    |
-| divider | Divider    |
-| header  | Header     |
-| image   | ImageBlock |
-| input   | Input      |
-| section | Section    |
+| Type      | Class      |
+| --------- | ---------- |
+| actions   | Actions    |
+| context   | Context    |
+| divider   | Divider    |
+| header    | Header     |
+| image     | ImageBlock |
+| input     | Input      |
+| rich_text | RichText   |
+| section   | Section    |
 
 ### Block elements
 
@@ -88,7 +89,7 @@ Here's the list of types of components and corresponding classes:
 ### Composition objects
 
 | Type       | Class                |
-|------------|----------------------|
+| ---------- | -------------------- |
 | plain_text | PlainText            |
 | mrkdwn     | MarkdownText         |
 |            | Confirm              |

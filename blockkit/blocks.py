@@ -33,7 +33,16 @@ from blockkit.validators import (
     validator,
 )
 
-__all__ = ["Actions", "Context", "Divider", "Header", "ImageBlock", "Input", "Section"]
+__all__ = [
+    "Actions",
+    "Context",
+    "Divider",
+    "Header",
+    "ImageBlock",
+    "Input",
+    "RichText",
+    "Section",
+]
 
 ActionElement = Union[
     Button,
@@ -173,6 +182,19 @@ class Input(Block):
 
     _validate_label = validator("label", validate_text_length, max_length=2000)
     _validate_hint = validator("hint", validate_text_length, max_length=2000)
+
+
+RichTextElement = Union[None, None]
+
+
+class RichText(Block):
+    type: str = "rich_text"
+    elements: List[RichTextElement] = Field(..., min_length=1)
+
+    def __init__(
+        self, *, elements: List[RichTextElement], block_id: Optional[str] = None
+    ):
+        super().__init__(elements=elements, block_id=block_id)
 
 
 AccessoryElement = Union[
