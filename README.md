@@ -85,6 +85,10 @@ Here's the list of types of components and corresponding classes:
 | conversations_select       | ConversationsSelect      |
 | external_select            | ExternalSelect           |
 | timepicker                 | TimePicker               |
+| rich_text_list             | RichTextList             |
+| rich_text_preformatted     | RichTextPreformatted     |
+| rich_text_quote            | RichTextQuote            |
+| rich_text_section          | RichTextSection          |
 
 ### Composition objects
 
@@ -92,6 +96,9 @@ Here's the list of types of components and corresponding classes:
 | ---------- | -------------------- |
 | plain_text | PlainText            |
 | mrkdwn     | MarkdownText         |
+| text       | Text                 |
+| emoji      | Emoji                |
+|            | Style                |
 |            | Confirm              |
 |            | PlainOption          |
 |            | MarkdownOption       |
