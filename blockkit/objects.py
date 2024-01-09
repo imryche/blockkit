@@ -42,6 +42,17 @@ class Style(Component):
     bold: Optional[bool] = None
     italic: Optional[bool] = None
     strike: Optional[bool] = None
+    code: Optional[bool] = None
+
+    def __init__(
+        self,
+        *,
+        bold: Optional[bool] = None,
+        italic: Optional[bool] = None,
+        strike: Optional[bool] = None,
+        code: Optional[bool] = None,
+    ):
+        super().__init__(bold=bold, italic=italic, strike=strike, code=code)
 
 
 class Text(Component):

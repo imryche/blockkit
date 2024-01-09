@@ -4,12 +4,15 @@ from pydantic import ValidationError
 from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
+    Emoji,
     Filter,
     Include,
     MarkdownText,
     OptionGroup,
     PlainOption,
     PlainText,
+    Style,
+    Text,
     TriggerActionsOn,
 )
 
@@ -218,15 +221,12 @@ def test_option_group_empty_options_raise_exception():
 
 
 def test_builds_dispatch_action_config():
-    assert (
-        DispatchActionConfig(
-            trigger_actions_on=[
-                TriggerActionsOn.on_enter_pressed,
-                TriggerActionsOn.on_character_entered,
-            ]
-        ).build()
-        == {"trigger_actions_on": ["on_enter_pressed", "on_character_entered"]}
-    )
+    assert DispatchActionConfig(
+        trigger_actions_on=[
+            TriggerActionsOn.on_enter_pressed,
+            TriggerActionsOn.on_character_entered,
+        ]
+    ).build() == {"trigger_actions_on": ["on_enter_pressed", "on_character_entered"]}
 
 
 def test_dispatch_action_config_incorrect_trigger_raises_exception():
@@ -270,3 +270,40 @@ def test_empty_filter_raises_exception():
 def test_filter_with_incorrect_include_raises_exception():
     with pytest.raises(ValidationError):
         Filter(include=["group"])
+
+
+def test_builds_emoji():
+    assert Emoji(name="raised_hands").build() == {
+        "type": "emoji",
+        "name": "raised_hands",
+    }
+
+
+def test_empty_emoji_raises_exception():
+    with pytest.raises(ValidationError):
+        Emoji(name="")
+
+
+def test_builds_style():
+    assert Style(bold=True, italic=False, strike=None, code=True).build() == {
+        "bold": True,
+        "italic": False,
+        "code": True,
+    }
+
+
+def test_empty_style_is_ok():
+    assert Style().build() == {}
+
+
+def test_builds_text():
+    assert Text(text="text", style=Style(bold=True, code=True)).build() == {
+        "type": "text",
+        "text": "text",
+        "style": {"code": True, "bold": True},
+    }
+
+
+def test_empty_text_raises_exception():
+    with pytest.raises(ValidationError):
+        Text(text="")
