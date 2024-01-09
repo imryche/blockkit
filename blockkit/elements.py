@@ -681,6 +681,10 @@ class RichTextList(Component):
 
 class RichTextPreformatted(Component):
     type: str = "rich_text_preformatted"
+    elements: List[RichTextObject] = Field(..., min_length=1)
+
+    def __init__(self, *, elements: List[RichTextObject]):
+        super().__init__(elements=elements)
 
 
 class RichTextQuote(Component):

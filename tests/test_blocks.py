@@ -12,7 +12,13 @@ from blockkit.blocks import (
     Section,
     UsersSelect,
 )
-from blockkit.elements import Button, Image, RichTextQuote, RichTextSection
+from blockkit.elements import (
+    Button,
+    Image,
+    RichTextPreformatted,
+    RichTextQuote,
+    RichTextSection,
+)
 from blockkit.objects import Emoji, MarkdownText, Style, Text
 from pydantic import ValidationError
 
@@ -270,6 +276,11 @@ def test_input_excessive_hint_raises_exception():
 def test_builds_rich_text():
     assert RichText(
         elements=[
+            RichTextPreformatted(
+                elements=[
+                    Text(text="a preformatted text"),
+                ]
+            ),
             RichTextQuote(
                 elements=[
                     Text(text="a quote"),
@@ -284,6 +295,12 @@ def test_builds_rich_text():
     ).build() == {
         "type": "rich_text",
         "elements": [
+            {
+                "type": "rich_text_preformatted",
+                "elements": [
+                    {"type": "text", "text": "a preformatted text"},
+                ],
+            },
             {
                 "type": "rich_text_quote",
                 "elements": [

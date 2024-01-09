@@ -21,6 +21,7 @@ from blockkit.elements import (
     Overflow,
     PlainTextInput,
     RadioButtons,
+    RichTextPreformatted,
     RichTextQuote,
     RichTextSection,
     StaticSelect,
@@ -1386,6 +1387,32 @@ def test_radio_buttons_initial_options_arent_within_options_raise_exception():
                 text=PlainText(text="option 2"), value="value_2"
             ),
         )
+
+
+def test_builds_rich_text_preformatted():
+    assert RichTextPreformatted(
+        elements=[
+            Text(text="Well "),
+            Text(text="done ", style=Style(bold=True)),
+            Text(text="is better than well "),
+            Text(text="said.", style=Style(bold=True, strike=True)),
+            Emoji(name="wink"),
+        ]
+    ).build() == {
+        "type": "rich_text_preformatted",
+        "elements": [
+            {"type": "text", "text": "Well "},
+            {"type": "text", "text": "done ", "style": {"bold": True}},
+            {"type": "text", "text": "is better than well "},
+            {"type": "text", "text": "said.", "style": {"bold": True, "strike": True}},
+            {"type": "emoji", "name": "wink"},
+        ],
+    }
+
+
+def test_empty_rich_text_preformatted_raises_exception():
+    with pytest.raises(ValidationError):
+        RichTextPreformatted(elements=[])
 
 
 def test_builds_rich_text_quote():
