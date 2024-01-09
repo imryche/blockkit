@@ -53,6 +53,14 @@ class Text(Component):
         super().__init__(text=text, style=style)
 
 
+class Emoji(Component):
+    type: str = "emoji"
+    name: str = Field(..., min_length=1)
+
+    def __init__(self, *, name: str):
+        super().__init__(name=name)
+
+
 class Confirm(Component):
     title: Union[PlainText, str]
     text: Union[PlainText, MarkdownText, str]

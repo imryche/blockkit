@@ -10,6 +10,7 @@ from blockkit.enums import Style
 from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
+    Emoji,
     Filter,
     MarkdownOption,
     OptionGroup,
@@ -671,6 +672,9 @@ class NumberInput(FocusableElement):
     )
 
 
+RichTextObject = Union[Text, Emoji]
+
+
 class RichTextList(Component):
     type: str = "rich_text_list"
 
@@ -685,7 +689,7 @@ class RichTextQuote(Component):
 
 class RichTextSection(Component):
     type: str = "rich_text_section"
-    elements: List[Text] = Field(..., min_length=1)
+    elements: List[RichTextObject] = Field(..., min_length=1)
 
-    def __init__(self, *, elements: List[Text]):
+    def __init__(self, *, elements: List[RichTextObject]):
         super().__init__(elements=elements)

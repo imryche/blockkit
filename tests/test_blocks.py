@@ -13,7 +13,7 @@ from blockkit.blocks import (
     UsersSelect,
 )
 from blockkit.elements import Button, Image, RichTextSection
-from blockkit.objects import MarkdownText, Style, Text
+from blockkit.objects import Emoji, MarkdownText, Style, Text
 from pydantic import ValidationError
 
 
@@ -275,6 +275,7 @@ def test_builds_rich_text():
                     Text(text="plain"),
                     Text(text="one style", style=Style(bold=True)),
                     Text(text="two styles", style=Style(italic=True, bold=True)),
+                    Emoji(name="smile"),
                     Text(
                         text="also two styles",
                         style=Style(strike=True, italic=True, bold=False),
@@ -294,6 +295,10 @@ def test_builds_rich_text():
                         "type": "text",
                         "text": "two styles",
                         "style": {"italic": True, "bold": True},
+                    },
+                    {
+                        "type": "emoji",
+                        "name": "smile",
                     },
                     {
                         "type": "text",
