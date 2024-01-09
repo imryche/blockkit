@@ -15,6 +15,7 @@ from blockkit.blocks import (
 from blockkit.elements import (
     Button,
     Image,
+    RichTextList,
     RichTextPreformatted,
     RichTextQuote,
     RichTextSection,
@@ -291,6 +292,26 @@ def test_builds_rich_text():
                     Text(text="a section"),
                 ]
             ),
+            RichTextList(
+                style="ordered",
+                elements=[
+                    RichTextSection(elements=[Text(text="a bullet")]),
+                    RichTextSection(elements=[Text(text="a another bullet")]),
+                ],
+            ),
+            RichTextList(
+                style="ordered",
+                indent=1,
+                elements=[
+                    RichTextSection(elements=[Text(text="a nested bullet")]),
+                ],
+            ),
+            RichTextList(
+                style="ordered",
+                elements=[
+                    RichTextSection(elements=[Text(text="an un-nested bullet")]),
+                ],
+            ),
         ]
     ).build() == {
         "type": "rich_text",
@@ -311,6 +332,49 @@ def test_builds_rich_text():
                 "type": "rich_text_section",
                 "elements": [
                     {"type": "text", "text": "a section"},
+                ],
+            },
+            {
+                "type": "rich_text_list",
+                "style": "ordered",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {"type": "text", "text": "a bullet"},
+                        ],
+                    },
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {"type": "text", "text": "a another bullet"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "type": "rich_text_list",
+                "style": "ordered",
+                "indent": 1,
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {"type": "text", "text": "a nested bullet"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "type": "rich_text_list",
+                "style": "ordered",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {"type": "text", "text": "an un-nested bullet"},
+                        ],
+                    },
                 ],
             },
         ],

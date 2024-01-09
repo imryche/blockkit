@@ -21,6 +21,7 @@ from blockkit.elements import (
     Overflow,
     PlainTextInput,
     RadioButtons,
+    RichTextList,
     RichTextPreformatted,
     RichTextQuote,
     RichTextSection,
@@ -1465,6 +1466,55 @@ def test_builds_rich_text_section():
 def test_empty_rich_text_section_raises_exception():
     with pytest.raises(ValidationError):
         RichTextSection(elements=[])
+
+
+def test_builds_rich_text_list():
+    assert RichTextList(
+        style="ordered",
+        indent=1,
+        elements=[
+            RichTextSection(elements=[Text(text="My first bullet point")]),
+            RichTextSection(elements=[Text(text="My second bullet point")]),
+        ],
+    ).build() == {
+        "type": "rich_text_list",
+        "style": "ordered",
+        "indent": 1,
+        "elements": [
+            {
+                "type": "rich_text_section",
+                "elements": [{"type": "text", "text": "My first bullet point"}],
+            },
+            {
+                "type": "rich_text_section",
+                "elements": [{"type": "text", "text": "My second bullet point"}],
+            },
+        ],
+    }
+
+
+def test_empty_rich_text_list_raises_exception():
+    with pytest.raises(ValidationError):
+        RichTextList(elements=[])
+
+
+@pytest.fixture(scope="module")
+def minimal_rich_text_list_elements():
+    return [RichTextSection(elements=[Text(text="a")])]
+
+
+def test_invalid_rich_text_list_style_raises_exception(minimal_rich_text_list_elements):
+    with pytest.raises(ValidationError):
+        RichTextList(elements=minimal_rich_text_list_elements, style="invalid")
+
+
+def test_invalid_rich_text_list_indent_raises_exception(
+    minimal_rich_text_list_elements,
+):
+    with pytest.raises(ValidationError):
+        RichTextList(elements=minimal_rich_text_list_elements, indent=-1)
+    with pytest.raises(ValidationError):
+        RichTextList(elements=minimal_rich_text_list_elements, indent=9)
 
 
 def test_builds_timepicker():

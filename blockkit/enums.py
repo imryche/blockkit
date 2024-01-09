@@ -1,6 +1,11 @@
 from enum import Enum
 
-__all__ = ["Style", "TriggerActionsOn", "Include"]
+__all__ = ["ListStyle", "Style", "TriggerActionsOn", "Include"]
+
+
+class ListStyle(str, Enum):
+    ordered = "ordered"
+    bullet = "bullet"
 
 
 class Style(str, Enum):
