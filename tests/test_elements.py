@@ -1413,6 +1413,33 @@ def test_empty_rich_text_quote_raises_exception():
     with pytest.raises(ValidationError):
         RichTextQuote(elements=[])
 
+
+def test_builds_rich_text_section():
+    assert RichTextSection(
+        elements=[
+            Text(text="Well "),
+            Text(text="done ", style=Style(bold=True)),
+            Text(text="is better than well "),
+            Text(text="said.", style=Style(bold=True, strike=True)),
+            Emoji(name="wink"),
+        ]
+    ).build() == {
+        "type": "rich_text_section",
+        "elements": [
+            {"type": "text", "text": "Well "},
+            {"type": "text", "text": "done ", "style": {"bold": True}},
+            {"type": "text", "text": "is better than well "},
+            {"type": "text", "text": "said.", "style": {"bold": True, "strike": True}},
+            {"type": "emoji", "name": "wink"},
+        ],
+    }
+
+
+def test_empty_rich_text_section_raises_exception():
+    with pytest.raises(ValidationError):
+        RichTextSection(elements=[])
+
+
 def test_builds_timepicker():
     assert TimePicker(
         action_id="action_id",

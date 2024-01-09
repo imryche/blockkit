@@ -12,7 +12,7 @@ from blockkit.blocks import (
     Section,
     UsersSelect,
 )
-from blockkit.elements import Button, Image, RichTextSection
+from blockkit.elements import Button, Image, RichTextQuote, RichTextSection
 from blockkit.objects import Emoji, MarkdownText, Style, Text
 from pydantic import ValidationError
 
@@ -270,43 +270,32 @@ def test_input_excessive_hint_raises_exception():
 def test_builds_rich_text():
     assert RichText(
         elements=[
+            RichTextQuote(
+                elements=[
+                    Text(text="a quote"),
+                ]
+            ),
             RichTextSection(
                 elements=[
-                    Text(text="plain"),
-                    Text(text="one style", style=Style(bold=True)),
-                    Text(text="two styles", style=Style(italic=True, bold=True)),
-                    Emoji(name="smile"),
-                    Text(
-                        text="also two styles",
-                        style=Style(strike=True, italic=True, bold=False),
-                    ),
+                    Text(text="a section"),
                 ]
-            )
+            ),
         ]
     ).build() == {
         "type": "rich_text",
         "elements": [
             {
+                "type": "rich_text_quote",
+                "elements": [
+                    {"type": "text", "text": "a quote"},
+                ],
+            },
+            {
                 "type": "rich_text_section",
                 "elements": [
-                    {"type": "text", "text": "plain"},
-                    {"type": "text", "text": "one style", "style": {"bold": True}},
-                    {
-                        "type": "text",
-                        "text": "two styles",
-                        "style": {"italic": True, "bold": True},
-                    },
-                    {
-                        "type": "emoji",
-                        "name": "smile",
-                    },
-                    {
-                        "type": "text",
-                        "text": "also two styles",
-                        "style": {"strike": True, "italic": True, "bold": False},
-                    },
+                    {"type": "text", "text": "a section"},
                 ],
-            }
+            },
         ],
     }
 
