@@ -47,6 +47,10 @@ __all__ = [
     "TimePicker",
     "UsersSelect",
     "NumberInput",
+    "RichTextPreformatted",
+    "RichTextQuote",
+    "RichTextSection",
+    "RichTextList",
 ]
 
 

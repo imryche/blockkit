@@ -17,6 +17,7 @@ __all__ = [
     "PlainText",
     "Text",
     "Style",
+    "Emoji",
 ]
 
 
