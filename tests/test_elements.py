@@ -21,6 +21,10 @@ from blockkit.elements import (
     Overflow,
     PlainTextInput,
     RadioButtons,
+    RichTextList,
+    RichTextPreformatted,
+    RichTextQuote,
+    RichTextSection,
     StaticSelect,
     TimePicker,
     UsersSelect,
@@ -28,12 +32,15 @@ from blockkit.elements import (
 from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
+    Emoji,
     Filter,
     MarkdownOption,
     MarkdownText,
     OptionGroup,
     PlainOption,
     PlainText,
+    Style,
+    Text,
 )
 
 
@@ -1381,6 +1388,133 @@ def test_radio_buttons_initial_options_arent_within_options_raise_exception():
                 text=PlainText(text="option 2"), value="value_2"
             ),
         )
+
+
+def test_builds_rich_text_preformatted():
+    assert RichTextPreformatted(
+        elements=[
+            Text(text="Well "),
+            Text(text="done ", style=Style(bold=True)),
+            Text(text="is better than well "),
+            Text(text="said.", style=Style(bold=True, strike=True)),
+            Emoji(name="wink"),
+        ]
+    ).build() == {
+        "type": "rich_text_preformatted",
+        "elements": [
+            {"type": "text", "text": "Well "},
+            {"type": "text", "text": "done ", "style": {"bold": True}},
+            {"type": "text", "text": "is better than well "},
+            {"type": "text", "text": "said.", "style": {"bold": True, "strike": True}},
+            {"type": "emoji", "name": "wink"},
+        ],
+    }
+
+
+def test_empty_rich_text_preformatted_raises_exception():
+    with pytest.raises(ValidationError):
+        RichTextPreformatted(elements=[])
+
+
+def test_builds_rich_text_quote():
+    assert RichTextQuote(
+        elements=[
+            Text(text="Well "),
+            Text(text="done ", style=Style(bold=True)),
+            Text(text="is better than well "),
+            Text(text="said.", style=Style(bold=True, strike=True)),
+            Emoji(name="wink"),
+        ]
+    ).build() == {
+        "type": "rich_text_quote",
+        "elements": [
+            {"type": "text", "text": "Well "},
+            {"type": "text", "text": "done ", "style": {"bold": True}},
+            {"type": "text", "text": "is better than well "},
+            {"type": "text", "text": "said.", "style": {"bold": True, "strike": True}},
+            {"type": "emoji", "name": "wink"},
+        ],
+    }
+
+
+def test_empty_rich_text_quote_raises_exception():
+    with pytest.raises(ValidationError):
+        RichTextQuote(elements=[])
+
+
+def test_builds_rich_text_section():
+    assert RichTextSection(
+        elements=[
+            Text(text="Well "),
+            Text(text="done ", style=Style(bold=True)),
+            Text(text="is better than well "),
+            Text(text="said.", style=Style(bold=True, strike=True)),
+            Emoji(name="wink"),
+        ]
+    ).build() == {
+        "type": "rich_text_section",
+        "elements": [
+            {"type": "text", "text": "Well "},
+            {"type": "text", "text": "done ", "style": {"bold": True}},
+            {"type": "text", "text": "is better than well "},
+            {"type": "text", "text": "said.", "style": {"bold": True, "strike": True}},
+            {"type": "emoji", "name": "wink"},
+        ],
+    }
+
+
+def test_empty_rich_text_section_raises_exception():
+    with pytest.raises(ValidationError):
+        RichTextSection(elements=[])
+
+
+def test_builds_rich_text_list():
+    assert RichTextList(
+        style="ordered",
+        indent=1,
+        elements=[
+            RichTextSection(elements=[Text(text="My first bullet point")]),
+            RichTextSection(elements=[Text(text="My second bullet point")]),
+        ],
+    ).build() == {
+        "type": "rich_text_list",
+        "style": "ordered",
+        "indent": 1,
+        "elements": [
+            {
+                "type": "rich_text_section",
+                "elements": [{"type": "text", "text": "My first bullet point"}],
+            },
+            {
+                "type": "rich_text_section",
+                "elements": [{"type": "text", "text": "My second bullet point"}],
+            },
+        ],
+    }
+
+
+def test_empty_rich_text_list_raises_exception():
+    with pytest.raises(ValidationError):
+        RichTextList(elements=[])
+
+
+@pytest.fixture(scope="module")
+def minimal_rich_text_list_elements():
+    return [RichTextSection(elements=[Text(text="a")])]
+
+
+def test_invalid_rich_text_list_style_raises_exception(minimal_rich_text_list_elements):
+    with pytest.raises(ValidationError):
+        RichTextList(elements=minimal_rich_text_list_elements, style="invalid")
+
+
+def test_invalid_rich_text_list_indent_raises_exception(
+    minimal_rich_text_list_elements,
+):
+    with pytest.raises(ValidationError):
+        RichTextList(elements=minimal_rich_text_list_elements, indent=-1)
+    with pytest.raises(ValidationError):
+        RichTextList(elements=minimal_rich_text_list_elements, indent=9)
 
 
 def test_builds_timepicker():

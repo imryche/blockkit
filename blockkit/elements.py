@@ -6,15 +6,17 @@ from pydantic import AnyUrl, Field, model_validator
 from pydantic.networks import HttpUrl
 
 from blockkit.components import Component
-from blockkit.enums import Style
+from blockkit.enums import ListStyle, Style
 from blockkit.objects import (
     Confirm,
     DispatchActionConfig,
+    Emoji,
     Filter,
     MarkdownOption,
     OptionGroup,
     PlainOption,
     PlainText,
+    Text,
 )
 from blockkit.validators import (
     validate_date,
@@ -45,6 +47,10 @@ __all__ = [
     "TimePicker",
     "UsersSelect",
     "NumberInput",
+    "RichTextPreformatted",
+    "RichTextQuote",
+    "RichTextSection",
+    "RichTextList",
 ]
 
 
@@ -668,3 +674,46 @@ class NumberInput(FocusableElement):
     _validate_placeholder = validator(
         "placeholder", validate_text_length, max_length=150
     )
+
+
+RichTextObject = Union[Text, Emoji]
+
+
+class RichTextPreformatted(Component):
+    type: str = "rich_text_preformatted"
+    elements: List[RichTextObject] = Field(..., min_length=1)
+
+    def __init__(self, *, elements: List[RichTextObject]):
+        super().__init__(elements=elements)
+
+
+class RichTextQuote(Component):
+    type: str = "rich_text_quote"
+    elements: List[RichTextObject] = Field(..., min_length=1)
+
+    def __init__(self, *, elements: List[RichTextObject]):
+        super().__init__(elements=elements)
+
+
+class RichTextSection(Component):
+    type: str = "rich_text_section"
+    elements: List[RichTextObject] = Field(..., min_length=1)
+
+    def __init__(self, *, elements: List[RichTextObject]):
+        super().__init__(elements=elements)
+
+
+class RichTextList(Component):
+    type: str = "rich_text_list"
+    elements: List[RichTextSection] = Field(..., min_length=1)
+    style: Optional[ListStyle] = None
+    indent: Optional[int] = Field(..., ge=0, le=8)
+
+    def __init__(
+        self,
+        *,
+        elements: List[RichTextSection],
+        style: Optional[ListStyle] = None,
+        indent: Optional[int] = None,
+    ):
+        super().__init__(elements=elements, style=style, indent=indent)

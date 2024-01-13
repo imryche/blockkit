@@ -8,11 +8,19 @@ from blockkit.blocks import (
     Input,
     PlainText,
     PlainTextInput,
+    RichText,
     Section,
     UsersSelect,
 )
-from blockkit.elements import Button, Image
-from blockkit.objects import MarkdownText
+from blockkit.elements import (
+    Button,
+    Image,
+    RichTextList,
+    RichTextPreformatted,
+    RichTextQuote,
+    RichTextSection,
+)
+from blockkit.objects import Emoji, MarkdownText, Style, Text
 from pydantic import ValidationError
 
 
@@ -264,6 +272,139 @@ def test_input_excessive_hint_raises_exception():
             element=PlainTextInput(action_id="action_id"),
             hint=PlainText(text="h" * 2001),
         )
+
+
+def test_builds_rich_text():
+    assert RichText(
+        elements=[
+            RichTextPreformatted(
+                elements=[
+                    Text(text="a preformatted text"),
+                ]
+            ),
+            RichTextQuote(
+                elements=[
+                    Text(text="a quote"),
+                ]
+            ),
+            RichTextSection(
+                elements=[
+                    Text(text="a section"),
+                ]
+            ),
+            RichTextList(
+                style="ordered",
+                elements=[
+                    RichTextSection(elements=[Text(text="a bullet")]),
+                    RichTextSection(elements=[Text(text="a another bullet")]),
+                ],
+            ),
+            RichTextList(
+                style="ordered",
+                indent=1,
+                elements=[
+                    RichTextSection(elements=[Text(text="a nested bullet")]),
+                ],
+            ),
+            RichTextList(
+                style="ordered",
+                elements=[
+                    RichTextSection(elements=[Text(text="an un-nested bullet")]),
+                ],
+            ),
+        ]
+    ).build() == {
+        "type": "rich_text",
+        "elements": [
+            {
+                "type": "rich_text_preformatted",
+                "elements": [
+                    {"type": "text", "text": "a preformatted text"},
+                ],
+            },
+            {
+                "type": "rich_text_quote",
+                "elements": [
+                    {"type": "text", "text": "a quote"},
+                ],
+            },
+            {
+                "type": "rich_text_section",
+                "elements": [
+                    {"type": "text", "text": "a section"},
+                ],
+            },
+            {
+                "type": "rich_text_list",
+                "style": "ordered",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {"type": "text", "text": "a bullet"},
+                        ],
+                    },
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {"type": "text", "text": "a another bullet"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "type": "rich_text_list",
+                "style": "ordered",
+                "indent": 1,
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {"type": "text", "text": "a nested bullet"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "type": "rich_text_list",
+                "style": "ordered",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {"type": "text", "text": "an un-nested bullet"},
+                        ],
+                    },
+                ],
+            },
+        ],
+    }
+
+
+def test_rich_text_empty_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        RichText(
+            elements=[RichTextSection(elements=[Text(text="text")])],
+            block_id="",
+        )
+
+
+def test_rich_text_excessive_block_id_raises_exception():
+    with pytest.raises(ValidationError):
+        RichText(
+            elements=[RichTextSection(elements=[Text(text="text")])],
+            block_id="b" * 256,
+        )
+
+
+def test_rich_text_empty_elements_raise_exception():
+    with pytest.raises(ValidationError):
+        RichText(elements=[])
+
+
+def test_rich_text_excessive_elements_raise_exception():
+    with pytest.raises(ValidationError):
+        RichText(elements=[MarkdownText(text="*markdown* text") for _ in range(11)])
 
 
 def test_builds_section():

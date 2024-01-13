@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 from pydantic import AnyUrl, Field, model_validator
 
 from blockkit.components import Component
-from blockkit.enums import Include, Style, TriggerActionsOn
+from blockkit.enums import Include, Style as ConfirmStyle, TriggerActionsOn
 from blockkit.validators import validate_text_length, validator
 
 __all__ = [
@@ -15,6 +15,9 @@ __all__ = [
     "MarkdownOption",
     "OptionGroup",
     "PlainText",
+    "Text",
+    "Style",
+    "Emoji",
 ]
 
 
@@ -36,12 +39,46 @@ class PlainText(Component):
         super().__init__(text=text, emoji=emoji)
 
 
+class Style(Component):
+    bold: Optional[bool] = None
+    italic: Optional[bool] = None
+    strike: Optional[bool] = None
+    code: Optional[bool] = None
+
+    def __init__(
+        self,
+        *,
+        bold: Optional[bool] = None,
+        italic: Optional[bool] = None,
+        strike: Optional[bool] = None,
+        code: Optional[bool] = None,
+    ):
+        super().__init__(bold=bold, italic=italic, strike=strike, code=code)
+
+
+class Text(Component):
+    type: str = "text"
+    text: str = Field(..., min_length=1)
+    style: Optional[Style] = None
+
+    def __init__(self, *, text: str, style: Optional[Style] = None):
+        super().__init__(text=text, style=style)
+
+
+class Emoji(Component):
+    type: str = "emoji"
+    name: str = Field(..., min_length=1)
+
+    def __init__(self, *, name: str):
+        super().__init__(name=name)
+
+
 class Confirm(Component):
     title: Union[PlainText, str]
     text: Union[PlainText, MarkdownText, str]
     confirm: Union[PlainText, str]
     deny: Union[PlainText, str]
-    style: Optional[Style] = None
+    style: Optional[ConfirmStyle] = None
 
     def __init__(
         self,
@@ -50,7 +87,7 @@ class Confirm(Component):
         text: Union[PlainText, MarkdownText, str],
         confirm: Union[PlainText, str],
         deny: Union[PlainText, str],
-        style: Optional[Style] = None,
+        style: Optional[ConfirmStyle] = None,
     ):
         super().__init__(
             title=title, text=text, confirm=confirm, deny=deny, style=style
