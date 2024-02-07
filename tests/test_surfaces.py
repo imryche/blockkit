@@ -1,5 +1,5 @@
 import pytest
-from blockkit.blocks import Input, RichText, Section, RichTextSection
+from blockkit.blocks import Input, RichText, RichTextSection, Section
 from blockkit.elements import Button, PlainTextInput
 from blockkit.objects import MarkdownText, PlainText, Text
 from blockkit.surfaces import Home, Message, Modal, WorkflowStep
