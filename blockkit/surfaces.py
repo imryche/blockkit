@@ -9,6 +9,7 @@ from blockkit.blocks import (
     Header,
     ImageBlock,
     Input,
+    RichText,
     Section,
 )
 from blockkit.components import Component
@@ -17,7 +18,7 @@ from blockkit.validators import validate_text_length, validator
 
 __all__ = ["Home", "Message", "Modal", "WorkflowStep"]
 
-Block = Union[Actions, Context, Divider, Header, ImageBlock, Input, Section]
+Block = Union[Actions, Context, Divider, Header, ImageBlock, Input, RichText, Section]
 
 
 class View(Component):
