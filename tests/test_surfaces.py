@@ -1,7 +1,7 @@
 import pytest
-from blockkit.blocks import Input, Section
+from blockkit.blocks import Input, RichText, RichTextSection, Section
 from blockkit.elements import Button, PlainTextInput
-from blockkit.objects import MarkdownText, PlainText
+from blockkit.objects import MarkdownText, PlainText, Text
 from blockkit.surfaces import Home, Message, Modal, WorkflowStep
 from pydantic import ValidationError
 
@@ -199,7 +199,10 @@ def test_builds_message():
             Section(
                 text=MarkdownText(text="*markdown* text"),
                 accessory=Button(text=PlainText(text="button"), action_id="action_id"),
-            )
+            ),
+            RichText(
+                elements=[RichTextSection(elements=[Text(text="test_rich_text")])]
+            ),
         ],
     ).build() == {
         "text": "message text",
@@ -212,7 +215,16 @@ def test_builds_message():
                     "text": {"type": "plain_text", "text": "button"},
                     "action_id": "action_id",
                 },
-            }
+            },
+            {
+                "type": "rich_text",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [{"type": "text", "text": "test_rich_text"}],
+                    }
+                ],
+            },
         ],
     }
 
