@@ -51,6 +51,7 @@ __all__ = [
     "RichTextQuote",
     "RichTextSection",
     "RichTextList",
+    "FileInput"
 ]
 
 
@@ -717,3 +718,26 @@ class RichTextList(Component):
         indent: Optional[int] = None,
     ):
         super().__init__(elements=elements, style=style, indent=indent)
+
+class FileInput(FocusableElement):
+    type: str = "file_input"
+    filetypes: Optional[List[str]] = Field(None)
+    maxfiles: Optional[int] = Field(None)
+    # dispatch_action_config: Optional[DispatchActionConfig] = None
+
+    def __init__(
+        self,
+        *,
+        action_id: Optional[str] = None,
+        filetypes: Optional[List[str]] = None,
+        maxfiles: Optional[int] = None,
+        # dispatch_action_config: Optional[DispatchActionConfig] = None,
+        focus_on_load: Optional[bool] = None,
+    ):
+        super().__init__(
+            action_id=action_id,
+            filetypes=filetypes,
+            maxfiles=maxfiles,
+            # dispatch_action_config=dispatch_action_config,
+            focus_on_load=focus_on_load,
+        )

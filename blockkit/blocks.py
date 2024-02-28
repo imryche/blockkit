@@ -12,6 +12,7 @@ from blockkit.elements import (
     DatePicker,
     DatetimePicker,
     ExternalSelect,
+    FileInput,
     Image,
     MultiChannelsSelect,
     MultiConversationsSelect,
@@ -154,6 +155,7 @@ InputElement = Union[
     DatetimePicker,
     TimePicker,
     NumberInput,
+    FileInput
 ]
 
 
