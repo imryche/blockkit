@@ -23,6 +23,7 @@ from blockkit.validators import (
     validate_datetime,
     validate_text_length,
     validate_time,
+    validate_integer_size,
     validator,
 )
 
@@ -741,3 +742,7 @@ class FileInput(FocusableElement):
             # dispatch_action_config=dispatch_action_config,
             focus_on_load=focus_on_load,
         )
+
+    _validate_maxfiles = validator(
+        "maxfiles", validate_integer_size, min=1, max=10
+    )

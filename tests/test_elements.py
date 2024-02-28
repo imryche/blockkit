@@ -1558,3 +1558,21 @@ def test_timepicker_excessive_action_id_raises_exception():
 def test_timepicker_excessive_placeholder_raises_exception():
     with pytest.raises(ValidationError):
         TimePicker(placeholder=PlainText(text="p" * 151))
+
+def test_builds_fileinput():
+    assert FileInput(
+        action_id="action_id",
+        filetypes=["file"],
+        maxfiles=1,
+        focus_on_load=True
+    ).build() == {
+        "type": "file_input",
+        "action_id": "action_id",
+        "filetypes": ["file"],
+        "maxfiles": 1,
+        "focus_on_load": True
+    }
+
+def test_fileinput_excessive_maxfiles_raises_exception():
+    with pytest.raises(ValidationError):
+        FileInput(maxfiles=11)
