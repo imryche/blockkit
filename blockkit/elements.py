@@ -23,7 +23,6 @@ from blockkit.validators import (
     validate_datetime,
     validate_text_length,
     validate_time,
-    validate_integer_size,
     validator,
 )
 
