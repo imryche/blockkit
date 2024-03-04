@@ -723,7 +723,7 @@ class RichTextList(Component):
 class FileInput(FocusableElement):
     type: str = "file_input"
     filetypes: Optional[List[str]] = Field(None)
-    maxfiles: Optional[int] = Field(None)
+    maxfiles: Optional[int] = Field(..., gt=0, le=10)
 
     def __init__(
         self,
@@ -731,15 +731,9 @@ class FileInput(FocusableElement):
         action_id: Optional[str] = None,
         filetypes: Optional[List[str]] = None,
         maxfiles: Optional[int] = None,
-        focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
             action_id=action_id,
             filetypes=filetypes,
             maxfiles=maxfiles,
-            focus_on_load=focus_on_load,
         )
-
-    _validate_maxfiles = validator(
-        "maxfiles", validate_integer_size, min=1, max=10
-    )

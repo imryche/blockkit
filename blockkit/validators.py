@@ -53,16 +53,3 @@ def validate_datetime(v: Union[int, datetime]) -> Optional[int]:
             _ = datetime.fromtimestamp(v)
             return v
     return v
-
-def validate_integer_size(v: int, min: int, max: int) -> Optional[int]:
-    if v is not None:
-        if v<max and v>min:
-            return v
-        elif v<min:
-            e = ValueError(f"Minimum value is {min}")
-            raise e
-        elif v>max:
-            e = ValueError(f"Maximum value is {max}")
-            raise e
-        
-    return v
