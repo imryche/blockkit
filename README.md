@@ -89,6 +89,7 @@ Here's the list of types of components and corresponding classes:
 | rich_text_preformatted     | RichTextPreformatted     |
 | rich_text_quote            | RichTextQuote            |
 | rich_text_section          | RichTextSection          |
+| file_input                 | FileInput                |
 
 ### Composition objects
 
