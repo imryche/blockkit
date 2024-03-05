@@ -1564,13 +1564,11 @@ def test_builds_fileinput():
         action_id="action_id",
         filetypes=["file"],
         maxfiles=1,
-        focus_on_load=True
     ).build() == {
         "type": "file_input",
         "action_id": "action_id",
         "filetypes": ["file"],
         "maxfiles": 1,
-        "focus_on_load": True
     }
 
 def test_fileinput_excessive_maxfiles_raises_exception():
