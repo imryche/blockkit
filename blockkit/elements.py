@@ -722,17 +722,17 @@ class RichTextList(Component):
 class FileInput(ActionableComponent):
     type: str = "file_input"
     filetypes: Optional[List[str]] = Field(None)
-    maxfiles: Optional[int] = Field(..., gt=0, le=10)
+    max_files: Optional[int] = Field(..., gt=0, le=10)
 
     def __init__(
         self,
         *,
         action_id: Optional[str] = None,
         filetypes: Optional[List[str]] = None,
-        maxfiles: Optional[int] = None,
+        max_files: Optional[int] = None,
     ):
         super().__init__(
             action_id=action_id,
             filetypes=filetypes,
-            maxfiles=maxfiles,
+            max_files=max_files,
         )

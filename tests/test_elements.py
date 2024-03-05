@@ -1563,14 +1563,14 @@ def test_builds_fileinput():
     assert FileInput(
         action_id="action_id",
         filetypes=["file"],
-        maxfiles=1,
+        max_files=1,
     ).build() == {
         "type": "file_input",
         "action_id": "action_id",
         "filetypes": ["file"],
-        "maxfiles": 1,
+        "max_files": 1,
     }
 
-def test_fileinput_excessive_maxfiles_raises_exception():
+def test_fileinput_excessive_max_files_raises_exception():
     with pytest.raises(ValidationError):
-        FileInput(maxfiles=11)
+        FileInput(max_files=11)
