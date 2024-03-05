@@ -719,7 +719,7 @@ class RichTextList(Component):
     ):
         super().__init__(elements=elements, style=style, indent=indent)
 
-class FileInput(FocusableElement):
+class FileInput(ActionableComponent):
     type: str = "file_input"
     filetypes: Optional[List[str]] = Field(None)
     maxfiles: Optional[int] = Field(..., gt=0, le=10)
