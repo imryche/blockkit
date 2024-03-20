@@ -1,8 +1,19 @@
 import json
 from typing import Any, List, Type
-from typing import get_origin, get_args, get_type_hints
+from typing import get_type_hints
 
 from pydantic import BaseModel, model_validator
+
+
+try:
+    from typing import get_origin, get_args
+except ImportError:
+
+    def get_origin(tp):
+        return getattr(tp, "__origin__", None)
+
+    def get_args(tp):
+        return getattr(tp, "__args__", ())
 
 
 class Component(BaseModel):
