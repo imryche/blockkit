@@ -51,7 +51,7 @@ __all__ = [
     "RichTextQuote",
     "RichTextSection",
     "RichTextList",
-    "FileInput"
+    "FileInput",
 ]
 
 
@@ -719,6 +719,7 @@ class RichTextList(Component):
     ):
         super().__init__(elements=elements, style=style, indent=indent)
 
+
 class FileInput(ActionableComponent):
     type: str = "file_input"
     filetypes: Optional[List[str]] = Field(None)
@@ -736,3 +737,4 @@ class FileInput(ActionableComponent):
             filetypes=filetypes,
             max_files=max_files,
         )
+

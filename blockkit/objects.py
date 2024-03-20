@@ -29,6 +29,11 @@ class MarkdownText(Component):
     def __init__(self, *, text: str, verbatim: Optional[bool] = None):
         super().__init__(text=text, verbatim=verbatim)
 
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return self.text == other.text
+
 
 class PlainText(Component):
     type: str = "plain_text"
@@ -37,6 +42,11 @@ class PlainText(Component):
 
     def __init__(self, *, text: str, emoji: Optional[bool] = None):
         super().__init__(text=text, emoji=emoji)
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return self.text == other.text
 
 
 class Style(Component):

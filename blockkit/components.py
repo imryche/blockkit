@@ -1,6 +1,5 @@
 import json
 from typing import Any, List, Type
-from typing import get_type_hints
 
 from pydantic import BaseModel, model_validator
 
@@ -19,9 +18,8 @@ except ImportError:
 class Component(BaseModel):
     @model_validator(mode="after")
     def expand_strings(self) -> Any:
-        hints = get_type_hints(self)
-        for field_name, types in hints.items():
-            inner_types = self._get_inner_types(types)
+        for field_name, field in self.model_fields.items():
+            inner_types = self._get_inner_types(field.annotation)
             if not inner_types:
                 continue
 

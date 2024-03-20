@@ -318,10 +318,10 @@ def test_image_excessive_alt_text_raises_exception():
 
 def test_builds_static_select_with_options():
     assert StaticSelect(
-        placeholder=PlainText(text="placeholder"),
+        placeholder="placeholder",
         action_id="action_id",
         options=[
-            PlainOption(text=PlainText(text="option 1"), value="value_1"),
+            PlainOption(text="option 1", value="value_1"),
             PlainOption(text=PlainText(text="option 2"), value="value_2"),
         ],
         initial_option=PlainOption(text=PlainText(text="option 1"), value="value_1"),
@@ -334,10 +334,13 @@ def test_builds_static_select_with_options():
         focus_on_load=True,
     ).build() == {
         "type": "static_select",
-        "placeholder": {"type": "plain_text", "text": "placeholder"},
+        "placeholder": {"type": "plain_text", "text": "placeholder", "emoji": True},
         "action_id": "action_id",
         "options": [
-            {"text": {"type": "plain_text", "text": "option 1"}, "value": "value_1"},
+            {
+                "text": {"type": "plain_text", "text": "option 1", "emoji": True},
+                "value": "value_1",
+            },
             {"text": {"type": "plain_text", "text": "option 2"}, "value": "value_2"},
         ],
         "initial_option": {
@@ -1559,6 +1562,7 @@ def test_timepicker_excessive_placeholder_raises_exception():
     with pytest.raises(ValidationError):
         TimePicker(placeholder=PlainText(text="p" * 151))
 
+
 def test_builds_fileinput():
     assert FileInput(
         action_id="action_id",
@@ -1571,6 +1575,8 @@ def test_builds_fileinput():
         "max_files": 1,
     }
 
+
 def test_fileinput_excessive_max_files_raises_exception():
     with pytest.raises(ValidationError):
         FileInput(max_files=11)
+
