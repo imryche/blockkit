@@ -20,7 +20,7 @@ from blockkit.elements import (
     RichTextQuote,
     RichTextSection,
 )
-from blockkit.objects import Emoji, MarkdownText, Style, Text
+from blockkit.objects import MarkdownText, Text
 from pydantic import ValidationError
 
 
@@ -411,7 +411,7 @@ def test_builds_section():
     assert Section(
         text=MarkdownText(text="*markdown* text"),
         block_id="block_id",
-        fields=[MarkdownText(text="field 1"), MarkdownText(text="field 2")],
+        fields=["field 1", MarkdownText(text="field 2")],
         accessory=Button(text=PlainText(text="button"), action_id="action_id"),
     ).build() == {
         "type": "section",

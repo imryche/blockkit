@@ -1,51 +1,53 @@
 import json
-from typing import TYPE_CHECKING, Any, List, Type, Union
+from typing import Any, List, Type
+from typing import get_origin, get_args, get_type_hints
 
-from pydantic import BaseModel
-
-if TYPE_CHECKING:
-    from blockkit.objects import MarkdownText, PlainText
+from pydantic import BaseModel, model_validator
 
 
 class Component(BaseModel):
-    def __init__(self, *args, **kwargs):
-        for name, field in self.model_fields.items():
-            value = kwargs.get(name)
-            origin = getattr(field.annotation, "__origin__", None)
-            if (
-                value
-                and type(value) in (str, list)
-                and origin is Union
-                and self.__class__.__name__ != "Message"
-            ):
-                types = field.annotation.__args__
-                # types = field.type_.__args__
-                if type(value) is str:
-                    value = self._expand_str(value, types)
-                elif type(value) is list:
-                    items = []
-                    for v in value:
-                        if type(v) is str:
-                            v = self._expand_str(v, types)
-                        items.append(v)
-                    value = items
+    @model_validator(mode="after")
+    def expand_strings(self) -> Any:
+        hints = get_type_hints(self)
+        for field_name, types in hints.items():
+            inner_types = self._get_inner_types(types)
+            if not inner_types:
+                continue
 
-                kwargs[name] = value
-        super().__init__(*args, **kwargs)
+            value = getattr(self, field_name)
+            type_names = [t.__name__ for t in inner_types]
 
-    def _expand_str(
-        self, value: str, types: List[Type[Any]]
-    ) -> Union["PlainText", "MarkdownText", str]:
-        literal_types = [getattr(t, "__name__", None) for t in types]
+            expandable = "MarkdownText" in type_names or "PlainText" in type_names
+            if not expandable:
+                continue
 
-        if "MarkdownText" in literal_types:
-            idx = literal_types.index("MarkdownText")
-            return types[idx](text=value)
-        elif "PlainText" in literal_types:
-            idx = literal_types.index("PlainText")
-            return types[idx](text=value, emoji=True)
+            if isinstance(value, str):
+                value = self._expand_str(value, inner_types, type_names)
+            if isinstance(value, list):
+                value = [
+                    self._expand_str(v, inner_types, type_names)
+                    if isinstance(v, str)
+                    else v
+                    for v in value
+                ]
+            setattr(self, field_name, value)
+        return self
 
+    @classmethod
+    def _expand_str(cls, value: str, types: List[Type[Any]], type_names: List[str]):
+        if "MarkdownText" in type_names:
+            return types[type_names.index("MarkdownText")](text=value)
+        elif "PlainText" in type_names:
+            return types[type_names.index("PlainText")](text=value, emoji=True)
         return value
+
+    @classmethod
+    def _get_inner_types(cls, types, parent_types=None):
+        origin = get_origin(types)
+        if not origin:
+            return parent_types
+        args = get_args(types)
+        return cls._get_inner_types(args[0], parent_types=args)
 
     def build(self) -> dict:
         return json.loads(self.model_dump_json(by_alias=True, exclude_none=True))

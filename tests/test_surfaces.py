@@ -197,7 +197,7 @@ def test_builds_message():
         text="message text",
         blocks=[
             Section(
-                text=MarkdownText(text="*markdown* text"),
+                text="*markdown* text",
                 accessory=Button(text=PlainText(text="button"), action_id="action_id"),
             ),
             RichText(
