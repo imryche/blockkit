@@ -77,7 +77,7 @@ def test_actions_excessive_elements_raise_exception():
         Actions(
             elements=[
                 Button(text=PlainText(text="text"), action_id="action_id")
-                for _ in range(6)
+                for _ in range(26)
             ]
         )
 

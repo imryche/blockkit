@@ -76,7 +76,7 @@ class Block(Component):
 
 class Actions(Block):
     type: str = "actions"
-    elements: List[ActionElement] = Field(..., min_length=1, max_length=5)
+    elements: List[ActionElement] = Field(..., min_length=1, max_length=25)
 
     def __init__(
         self, *, elements: List[ActionElement], block_id: Optional[str] = None
@@ -155,7 +155,7 @@ InputElement = Union[
     DatetimePicker,
     TimePicker,
     NumberInput,
-    FileInput
+    FileInput,
 ]
 
 
