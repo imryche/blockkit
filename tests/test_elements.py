@@ -11,6 +11,7 @@ from blockkit.elements import (
     ConversationsSelect,
     DatePicker,
     DatetimePicker,
+    EmailTextInput,
     ExternalSelect,
     FileInput,
     Image,
@@ -28,6 +29,7 @@ from blockkit.elements import (
     RichTextSection,
     StaticSelect,
     TimePicker,
+    URLTextInput,
     UsersSelect,
 )
 from blockkit.objects import (
@@ -1580,3 +1582,60 @@ def test_fileinput_excessive_max_files_raises_exception():
     with pytest.raises(ValidationError):
         FileInput(max_files=11)
 
+
+def test_builds_email_text_input():
+    assert EmailTextInput(
+        action_id="action_id",
+        initial_value="dima@botsignals.co",
+        dispatch_action_config=DispatchActionConfig(
+            trigger_actions_on=["on_character_entered"]
+        ),
+        focus_on_load=True,
+        placeholder=PlainText(text="placeholder"),
+    ).build() == {
+        "type": "email_text_input",
+        "action_id": "action_id",
+        "initial_value": "dima@botsignals.co",
+        "dispatch_action_config": {"trigger_actions_on": ["on_character_entered"]},
+        "focus_on_load": True,
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+    }
+
+
+def test_email_text_input_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        EmailTextInput(placeholder=PlainText(text="p" * 151))
+
+
+def test_email_text_input_invalid_initial_value_raises_exception():
+    with pytest.raises(ValidationError):
+        EmailTextInput(initial_value="dimabotsignals.co")
+
+
+def test_builds_url_text_input():
+    assert URLTextInput(
+        action_id="action_id",
+        initial_value="https://example.com/",
+        dispatch_action_config=DispatchActionConfig(
+            trigger_actions_on=["on_character_entered"]
+        ),
+        focus_on_load=True,
+        placeholder=PlainText(text="placeholder"),
+    ).build() == {
+        "type": "url_text_input",
+        "action_id": "action_id",
+        "initial_value": "https://example.com/",
+        "dispatch_action_config": {"trigger_actions_on": ["on_character_entered"]},
+        "focus_on_load": True,
+        "placeholder": {"type": "plain_text", "text": "placeholder"},
+    }
+
+
+def test_url_text_input_excessive_placeholder_raises_exception():
+    with pytest.raises(ValidationError):
+        URLTextInput(placeholder=PlainText(text="p" * 151))
+
+
+def test_url_text_input_invalid_initial_value_raises_exception():
+    with pytest.raises(ValidationError):
+        URLTextInput(initial_value="foo bar")

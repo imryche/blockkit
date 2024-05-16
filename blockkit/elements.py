@@ -2,7 +2,7 @@ import itertools
 from datetime import date, datetime, time
 from typing import List, Optional, Union
 
-from pydantic import AnyUrl, Field, model_validator
+from pydantic import AnyUrl, EmailStr, Field, model_validator
 from pydantic.networks import HttpUrl
 
 from blockkit.components import Component
@@ -52,6 +52,8 @@ __all__ = [
     "RichTextSection",
     "RichTextList",
     "FileInput",
+    "EmailTextInput",
+    "URLTextInput",
 ]
 
 
@@ -738,3 +740,58 @@ class FileInput(ActionableComponent):
             max_files=max_files,
         )
 
+
+class EmailTextInput(FocusableElement):
+    type: str = "email_text_input"
+    placeholder: Union[PlainText, str, None] = None
+    initial_value: Optional[EmailStr] = None
+    dispatch_action_config: Optional[DispatchActionConfig] = None
+
+    _validate_placeholder = validator(
+        "placeholder", validate_text_length, max_length=150
+    )
+
+    def __init__(
+        self,
+        *,
+        action_id: Optional[str] = None,
+        placeholder: Union[PlainText, str, None] = None,
+        initial_value: Optional[EmailStr] = None,
+        dispatch_action_config: Optional[DispatchActionConfig] = None,
+        focus_on_load: Optional[bool] = None,
+    ):
+        super().__init__(
+            action_id=action_id,
+            placeholder=placeholder,
+            initial_value=initial_value,
+            dispatch_action_config=dispatch_action_config,
+            focus_on_load=focus_on_load,
+        )
+
+
+class URLTextInput(FocusableElement):
+    type: str = "url_text_input"
+    placeholder: Union[PlainText, str, None] = None
+    initial_value: Optional[AnyUrl] = None
+    dispatch_action_config: Optional[DispatchActionConfig] = None
+
+    _validate_placeholder = validator(
+        "placeholder", validate_text_length, max_length=150
+    )
+
+    def __init__(
+        self,
+        *,
+        action_id: Optional[str] = None,
+        placeholder: Union[PlainText, str, None] = None,
+        initial_value: Optional[AnyUrl] = None,
+        dispatch_action_config: Optional[DispatchActionConfig] = None,
+        focus_on_load: Optional[bool] = None,
+    ):
+        super().__init__(
+            action_id=action_id,
+            placeholder=placeholder,
+            initial_value=initial_value,
+            dispatch_action_config=dispatch_action_config,
+            focus_on_load=focus_on_load,
+        )
