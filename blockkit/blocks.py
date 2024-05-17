@@ -11,6 +11,7 @@ from blockkit.elements import (
     ConversationsSelect,
     DatePicker,
     DatetimePicker,
+    EmailTextInput,
     ExternalSelect,
     FileInput,
     Image,
@@ -29,6 +30,7 @@ from blockkit.elements import (
     RichTextSection,
     StaticSelect,
     TimePicker,
+    URLTextInput,
     UsersSelect,
 )
 from blockkit.objects import MarkdownText, PlainText
@@ -156,6 +158,8 @@ InputElement = Union[
     TimePicker,
     NumberInput,
     FileInput,
+    EmailTextInput,
+    URLTextInput,
 ]
 
 
