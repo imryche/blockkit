@@ -18,6 +18,7 @@ __all__ = [
     "Text",
     "Style",
     "Emoji",
+    "Date",
 ]
 
 
@@ -81,6 +82,17 @@ class Emoji(Component):
 
     def __init__(self, *, name: str):
         super().__init__(name=name)
+
+
+class Date(Component):
+    type: str = "date"
+    timestamp: int = Field(...)
+    format: str = Field(..., min_length=1)
+    url: Optional[str] = None
+    fallback: Optional[str] = None
+
+    def __init__(self, *, timestamp: int, format: str, url: Optional[str] = None, fallback: Optional[str] = None):
+        super().__init__(timestamp=timestamp, format=format, url=url, fallback=fallback)
 
 
 class Confirm(Component):
