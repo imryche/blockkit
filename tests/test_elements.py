@@ -34,6 +34,7 @@ from blockkit.elements import (
 )
 from blockkit.objects import (
     Confirm,
+    Date,
     DispatchActionConfig,
     Emoji,
     Filter,
@@ -1430,6 +1431,7 @@ def test_builds_rich_text_quote():
             Text(text="is better than well "),
             Text(text="said.", style=Style(bold=True, strike=True)),
             Emoji(name="wink"),
+            Date(timestamp=123456789, format="{ago}", url="https://example.com", fallback="Yep"),
         ]
     ).build() == {
         "type": "rich_text_quote",
@@ -1439,6 +1441,7 @@ def test_builds_rich_text_quote():
             {"type": "text", "text": "is better than well "},
             {"type": "text", "text": "said.", "style": {"bold": True, "strike": True}},
             {"type": "emoji", "name": "wink"},
+            {"type": "date", "timestamp": 123456789, "format": "{ago}", "url": "https://example.com", "fallback": "Yep"},
         ],
     }
 

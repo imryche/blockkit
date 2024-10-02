@@ -9,6 +9,7 @@ from blockkit.components import Component
 from blockkit.enums import ListStyle, Style
 from blockkit.objects import (
     Confirm,
+    Date,
     DispatchActionConfig,
     Emoji,
     Filter,
@@ -679,7 +680,7 @@ class NumberInput(FocusableElement):
     )
 
 
-RichTextObject = Union[Text, Emoji]
+RichTextObject = Union[Text, Date, Emoji]
 
 
 class RichTextPreformatted(Component):
