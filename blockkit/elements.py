@@ -18,14 +18,9 @@ from blockkit.objects import (
     PlainOption,
     PlainText,
     Text,
+    Link,
 )
-from blockkit.validators import (
-    validate_date,
-    validate_datetime,
-    validate_text_length,
-    validate_time,
-    validator,
-)
+from blockkit.validators import validate_date, validate_datetime, validate_text_length, validate_time, validator
 
 __all__ = [
     "Button",
@@ -84,26 +79,15 @@ class Button(ActionableComponent):
         style: Optional[Style] = None,
         confirm: Optional[Confirm] = None,
     ):
-        super().__init__(
-            text=text,
-            action_id=action_id,
-            url=url,
-            value=value,
-            style=style,
-            confirm=confirm,
-        )
+        super().__init__(text=text, action_id=action_id, url=url, value=value, style=style, confirm=confirm)
 
     _validate_text = validator("text", validate_text_length, max_length=75)
 
 
 class Checkboxes(FocusableElement):
     type: str = "checkboxes"
-    options: List[Union[MarkdownOption, PlainOption]] = Field(
-        ..., min_length=1, max_length=10
-    )
-    initial_options: Optional[List[Union[MarkdownOption, PlainOption]]] = Field(
-        None, min_length=1, max_length=10
-    )
+    options: List[Union[MarkdownOption, PlainOption]] = Field(..., min_length=1, max_length=10)
+    initial_options: Optional[List[Union[MarkdownOption, PlainOption]]] = Field(None, min_length=1, max_length=10)
     confirm: Optional[Confirm] = None
 
     def __init__(
@@ -157,9 +141,7 @@ class DatePicker(FocusableElement):
             focus_on_load=focus_on_load,
         )
 
-    _validate_placeholder = validator(
-        "placeholder", validate_text_length, max_length=150
-    )
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
     _validate_initial_date = validator("initial_date", validate_date)
 
 
@@ -179,10 +161,7 @@ class DatetimePicker(FocusableElement):
         focus_on_load: Optional[bool] = None,
     ):
         super().__init__(
-            action_id=action_id,
-            initial_date_time=initial_date_time,
-            confirm=confirm,
-            focus_on_load=focus_on_load,
+            action_id=action_id, initial_date_time=initial_date_time, confirm=confirm, focus_on_load=focus_on_load
         )
 
 
@@ -199,16 +178,12 @@ class Select(FocusableElement):
     placeholder: Union[PlainText, str]
     confirm: Optional[Confirm] = None
 
-    _validate_placeholder = validator(
-        "placeholder", validate_text_length, max_length=150
-    )
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
 
 
 class StaticSelectBase(Select):
     options: Optional[List[PlainOption]] = Field(None, min_length=1, max_length=100)
-    option_groups: Optional[List[OptionGroup]] = Field(
-        None, min_length=1, max_length=100
-    )
+    option_groups: Optional[List[OptionGroup]] = Field(None, min_length=1, max_length=100)
 
 
 class StaticSelect(StaticSelectBase):
@@ -241,22 +216,12 @@ class StaticSelect(StaticSelectBase):
         if bool(self.options) == bool(self.option_groups):
             raise ValueError("You must provide either options or option_groups.")
 
-        if (
-            self.initial_option
-            and self.options
-            and self.initial_option not in self.options
-        ):
-            raise ValueError(
-                f"Option {self.initial_option} isn't within {self.options}"
-            )
+        if self.initial_option and self.options and self.initial_option not in self.options:
+            raise ValueError(f"Option {self.initial_option} isn't within {self.options}")
 
         if self.initial_option and self.option_groups:
-            if self.initial_option not in itertools.chain(
-                *[og.options for og in self.option_groups]
-            ):
-                raise ValueError(
-                    f"Option {self.initial_option} isn't within {self.option_groups}"
-                )
+            if self.initial_option not in itertools.chain(*[og.options for og in self.option_groups]):
+                raise ValueError(f"Option {self.initial_option} isn't within {self.option_groups}")
         return self
 
 
@@ -296,17 +261,13 @@ class MultiStaticSelect(StaticSelectBase):
         if self.initial_options and self.options:
             for initial_option in self.initial_options:
                 if initial_option not in self.options:
-                    raise ValueError(
-                        f"Option {initial_option} isn't within {self.options}"
-                    )
+                    raise ValueError(f"Option {initial_option} isn't within {self.options}")
 
         if self.initial_options and self.option_groups:
             groups_options = itertools.chain(*[og.options for og in self.option_groups])
             for initial_option in self.initial_options:
                 if initial_option not in groups_options:
-                    raise ValueError(
-                        f"Option {initial_option} isn't within {self.option_groups}"
-                    )
+                    raise ValueError(f"Option {initial_option} isn't within {self.option_groups}")
         return self
 
 
@@ -530,11 +491,7 @@ class Overflow(ActionableComponent):
     confirm: Optional[Confirm] = None
 
     def __init__(
-        self,
-        *,
-        action_id: Optional[str] = None,
-        options: List[PlainOption],
-        confirm: Optional[Confirm] = None,
+        self, *, action_id: Optional[str] = None, options: List[PlainOption], confirm: Optional[Confirm] = None
     ):
         super().__init__(action_id=action_id, options=options, confirm=confirm)
 
@@ -571,16 +528,12 @@ class PlainTextInput(FocusableElement):
             focus_on_load=focus_on_load,
         )
 
-    _validate_placeholder = validator(
-        "placeholder", validate_text_length, max_length=150
-    )
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
 
 
 class RadioButtons(FocusableElement):
     type: str = "radio_buttons"
-    options: List[Union[MarkdownOption, PlainOption]] = Field(
-        ..., min_length=1, max_length=10
-    )
+    options: List[Union[MarkdownOption, PlainOption]] = Field(..., min_length=1, max_length=10)
     initial_option: Union[MarkdownOption, PlainOption, None] = None
     confirm: Optional[Confirm] = None
 
@@ -603,14 +556,8 @@ class RadioButtons(FocusableElement):
 
     @model_validator(mode="after")
     def _validate_values(self) -> "RadioButtons":
-        if (
-            self.initial_option
-            and self.options
-            and self.initial_option not in self.options
-        ):
-            raise ValueError(
-                f"Option {self.initial_option} isn't within {self.options}"
-            )
+        if self.initial_option and self.options and self.initial_option not in self.options:
+            raise ValueError(f"Option {self.initial_option} isn't within {self.options}")
         return self
 
 
@@ -620,9 +567,7 @@ class TimePicker(FocusableElement):
     initial_time: Optional[time] = None
     confirm: Optional[Confirm] = None
 
-    _validate_placeholder = validator(
-        "placeholder", validate_text_length, max_length=150
-    )
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
     _validate_initial_time = validator("initial_time", validate_time)
 
     def __init__(
@@ -675,12 +620,10 @@ class NumberInput(FocusableElement):
             focus_on_load=focus_on_load,
         )
 
-    _validate_placeholder = validator(
-        "placeholder", validate_text_length, max_length=150
-    )
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
 
 
-RichTextObject = Union[Text, Date, Emoji]
+RichTextObject = Union[Text, Date, Emoji, Link]
 
 
 class RichTextPreformatted(Component):
@@ -714,11 +657,7 @@ class RichTextList(Component):
     indent: Optional[int] = Field(..., ge=0, le=8)
 
     def __init__(
-        self,
-        *,
-        elements: List[RichTextSection],
-        style: Optional[ListStyle] = None,
-        indent: Optional[int] = None,
+        self, *, elements: List[RichTextSection], style: Optional[ListStyle] = None, indent: Optional[int] = None
     ):
         super().__init__(elements=elements, style=style, indent=indent)
 
@@ -729,17 +668,9 @@ class FileInput(ActionableComponent):
     max_files: Optional[int] = Field(..., gt=0, le=10)
 
     def __init__(
-        self,
-        *,
-        action_id: Optional[str] = None,
-        filetypes: Optional[List[str]] = None,
-        max_files: Optional[int] = None,
+        self, *, action_id: Optional[str] = None, filetypes: Optional[List[str]] = None, max_files: Optional[int] = None
     ):
-        super().__init__(
-            action_id=action_id,
-            filetypes=filetypes,
-            max_files=max_files,
-        )
+        super().__init__(action_id=action_id, filetypes=filetypes, max_files=max_files)
 
 
 class EmailTextInput(FocusableElement):
@@ -748,9 +679,7 @@ class EmailTextInput(FocusableElement):
     initial_value: Optional[EmailStr] = None
     dispatch_action_config: Optional[DispatchActionConfig] = None
 
-    _validate_placeholder = validator(
-        "placeholder", validate_text_length, max_length=150
-    )
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
 
     def __init__(
         self,
@@ -776,9 +705,7 @@ class URLTextInput(FocusableElement):
     initial_value: Optional[AnyUrl] = None
     dispatch_action_config: Optional[DispatchActionConfig] = None
 
-    _validate_placeholder = validator(
-        "placeholder", validate_text_length, max_length=150
-    )
+    _validate_placeholder = validator("placeholder", validate_text_length, max_length=150)
 
     def __init__(
         self,
