@@ -101,7 +101,14 @@ class Date(Component):
     url: Optional[str] = None
     fallback: Optional[str] = None
 
-    def __init__(self, *, timestamp: int, format: str, url: Optional[str] = None, fallback: Optional[str] = None):
+    def __init__(
+        self,
+        *,
+        timestamp: int,
+        format: str,
+        url: Optional[str] = None,
+        fallback: Optional[str] = None,
+    ):
         super().__init__(timestamp=timestamp, format=format, url=url, fallback=fallback)
 
 
@@ -121,7 +128,9 @@ class Confirm(Component):
         deny: Union[PlainText, str],
         style: Optional[ConfirmStyle] = None,
     ):
-        super().__init__(title=title, text=text, confirm=confirm, deny=deny, style=style)
+        super().__init__(
+            title=title, text=text, confirm=confirm, deny=deny, style=style
+        )
 
     _validate_title = validator("title", validate_text_length, max_length=100)
     _validate_text = validator("text", validate_text_length, max_length=300)
@@ -144,7 +153,9 @@ class BaseOption(Component):
     ):
         super().__init__(text=text, value=value, description=description, url=url)
 
-    _validate_description = validator("description", validate_text_length, max_length=75)
+    _validate_description = validator(
+        "description", validate_text_length, max_length=75
+    )
 
 
 class PlainOption(BaseOption):
@@ -216,6 +227,12 @@ class Filter(Component):
 
     @model_validator(mode="after")
     def _validate_values(self) -> "Filter":
-        if not any([self.include, self.exclude_external_shared_channels, self.exclude_bot_users]):
+        if not any(
+            [
+                self.include,
+                self.exclude_external_shared_channels,
+                self.exclude_bot_users,
+            ]
+        ):
             raise ValueError("You should provide at least one argument.")
         return self
