@@ -1,6 +1,52 @@
 import pytest
 
-from blockkit.core import Button, MarkdownText, ValidationError
+from blockkit.core import (
+    Button,
+    Component,
+    MarkdownText,
+    MaxLength,
+    NonEmpty,
+    Required,
+    ValidationError,
+)
+
+
+class TestValidators:
+    def test_required(self):
+        class PlainText(Component):
+            def __init__(self, text=None):
+                super().__init__()
+                self.text(text)
+
+            def text(self, text):
+                self._add_field("text", text, validators=[Required()])
+
+        with pytest.raises(ValidationError):
+            PlainText().validate()
+
+    def test_non_empty(self):
+        class PlainText(Component):
+            def __init__(self, text=None):
+                super().__init__()
+                self.text(text)
+
+            def text(self, text):
+                self._add_field("text", text, validators=[NonEmpty()])
+
+        with pytest.raises(ValidationError):
+            PlainText("").validate()
+
+    def test_max_length(self):
+        class PlainText(Component):
+            def __init__(self, text=None):
+                super().__init__()
+                self.text(text)
+
+            def text(self, text):
+                self._add_field("text", text, validators=[MaxLength(3)])
+
+        with pytest.raises(ValidationError):
+            PlainText("aaaa").validate()
 
 
 class TestMarkdownText:
@@ -37,7 +83,7 @@ class TestButton:
         want = {
             "type": "button",
             "text": {
-                "type": "mrkdwn",
+                "type": "plain_text",
                 "text": "Click me",
             },
             "action_id": "button_clicked",

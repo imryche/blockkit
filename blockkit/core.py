@@ -80,15 +80,13 @@ class Component:
         }
 
 
-class MarkdownText(Component):
+class TextObject(Component):
     def __init__(
         self,
         text: str | None = None,
-        emoji: bool | None = None,
         verbatim: bool | None = None,
     ):
         super().__init__()
-        self._add_field("type", "mrkdwn")
         self.text(text)
         self.verbatim(verbatim)
 
@@ -107,10 +105,36 @@ class MarkdownText(Component):
         return self._add_field("verbatim", verbatim)
 
 
+class PlainText(TextObject):
+    def __init__(
+        self,
+        text: str | None = None,
+        emoji: bool | None = None,
+        verbatim: bool | None = None,
+    ):
+        super().__init__(text, verbatim)
+        self._add_field("type", "plain_text")
+        self.emoji(emoji)
+
+    def emoji(self, emoji: bool):
+        self._add_field("emoji", emoji)
+
+
+class MarkdownText(TextObject):
+    def __init__(
+        self,
+        text: str | None = None,
+        emoji: bool | None = None,
+        verbatim: bool | None = None,
+    ):
+        super().__init__(text, verbatim)
+        self._add_field("type", "mrkdwn")
+
+
 class Button(Component):
     def __init__(
         self,
-        text: str | MarkdownText | None,
+        text: str | PlainText | None,
         action_id: str | None = None,
         url: str | None = None,
         value: str | None = None,
@@ -125,9 +149,9 @@ class Button(Component):
         self.value(value)
         self.style(style)
 
-    def text(self, text: str | MarkdownText):
+    def text(self, text: str | PlainText):
         if isinstance(text, str):
-            text = MarkdownText(text)
+            text = PlainText(text)
 
         return self._add_field("text", text, validators=[Required(), MaxLength(75)])
 
