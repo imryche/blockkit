@@ -106,6 +106,13 @@ class TextObject(Component):
 
 
 class PlainText(TextObject):
+    """
+    Displays basic text.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#text
+    """
+
     def __init__(
         self,
         text: str | None = None,
@@ -121,6 +128,13 @@ class PlainText(TextObject):
 
 
 class MarkdownText(TextObject):
+    """
+    Displays text formatted as Slack's markdown.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#text
+    """
+
     def __init__(
         self,
         text: str | None = None,
@@ -132,6 +146,13 @@ class MarkdownText(TextObject):
 
 
 class Button(Component):
+    """
+    Allows users a direct path to performing basic actions.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#button
+    """
+
     def __init__(
         self,
         text: str | PlainText | None,
