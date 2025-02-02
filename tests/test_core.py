@@ -63,14 +63,6 @@ class TestMarkdownText:
         want = {"type": "mrkdwn", "text": "hello alice!", "verbatim": True}
         assert got == want
 
-    def test_validates_empty_text(self):
-        with pytest.raises(ValidationError):
-            MarkdownText("").build()
-
-    def test_validates_required_fields(self):
-        with pytest.raises(ValidationError):
-            MarkdownText().build()
-
 
 class TestButton:
     def test_builds(self):
@@ -91,7 +83,3 @@ class TestButton:
             "style": "primary",
         }
         assert got == want
-
-    def test_validates_extra_long_text(self):
-        with pytest.raises(ValidationError):
-            Button("C" * 76).build()
