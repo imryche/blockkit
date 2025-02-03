@@ -55,31 +55,42 @@ class TestMarkdownText:
         want = {"type": "mrkdwn", "text": "hello alice!"}
         assert got == want
 
-        got = MarkdownText("hello alice!", verbatim=True).build()
         want = {"type": "mrkdwn", "text": "hello alice!", "verbatim": True}
+        got = MarkdownText("hello alice!", verbatim=True).build()
         assert got == want
 
         got = MarkdownText().text("hello alice!").verbatim().build()
-        want = {"type": "mrkdwn", "text": "hello alice!", "verbatim": True}
         assert got == want
 
 
 class TestButton:
     def test_builds(self):
-        got = Button(
-            "Click me",
-            action_id="button_clicked",
-            value="1",
-            style="primary",
-        ).build()
+        got = Button("Click me").build()
+        want = {"type": "button", "text": {"type": "plain_text", "text": "Click me"}}
+        assert got == want
+
         want = {
             "type": "button",
-            "text": {
-                "type": "plain_text",
-                "text": "Click me",
-            },
-            "action_id": "button_clicked",
+            "text": {"type": "plain_text", "text": "Click me"},
+            "action_id": "clicked",
             "value": "1",
             "style": "primary",
         }
+
+        got = Button(
+            "Click me",
+            action_id="clicked",
+            value="1",
+            style="primary",
+        ).build()
+        assert got == want
+
+        got = (
+            Button()
+            .text("Click me")
+            .action_id("clicked")
+            .value("1")
+            .style("primary")
+            .build()
+        )
         assert got == want
