@@ -19,6 +19,7 @@ __all__ = [
     "Style",
     "Emoji",
     "Date",
+    "Link",
 ]
 
 
@@ -76,6 +77,15 @@ class Text(Component):
         super().__init__(text=text, style=style)
 
 
+class Link(Component):
+    type: str = "link"
+    text: str = Field(..., min_length=1)
+    url: str = Field(..., min_lenght=1)
+
+    def __init__(self, *, text: str, url: str, style: Optional[Style] = None):
+        super().__init__(text=text, url=url, style=style)
+
+
 class Emoji(Component):
     type: str = "emoji"
     name: str = Field(..., min_length=1)
@@ -91,7 +101,14 @@ class Date(Component):
     url: Optional[str] = None
     fallback: Optional[str] = None
 
-    def __init__(self, *, timestamp: int, format: str, url: Optional[str] = None, fallback: Optional[str] = None):
+    def __init__(
+        self,
+        *,
+        timestamp: int,
+        format: str,
+        url: Optional[str] = None,
+        fallback: Optional[str] = None,
+    ):
         super().__init__(timestamp=timestamp, format=format, url=url, fallback=fallback)
 
 

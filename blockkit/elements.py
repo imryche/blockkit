@@ -18,6 +18,7 @@ from blockkit.objects import (
     PlainOption,
     PlainText,
     Text,
+    Link,
 )
 from blockkit.validators import (
     validate_date,
@@ -680,7 +681,7 @@ class NumberInput(FocusableElement):
     )
 
 
-RichTextObject = Union[Text, Date, Emoji]
+RichTextObject = Union[Text, Date, Emoji, Link]
 
 
 class RichTextPreformatted(Component):
@@ -735,11 +736,7 @@ class FileInput(ActionableComponent):
         filetypes: Optional[List[str]] = None,
         max_files: Optional[int] = None,
     ):
-        super().__init__(
-            action_id=action_id,
-            filetypes=filetypes,
-            max_files=max_files,
-        )
+        super().__init__(action_id=action_id, filetypes=filetypes, max_files=max_files)
 
 
 class EmailTextInput(FocusableElement):
