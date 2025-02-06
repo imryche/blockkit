@@ -7,6 +7,7 @@ from blockkit.core import (
     MaxLength,
     NonEmpty,
     Required,
+    Typed,
     ValidationError,
 )
 
@@ -47,6 +48,28 @@ class TestValidators:
 
         with pytest.raises(ValidationError):
             PlainText("aaaa").validate()
+
+    def test_typed(self):
+        class PlainText(Component):
+            def __init__(self):
+                pass
+
+        class Button(Component):
+            def __init__(self, text=None):
+                super().__init__()
+                self.text(text)
+
+            def text(self, text):
+                self._add_field("text", text, validators=[Typed(str, PlainText)])
+
+        try:
+            Button(PlainText()).validate()
+            Button("Click me").validate()
+        except ValidationError as e:
+            pytest.fail(f"Validation error: {e}")
+
+        with pytest.raises(ValidationError):
+            Button(123).validate()
 
 
 class TestMarkdownText:

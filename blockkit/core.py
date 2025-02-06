@@ -42,6 +42,19 @@ class MaxLength(Validator):
             )
 
 
+class Typed(Validator):
+    def __init__(self, *types):
+        self.types = types
+
+    def validate(self, field_name: str, field_value: Any) -> None:
+        if field_value is not None and not isinstance(field_value, self.types):
+            expected_names = ", ".join(c.__name__ for c in self.types)
+            got_name = type(field_value).__name__
+            raise ValidationError(
+                field_name, f"Expected types '{expected_names}', got '{got_name}'"
+            )
+
+
 @dataclass
 class Field:
     name: str
@@ -174,7 +187,9 @@ class Button(Component):
         if isinstance(text, str):
             text = PlainText(text)
 
-        return self._add_field("text", text, validators=[Required(), MaxLength(75)])
+        return self._add_field(
+            "text", text, validators=[Typed(PlainText), Required(), MaxLength(75)]
+        )
 
     def action_id(self, action_id: str):
         return self._add_field("action_id", action_id)
