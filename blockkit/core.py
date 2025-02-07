@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Sequence
 
 
@@ -59,7 +59,7 @@ class Typed(Validator):
 class Field:
     name: str
     value: Any
-    validators: Sequence[Validator] = ()
+    validators: Sequence[Validator] = field(default_factory=list)
 
     def validate(self):
         for validator in self.validators:
@@ -70,18 +70,26 @@ class Component:
     def __init__(self):
         self._fields: dict[str, Field] = {}
 
-    def _add_field(self, name, value, validators: Sequence[Validator] = ()):
+    def _add_field(self, name, value, validators: Sequence[Validator] = None):
+        if not validators:
+            validators = []
         field = Field(name=name, value=value, validators=validators)
         self._fields[name] = field
         return self
 
-    def _get_field_value(self, name: str) -> Any:
-        field = self._fields.get(name)
+    def _add_validator(self, field_name: str, validator: Validator) -> None:
+        if field_name not in self._fields:
+            raise ValueError(f"No '{field_name}' field found")
+
+        self._fields[field_name].validators.append(validator)
+
+    def _get_field_value(self, field_name: str) -> Any:
+        field = self._fields.get(field_name)
         return field.value if field else None
 
     def validate(self):
-        for field in self._fields.values():
-            field.validate()
+        for field_ in self._fields.values():
+            field_.validate()
 
     def build(self):
         self.validate()

@@ -12,64 +12,85 @@ from blockkit.core import (
 )
 
 
-class TestValidators:
-    def test_required(self):
-        class PlainText(Component):
-            def __init__(self, text=None):
-                super().__init__()
-                self.text(text)
+@pytest.fixture
+def plain_text():
+    class PlainText(Component):
+        def __init__(self, text=None):
+            super().__init__()
+            self.text(text)
 
-            def text(self, text):
-                self._add_field("text", text, validators=[Required()])
+        def text(self, text):
+            self._add_field("text", text)
 
-        with pytest.raises(ValidationError):
-            PlainText().validate()
+    return PlainText()
 
-    def test_non_empty(self):
-        class PlainText(Component):
-            def __init__(self, text=None):
-                super().__init__()
-                self.text(text)
 
-            def text(self, text):
-                self._add_field("text", text, validators=[NonEmpty()])
+@pytest.fixture
+def button():
+    class Button(Component):
+        def __init__(self, text=None):
+            super().__init__()
+            self.text(text)
 
-        with pytest.raises(ValidationError):
-            PlainText("").validate()
+        def text(self, text):
+            self._add_field("text", text)
 
-    def test_max_length(self):
-        class PlainText(Component):
-            def __init__(self, text=None):
-                super().__init__()
-                self.text(text)
+    return Button()
 
-            def text(self, text):
-                self._add_field("text", text, validators=[MaxLength(3)])
 
-        with pytest.raises(ValidationError):
-            PlainText("aaaa").validate()
+class TestRequired:
+    def test_invalid(self, plain_text):
+        plain_text._add_validator("text", Required())
+        with pytest.raises(ValidationError) as e:
+            plain_text.validate()
+        assert "Value is required" in str(e.value)
 
-    def test_typed(self):
-        class PlainText(Component):
-            def __init__(self):
-                pass
+    def test_valid(self, plain_text):
+        plain_text.text("hello alice")
+        plain_text._add_validator("text", Required())
+        plain_text.validate()
 
-        class Button(Component):
-            def __init__(self, text=None):
-                super().__init__()
-                self.text(text)
 
-            def text(self, text):
-                self._add_field("text", text, validators=[Typed(str, PlainText)])
+class TestNonEmpty:
+    def test_invalid(self, plain_text):
+        plain_text.text("")
+        plain_text._add_validator("text", NonEmpty())
+        with pytest.raises(ValidationError) as e:
+            plain_text.validate()
+        assert "Value cannot be empty" in str(e.value)
 
-        try:
-            Button(PlainText()).validate()
-            Button("Click me").validate()
-        except ValidationError as e:
-            pytest.fail(f"Validation error: {e}")
+    def test_valid(self, plain_text):
+        plain_text.text("hello, alice!")
+        plain_text._add_validator("text", NonEmpty())
+        plain_text.validate()
 
-        with pytest.raises(ValidationError):
-            Button(123).validate()
+
+class TestMaxLength:
+    def test_invalid(self, plain_text):
+        plain_text.text("hello, alice!")
+        plain_text._add_validator("text", MaxLength(10))
+        with pytest.raises(ValidationError) as e:
+            plain_text.validate()
+        assert "Length must be less or equal 10" in str(e.value)
+
+    def test_valid(self, plain_text):
+        plain_text.text("hello, alice!")
+        plain_text._add_validator("text", MaxLength(13))
+        plain_text.validate()
+
+
+class TestTyped:
+    def test_invalid(self, button, plain_text):
+        button.text(123)
+        button._add_validator("text", Typed(str, type(plain_text)))
+        with pytest.raises(ValidationError) as e:
+            button.validate()
+        assert "Expected types 'str, PlainText', got 'int'" in str(e.value)
+
+    def test_valid(self, button, plain_text):
+        button.text("click me")
+        button._add_validator("text", Typed(str, type(plain_text)))
+        button.validate()
 
 
 class TestMarkdownText:
