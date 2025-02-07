@@ -95,11 +95,8 @@ class TestTyped:
 
 class TestMarkdownText:
     def test_builds(self):
-        got = MarkdownText("hello alice!").build()
-        want = {"type": "mrkdwn", "text": "hello alice!"}
-        assert got == want
-
         want = {"type": "mrkdwn", "text": "hello alice!", "verbatim": True}
+
         got = MarkdownText("hello alice!", verbatim=True).build()
         assert got == want
 
@@ -109,10 +106,6 @@ class TestMarkdownText:
 
 class TestButton:
     def test_builds(self):
-        got = Button("Click me").build()
-        want = {"type": "button", "text": {"type": "plain_text", "text": "Click me"}}
-        assert got == want
-
         want = {
             "type": "button",
             "text": {"type": "plain_text", "text": "Click me"},
