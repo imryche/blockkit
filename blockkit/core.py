@@ -284,7 +284,7 @@ class Confirm(Component):
         self.deny(deny)
         self.style(style)
 
-    def title(self, title: str | PlainText):
+    def title(self, title: str | PlainText) -> "Confirm":
         self._add_field(
             "title",
             str_to_plain(title),
@@ -292,7 +292,7 @@ class Confirm(Component):
         )
         return self
 
-    def text(self, text: str | PlainText):
+    def text(self, text: str | PlainText) -> "Confirm":
         self._add_field(
             "text",
             str_to_plain(text),
@@ -300,7 +300,7 @@ class Confirm(Component):
         )
         return self
 
-    def confirm(self, confirm: str | PlainText):
+    def confirm(self, confirm: str | PlainText) -> "Confirm":
         self._add_field(
             "confirm",
             str_to_plain(confirm),
@@ -308,7 +308,7 @@ class Confirm(Component):
         )
         return self
 
-    def deny(self, deny: str | PlainText):
+    def deny(self, deny: str | PlainText) -> "Confirm":
         self._add_field(
             "deny",
             str_to_plain(deny),
@@ -316,11 +316,30 @@ class Confirm(Component):
         )
         return self
 
-    def style(self, style: str):
+    def style(self, style: str) -> "Confirm":
         self._add_field(
             "style", style, validators=[Typed(str), Values("primary", "danger")]
         )
         return self
+
+
+class ConversationFilter(Component):
+    def __init__(
+        self,
+        include: Sequence[str] | None,
+        exclude_bot_users: bool | None = None,
+        exclude_external_shared_channels: bool | None = None,
+    ):
+        super().__init__()
+
+    def include(self, include: Sequence[str]):
+        pass
+
+    def exclude_bot_users(self, exclude_bot_users: bool):
+        pass
+
+    def exclude_external_shared_channels(self, exclude_external_shared_channels: bool):
+        pass
 
 
 class Button(Component):
