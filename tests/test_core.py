@@ -4,6 +4,7 @@ from blockkit.core import (
     Button,
     Component,
     Confirm,
+    ConversationFilter,
     MarkdownText,
     MaxLength,
     NonEmpty,
@@ -162,6 +163,22 @@ class TestConfirm:
             .style("danger")
             .build()
         )
+        assert got == want
+
+
+class TestConversationFilter:
+    def test_builds(self):
+        want = {
+            "include": ["public", "mpim"],
+            "exclude_external_shared_channels": True,
+            "exclude_bot_users": True,
+        }
+
+        got = ConversationFilter(
+            include=["public", "mpim"],
+            exclude_external_shared_channels=True,
+            exclude_bot_users=True,
+        ).build()
         assert got == want
 
 

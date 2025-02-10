@@ -331,15 +331,29 @@ class ConversationFilter(Component):
         exclude_external_shared_channels: bool | None = None,
     ):
         super().__init__()
+        self.include(include)
+        self.exclude_bot_users(exclude_bot_users)
+        self.exclude_external_shared_channels(exclude_external_shared_channels)
 
-    def include(self, include: Sequence[str]):
-        pass
+    def include(self, include: Sequence[str]) -> "ConversationFilter":
+        self._add_field(
+            "include", include, validators=[Values("im", "mpim", "private", "public")]
+        )
+        return self
 
-    def exclude_bot_users(self, exclude_bot_users: bool):
-        pass
+    def exclude_bot_users(self, exclude_bot_users: bool) -> "ConversationFilter":
+        self._add_field("exclude_bot_users", exclude_bot_users, validators=[])
+        return self
 
-    def exclude_external_shared_channels(self, exclude_external_shared_channels: bool):
-        pass
+    def exclude_external_shared_channels(
+        self, exclude_external_shared_channels: bool
+    ) -> "ConversationFilter":
+        self._add_field(
+            "exclude_external_shared_channels",
+            exclude_external_shared_channels,
+            validators=[],
+        )
+        return self
 
 
 class Button(Component):
