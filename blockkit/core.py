@@ -47,11 +47,25 @@ class Values(Validator):
         self.values = values
 
     def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is not None and field_value not in self.values:
-            expected_values = ", ".join(self.values)
-            raise ValidationError(
-                field_name, f"Expected values '{expected_values}', got '{field_value}'"
-            )
+        if field_value is None:
+            return
+
+        expected_values = ", ".join(f"'{v}'" for v in self.values)
+        if isinstance(field_value, (list, tuple, set)):
+            unexpected = set(field_value).difference(self.values)
+            if unexpected:
+                pretty_unexpected = ", ".join(f"'{v}'" for v in unexpected)
+                raise ValidationError(
+                    field_name,
+                    f"Expected values {expected_values}, "
+                    f"got unexpected {pretty_unexpected}",
+                )
+        else:
+            if field_value not in self.values:
+                raise ValidationError(
+                    field_name,
+                    f"Expected values {expected_values}, got '{field_value}'",
+                )
 
 
 class Typed(Validator):

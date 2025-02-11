@@ -25,6 +25,7 @@ def plain_text():
 
         def text(self, text):
             self._add_field("text", text)
+            return self
 
     return PlainText()
 
@@ -38,8 +39,23 @@ def button():
 
         def text(self, text):
             self._add_field("text", text)
+            return self
 
     return Button()
+
+
+@pytest.fixture
+def conversation_filter():
+    class ConversationFilter(Component):
+        def __init__(self, include=None):
+            super().__init__()
+            self.include(include)
+
+        def include(self, include):
+            self._add_field("include", include)
+            return self
+
+    return ConversationFilter()
 
 
 class TestRequired:
@@ -84,20 +100,39 @@ class TestMaxLength:
 
 
 class TestValues:
-    def test_invalid(self, plain_text):
+    def test_invalid_single(self, plain_text):
         plain_text.text("hello, charlie!")
         plain_text._add_validator("text", Values("hello, alice!", "hello, bob!"))
         with pytest.raises(ValidationError) as e:
             plain_text.validate()
         assert (
-            "Expected values 'hello, alice!, hello, bob!', got 'hello, charlie!'"
+            "Expected values 'hello, alice!', 'hello, bob!', got 'hello, charlie!'"
             in str(e.value)
         )
 
-    def test_valid(self, plain_text):
+    def test_valid_single(self, plain_text):
         plain_text.text("hello, alice!")
         plain_text._add_validator("text", Values("hello, alice!"))
         plain_text.validate()
+
+    def test_invalid_multi(self, conversation_filter):
+        conversation_filter.include(["im", "external"])
+        conversation_filter._add_validator(
+            "include", Values("im", "mpim", "private", "public")
+        )
+        with pytest.raises(ValidationError) as e:
+            conversation_filter.validate()
+        assert (
+            "Expected values 'im', 'mpim', 'private', 'public', "
+            "got unexpected 'external'" in str(e.value)
+        )
+
+    def test_valid_multi(self, conversation_filter):
+        conversation_filter.include(["private", "public"])
+        conversation_filter._add_validator(
+            "include", Values("im", "mpim", "private", "public")
+        )
+        conversation_filter.validate()
 
 
 class TestTyped:
