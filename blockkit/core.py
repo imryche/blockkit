@@ -3,14 +3,14 @@ from dataclasses import dataclass, field
 from typing import Any, Sequence
 
 
-class ValidationError(Exception):
+class FieldValidationError(Exception):
     def __init__(self, field_name: str, message: str):
         self.field_name = field_name
         self.message = message
         super().__init__(f"Field '{field_name}': {message}")
 
 
-class Validator(ABC):
+class FieldValidator(ABC):
     @abstractmethod
     def validate(self, field_name: str, field_value: Any) -> None:
         pass
@@ -19,30 +19,30 @@ class Validator(ABC):
         return self.validate(field_name, field_value)
 
 
-class Required(Validator):
+class Required(FieldValidator):
     def validate(self, field_name: str, field_value: Any) -> None:
         if field_value is None:
-            raise ValidationError(field_name, "Value is required")
+            raise FieldValidationError(field_name, "Value is required")
 
 
-class NonEmpty(Validator):
+class NonEmpty(FieldValidator):
     def validate(self, field_name: str, field_value: Any) -> None:
         if field_value == "":
-            raise ValidationError(field_name, "Value cannot be empty")
+            raise FieldValidationError(field_name, "Value cannot be empty")
 
 
-class MaxLength(Validator):
+class MaxLength(FieldValidator):
     def __init__(self, max_length):
         self.max_length = max_length
 
     def validate(self, field_name: str, field_value: Any) -> None:
         if field_value is not None and len(field_value) > self.max_length:
-            raise ValidationError(
+            raise FieldValidationError(
                 field_name, f"Length must be less or equal {self.max_length}"
             )
 
 
-class Values(Validator):
+class Values(FieldValidator):
     def __init__(self, *values: Sequence[str]):
         self.values = values
 
@@ -55,20 +55,20 @@ class Values(Validator):
             unexpected = set(field_value).difference(self.values)
             if unexpected:
                 pretty_unexpected = ", ".join(f"'{v}'" for v in unexpected)
-                raise ValidationError(
+                raise FieldValidationError(
                     field_name,
                     f"Expected values {expected_values}, "
                     f"got unexpected {pretty_unexpected}",
                 )
         else:
             if field_value not in self.values:
-                raise ValidationError(
+                raise FieldValidationError(
                     field_name,
                     f"Expected values {expected_values}, got '{field_value}'",
                 )
 
 
-class Typed(Validator):
+class Typed(FieldValidator):
     def __init__(self, *types):
         self.types = types
 
@@ -76,9 +76,34 @@ class Typed(Validator):
         if field_value is not None and not isinstance(field_value, self.types):
             expected_names = ", ".join(c.__name__ for c in self.types)
             got_name = type(field_value).__name__
-            raise ValidationError(
+            raise FieldValidationError(
                 field_name, f"Expected types '{expected_names}', got '{got_name}'"
             )
+
+
+class ComponentValidationError(Exception):
+    def __init__(self, component_name: str, message: str):
+        self.component_name = component_name
+        self.message = message
+        super().__init__(f"Component '{component_name}': {message}")
+
+
+class ComponentValidator(ABC):
+    @abstractmethod
+    def validate(self, component: "Component") -> None:
+        pass
+
+    def __call__(self, component: "Component") -> None:
+        return self.validate(self, component)
+
+
+class Either(ComponentValidator):
+    def __init__(self, *field_names):
+        self.field_names = self.field_names
+
+    def validate(self, component: "Component") -> None:
+        if not any(component._get_field(name) for name in self.field_names):
+            pass
 
 
 def str_to_plain(value: str) -> "PlainText":
@@ -91,37 +116,46 @@ def str_to_plain(value: str) -> "PlainText":
 class Field:
     name: str
     value: Any
-    validators: Sequence[Validator] = field(default_factory=list)
+    validators: list[FieldValidator] = field(default_factory=list)
 
     def validate(self):
         for validator in self.validators:
             validator(self.name, self.value)
 
 
+@dataclass
 class Component:
-    def __init__(self):
-        self._fields: dict[str, Field] = {}
+    _fields: dict[str, Field] = field(default_factory=dict)
+    _validators: list[ComponentValidator] = field(default_factory=list)
 
-    def _add_field(self, name, value, validators: Sequence[Validator] = None):
+    def _add_field(self, name, value, validators: Sequence[FieldValidator] = None):
         if not validators:
             validators = []
         field = Field(name=name, value=value, validators=validators)
         self._fields[name] = field
         return self
 
-    def _add_validator(self, field_name: str, validator: Validator) -> None:
-        if field_name not in self._fields:
-            raise ValueError(f"No '{field_name}' field found")
+    def _add_validator(
+        self, validator: FieldValidator | ComponentValidator, field_name=None
+    ) -> None:
+        if isinstance(validator, FieldValidator):
+            if not field_name:
+                raise ValueError("Field name is required")
+            if field_name not in self._fields:
+                raise ValueError(f"No '{field_name}' field found")
+            self._fields[field_name].validators.append(validator)
+            return
+        self._validators.append(validator)
 
-        self._fields[field_name].validators.append(validator)
-
-    def _get_field_value(self, field_name: str) -> Any:
-        field = self._fields.get(field_name)
-        return field.value if field else None
+    def _get_field(self, field_name: str) -> Any:
+        return self._fields.get(field_name)
 
     def validate(self):
         for field_ in self._fields.values():
             field_.validate()
+
+        for validator in self._validators:
+            validator.validate(self)
 
     def build(self):
         self.validate()
@@ -219,8 +253,8 @@ class TextObject(Component):
         self.verbatim(verbatim)
 
     def __len__(self):
-        text = self._get_field_value("text")
-        return len(text) if text else 0
+        text = self._get_field("text")
+        return len(text.value or "")
 
     def text(self, text: str):
         return self._add_field(
@@ -351,7 +385,9 @@ class ConversationFilter(Component):
 
     def include(self, include: Sequence[str]) -> "ConversationFilter":
         self._add_field(
-            "include", include, validators=[Values("im", "mpim", "private", "public")]
+            "include",
+            include,
+            validators=[Required(), Values("im", "mpim", "private", "public")],
         )
         return self
 

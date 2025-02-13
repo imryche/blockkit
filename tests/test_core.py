@@ -5,13 +5,13 @@ from blockkit.core import (
     Component,
     Confirm,
     ConversationFilter,
+    FieldValidationError,
     MarkdownText,
     MaxLength,
     NonEmpty,
     PlainText,
     Required,
     Typed,
-    ValidationError,
     Values,
 )
 
@@ -60,50 +60,52 @@ def conversation_filter():
 
 class TestRequired:
     def test_invalid(self, plain_text):
-        plain_text._add_validator("text", Required())
-        with pytest.raises(ValidationError) as e:
+        plain_text._add_validator(Required(), field_name="text")
+        with pytest.raises(FieldValidationError) as e:
             plain_text.validate()
         assert "Value is required" in str(e.value)
 
     def test_valid(self, plain_text):
         plain_text.text("hello alice")
-        plain_text._add_validator("text", Required())
+        plain_text._add_validator(Required(), field_name="text")
         plain_text.validate()
 
 
 class TestNonEmpty:
     def test_invalid(self, plain_text):
         plain_text.text("")
-        plain_text._add_validator("text", NonEmpty())
-        with pytest.raises(ValidationError) as e:
+        plain_text._add_validator(NonEmpty(), field_name="text")
+        with pytest.raises(FieldValidationError) as e:
             plain_text.validate()
         assert "Value cannot be empty" in str(e.value)
 
     def test_valid(self, plain_text):
         plain_text.text("hello, alice!")
-        plain_text._add_validator("text", NonEmpty())
+        plain_text._add_validator(NonEmpty(), field_name="text")
         plain_text.validate()
 
 
 class TestMaxLength:
     def test_invalid(self, plain_text):
         plain_text.text("hello, alice!")
-        plain_text._add_validator("text", MaxLength(10))
-        with pytest.raises(ValidationError) as e:
+        plain_text._add_validator(MaxLength(10), field_name="text")
+        with pytest.raises(FieldValidationError) as e:
             plain_text.validate()
         assert "Length must be less or equal 10" in str(e.value)
 
     def test_valid(self, plain_text):
         plain_text.text("hello, alice!")
-        plain_text._add_validator("text", MaxLength(13))
+        plain_text._add_validator(MaxLength(13), field_name="text")
         plain_text.validate()
 
 
 class TestValues:
     def test_invalid_single(self, plain_text):
         plain_text.text("hello, charlie!")
-        plain_text._add_validator("text", Values("hello, alice!", "hello, bob!"))
-        with pytest.raises(ValidationError) as e:
+        plain_text._add_validator(
+            Values("hello, alice!", "hello, bob!"), field_name="text"
+        )
+        with pytest.raises(FieldValidationError) as e:
             plain_text.validate()
         assert (
             "Expected values 'hello, alice!', 'hello, bob!', got 'hello, charlie!'"
@@ -112,15 +114,15 @@ class TestValues:
 
     def test_valid_single(self, plain_text):
         plain_text.text("hello, alice!")
-        plain_text._add_validator("text", Values("hello, alice!"))
+        plain_text._add_validator(Values("hello, alice!"), field_name="text")
         plain_text.validate()
 
     def test_invalid_multi(self, conversation_filter):
         conversation_filter.include(["im", "external"])
         conversation_filter._add_validator(
-            "include", Values("im", "mpim", "private", "public")
+            Values("im", "mpim", "private", "public"), field_name="include"
         )
-        with pytest.raises(ValidationError) as e:
+        with pytest.raises(FieldValidationError) as e:
             conversation_filter.validate()
         assert (
             "Expected values 'im', 'mpim', 'private', 'public', "
@@ -130,7 +132,7 @@ class TestValues:
     def test_valid_multi(self, conversation_filter):
         conversation_filter.include(["private", "public"])
         conversation_filter._add_validator(
-            "include", Values("im", "mpim", "private", "public")
+            Values("im", "mpim", "private", "public"), field_name="include"
         )
         conversation_filter.validate()
 
@@ -138,14 +140,14 @@ class TestValues:
 class TestTyped:
     def test_invalid(self, button, plain_text):
         button.text(123)
-        button._add_validator("text", Typed(str, type(plain_text)))
-        with pytest.raises(ValidationError) as e:
+        button._add_validator(Typed(str, type(plain_text)), field_name="text")
+        with pytest.raises(FieldValidationError) as e:
             button.validate()
         assert "Expected types 'str, PlainText', got 'int'" in str(e.value)
 
     def test_valid(self, button, plain_text):
         button.text("click me")
-        button._add_validator("text", Typed(str, type(plain_text)))
+        button._add_validator(Typed(str, type(plain_text)), field_name="text")
         button.validate()
 
 
