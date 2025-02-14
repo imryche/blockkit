@@ -3,8 +3,10 @@ import pytest
 from blockkit.core import (
     Button,
     Component,
+    ComponentValidationError,
     Confirm,
     ConversationFilter,
+    Either,
     FieldValidationError,
     MarkdownText,
     MaxLength,
@@ -47,12 +49,17 @@ def button():
 @pytest.fixture
 def conversation_filter():
     class ConversationFilter(Component):
-        def __init__(self, include=None):
+        def __init__(self, include=None, exclude_bot_users=None):
             super().__init__()
             self.include(include)
+            self.exclude_bot_users(exclude_bot_users)
 
         def include(self, include):
             self._add_field("include", include)
+            return self
+
+        def exclude_bot_users(self, exclude_bot_users):
+            self._add_field("exclude_bot_users", exclude_bot_users)
             return self
 
     return ConversationFilter()
@@ -149,6 +156,21 @@ class TestTyped:
         button.text("click me")
         button._add_validator(Typed(str, type(plain_text)), field_name="text")
         button.validate()
+
+
+class TestEither:
+    def test_invalid(self, conversation_filter):
+        conversation_filter._add_validator(Either("include", "exclude_bot_users"))
+        with pytest.raises(ComponentValidationError) as e:
+            conversation_filter.validate()
+        assert (
+            "At least one of the following fields is required "
+            "'include', 'exclude_bot_users'" in str(e.value)
+        )
+
+    def test_valid(self, conversation_filter):
+        conversation_filter.include(["private", "public"])
+        conversation_filter.validate()
 
 
 class TestConfirm:

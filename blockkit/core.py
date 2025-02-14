@@ -99,11 +99,18 @@ class ComponentValidator(ABC):
 
 class Either(ComponentValidator):
     def __init__(self, *field_names):
-        self.field_names = self.field_names
+        self.field_names = field_names
 
     def validate(self, component: "Component") -> None:
-        if not any(component._get_field(name) for name in self.field_names):
-            pass
+        if not any(
+            getattr(component._get_field(name), "value", None)
+            for name in self.field_names
+        ):
+            expected_names = ", ".join(f"'{n}'" for n in self.field_names)
+            raise ComponentValidationError(
+                type(component).__name__,
+                f"At least one of the following fields is required {expected_names}",
+            )
 
 
 def str_to_plain(value: str) -> "PlainText":
