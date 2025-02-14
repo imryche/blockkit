@@ -74,10 +74,12 @@ class Typed(FieldValidator):
 
     def validate(self, field_name: str, field_value: Any) -> None:
         if field_value is not None and not isinstance(field_value, self.types):
-            expected_names = ", ".join(c.__name__ for c in self.types)
+            expected_names = ", ".join(f"'{c.__name__}'" for c in self.types)
             got_name = type(field_value).__name__
             raise FieldValidationError(
-                field_name, f"Expected types '{expected_names}', got '{got_name}'"
+                field_name,
+                f"Expected type{'s' if len(self.types) > 1 else ''} "
+                f"{expected_names}, got '{got_name}'",
             )
 
 

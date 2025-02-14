@@ -150,7 +150,7 @@ class TestTyped:
         button._add_validator(Typed(str, type(plain_text)), field_name="text")
         with pytest.raises(FieldValidationError) as e:
             button.validate()
-        assert "Expected types 'str, PlainText', got 'int'" in str(e.value)
+        assert "Expected types 'str', 'PlainText', got 'int'" in str(e.value)
 
     def test_valid(self, button, plain_text):
         button.text("click me")
