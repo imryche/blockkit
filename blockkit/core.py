@@ -381,7 +381,7 @@ class Confirm(Component):
 class ConversationFilter(Component):
     def __init__(
         self,
-        include: Sequence[str] | None,
+        include: Sequence[str] | None = None,
         exclude_bot_users: bool | None = None,
         exclude_external_shared_channels: bool | None = None,
     ):
@@ -390,11 +390,15 @@ class ConversationFilter(Component):
         self.exclude_bot_users(exclude_bot_users)
         self.exclude_external_shared_channels(exclude_external_shared_channels)
 
+        self._add_validator(
+            Either("include", "exclude_bot_users", "exclude_external_shared_channels")
+        )
+
     def include(self, include: Sequence[str]) -> "ConversationFilter":
         self._add_field(
             "include",
             include,
-            validators=[Required(), Values("im", "mpim", "private", "public")],
+            validators=[Values("im", "mpim", "private", "public")],
         )
         return self
 
