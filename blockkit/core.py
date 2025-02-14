@@ -403,7 +403,9 @@ class ConversationFilter(Component):
         return self
 
     def exclude_bot_users(self, exclude_bot_users: bool) -> "ConversationFilter":
-        self._add_field("exclude_bot_users", exclude_bot_users, validators=[])
+        self._add_field(
+            "exclude_bot_users", exclude_bot_users, validators=[Typed(bool)]
+        )
         return self
 
     def exclude_external_shared_channels(
@@ -412,7 +414,7 @@ class ConversationFilter(Component):
         self._add_field(
             "exclude_external_shared_channels",
             exclude_external_shared_channels,
-            validators=[],
+            validators=[Typed(bool)],
         )
         return self
 
