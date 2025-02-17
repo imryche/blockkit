@@ -427,14 +427,14 @@ class ConversationFilter(Component):
         )
         return self
 
-    def exclude_bot_users(self, exclude_bot_users: bool) -> "ConversationFilter":
+    def exclude_bot_users(self, exclude_bot_users: bool = True) -> "ConversationFilter":
         self._add_field(
             "exclude_bot_users", exclude_bot_users, validators=[Typed(bool)]
         )
         return self
 
     def exclude_external_shared_channels(
-        self, exclude_external_shared_channels: bool
+        self, exclude_external_shared_channels: bool = True
     ) -> "ConversationFilter":
         self._add_field(
             "exclude_external_shared_channels",

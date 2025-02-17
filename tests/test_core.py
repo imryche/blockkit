@@ -256,8 +256,8 @@ class TestConversationFilter:
         got = (
             ConversationFilter()
             .include(["public", "mpim"])
-            .exclude_bot_users(True)
-            .exclude_external_shared_channels(True)
+            .exclude_bot_users()
+            .exclude_external_shared_channels()
             .build()
         )
         assert got == want
