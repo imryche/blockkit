@@ -414,7 +414,7 @@ class ConversationFilter(Component):
         self._add_field(
             "include",
             include,
-            validators=[Values("im", "mpim", "private", "public")],
+            validators=[Typed(str), Values("im", "mpim", "private", "public")],
         )
         return self
 
