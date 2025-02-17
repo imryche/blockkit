@@ -6,6 +6,7 @@ from blockkit.core import (
     ComponentValidationError,
     Confirm,
     ConversationFilter,
+    DispatchActionConfig,
     Either,
     FieldValidationError,
     MarkdownText,
@@ -250,6 +251,38 @@ class TestConversationFilter:
             exclude_external_shared_channels=True,
             exclude_bot_users=True,
         ).build()
+        assert got == want
+
+        got = (
+            ConversationFilter()
+            .include(["public", "mpim"])
+            .exclude_bot_users(True)
+            .exclude_external_shared_channels(True)
+            .build()
+        )
+        assert got == want
+
+
+class TestDispatchActionConfig:
+    def test_builds(self):
+        want = {
+            "trigger_actions_on": [
+                "on_character_entered",
+            ]
+        }
+
+        got = DispatchActionConfig(
+            trigger_actions_on=["on_character_entered"],
+        ).build()
+        assert got == want
+
+        got = (
+            DispatchActionConfig()
+            .trigger_actions_on(
+                ["on_character_entered"],
+            )
+            .build()
+        )
         assert got == want
 
 

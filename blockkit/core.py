@@ -194,7 +194,7 @@ class Component:
 Composition objects:
 
 x Confirmation dialog (Confirm) - https://api.slack.com/reference/block-kit/composition-objects#confirm
-- Conversation filter (ConversationFilter) - https://api.slack.com/reference/block-kit/composition-objects#filter_conversations
+x Conversation filter (ConversationFilter) - https://api.slack.com/reference/block-kit/composition-objects#filter_conversations
 - Dispatch action configuration (DispatchActionConfig) - https://api.slack.com/reference/block-kit/composition-objects#dispatch_action_config
 - Option (Option) - https://api.slack.com/reference/block-kit/composition-objects#option
 - Option group (OptionGroup) - https://api.slack.com/reference/block-kit/composition-objects#option_group
@@ -440,6 +440,34 @@ class ConversationFilter(Component):
             "exclude_external_shared_channels",
             exclude_external_shared_channels,
             validators=[Typed(bool)],
+        )
+        return self
+
+
+class DispatchActionConfig(Component):
+    """
+    Dispatch action configuration object
+
+    Defines when a plain-text input element will return a
+    block_actions interaction payload.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#dispatch_action_config
+    """
+
+    def __init__(self, trigger_actions_on: Sequence[str] | None = None):
+        super().__init__()
+        self.trigger_actions_on(trigger_actions_on)
+
+    def trigger_actions_on(self, trigger_actions_on: Sequence[str]):
+        self._add_field(
+            "trigger_actions_on",
+            trigger_actions_on,
+            validators=[
+                Typed(str),
+                Required(),
+                Values("on_enter_pressed", "on_character_entered"),
+            ],
         )
         return self
 
