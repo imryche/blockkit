@@ -395,6 +395,15 @@ class Confirm(Component):
 
 
 class ConversationFilter(Component):
+    """
+    Conversation filter object
+
+    Defines a filter for the list of options in a conversation selector menu.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#filter_conversations
+    """
+
     def __init__(
         self,
         include: Sequence[str] | None = None,
