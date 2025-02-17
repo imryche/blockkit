@@ -145,17 +145,29 @@ class TestValues:
 
 
 class TestTyped:
-    def test_invalid(self, button, plain_text):
+    def test_invalid_basic(self, button, plain_text):
         button.text(123)
         button._add_validator(Typed(str, type(plain_text)), field_name="text")
         with pytest.raises(FieldValidationError) as e:
             button.validate()
         assert "Expected types 'str', 'PlainText', got 'int'" in str(e.value)
 
-    def test_valid(self, button, plain_text):
+    def test_valid_basic(self, button, plain_text):
         button.text("click me")
         button._add_validator(Typed(str, type(plain_text)), field_name="text")
         button.validate()
+
+    def test_invalid_list(self, conversation_filter):
+        conversation_filter.include(["im", 123])
+        conversation_filter._add_validator(Typed(str), field_name="include")
+        with pytest.raises(FieldValidationError) as e:
+            conversation_filter.validate()
+        assert "Expected type 'str', got 'int'" in str(e.value)
+
+    def test_valid_list(self, conversation_filter):
+        conversation_filter.include(["im", "public"])
+        conversation_filter._add_validator(Typed(str), field_name="include")
+        conversation_filter.validate()
 
 
 class TestEither:

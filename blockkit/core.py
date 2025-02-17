@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Sequence
+from typing import Any, Sequence, Type
 
 
 class FieldValidationError(Exception):
@@ -69,13 +69,27 @@ class Values(FieldValidator):
 
 
 class Typed(FieldValidator):
-    def __init__(self, *types):
+    def __init__(self, *types: Type):
+        if not types:
+            raise ValueError("At least one type must be specified")
         self.types = types
 
     def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is not None and not isinstance(field_value, self.types):
+        if field_value is None:
+            return
+
+        values = (
+            [field_value]
+            if not isinstance(field_value, (list, tuple, set))
+            else field_value
+        )
+
+        for value in values:
+            if isinstance(value, self.types):
+                continue
+
             expected_names = ", ".join(f"'{c.__name__}'" for c in self.types)
-            got_name = type(field_value).__name__
+            got_name = type(value).__name__
             raise FieldValidationError(
                 field_name,
                 f"Expected type{'s' if len(self.types) > 1 else ''} "
