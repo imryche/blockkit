@@ -292,22 +292,32 @@ class TestOption:
         want = {
             "text": {
                 "type": "plain_text",
-                "text": "Pick me",
+                "text": "Option 1",
             },
-            "value": "picked",
+            "value": "option_1",
             "description": {
                 "type": "plain_text",
-                "text": "Pick this",
+                "text": "This is option 1",
             },
             "url": "https://example.com",
         }
 
         got = Option(
-            text="Pick me",
-            value="picked",
-            description="Pick this",
+            text="Option 1",
+            value="option_1",
+            description="This is option 1",
             url="https://example.com",
         ).build()
+        assert got == want
+
+        got = (
+            Option()
+            .text("Option 1")
+            .value("option_1")
+            .description("This is option 1")
+            .url("https://example.com")
+            .build()
+        )
         assert got == want
 
 
