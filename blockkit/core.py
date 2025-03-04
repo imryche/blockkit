@@ -496,20 +496,20 @@ class Option(Component):
         self.url(url)
 
     # TODO: markdown should be available in checkboxex and radiobuttons
-    def text(self, text: str | PlainText | MarkdownText):
+    def text(self, text: str | PlainText | MarkdownText) -> "Option":
         return self._add_field(
             "text",
             str_to_plain(text),
             validators=[Typed(PlainText, MarkdownText), Required(), MaxLength(75)],
         )
 
-    def value(self, value: str):
+    def value(self, value: str) -> "Option":
         return self._add_field(
             "value", value, validators=[Typed(str), Required(), MaxLength(150)]
         )
 
     # TODO: markdown should be available in checkbox group and radiobutton group
-    def description(self, description: str | PlainText | MarkdownText):
+    def description(self, description: str | PlainText | MarkdownText) -> "Option":
         return self._add_field(
             "description",
             str_to_plain(description),
@@ -517,7 +517,7 @@ class Option(Component):
         )
 
     # TODO: should be available in overflow menus only
-    def url(self, url: str | None = None):
+    def url(self, url: str | None = None) -> "Option":
         return self._add_field("url", url, validators=[Typed(str), MaxLength(3000)])
 
 
