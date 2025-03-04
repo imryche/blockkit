@@ -12,6 +12,7 @@ from blockkit.core import (
     MarkdownText,
     MaxLength,
     NonEmpty,
+    Option,
     PlainText,
     Required,
     Typed,
@@ -283,6 +284,30 @@ class TestDispatchActionConfig:
             )
             .build()
         )
+        assert got == want
+
+
+class TestOption:
+    def test_builds(self):
+        want = {
+            "text": {
+                "type": "plain_text",
+                "text": "Pick me",
+            },
+            "value": "picked",
+            "description": {
+                "type": "plain_text",
+                "text": "Pick this",
+            },
+            "url": "https://example.com",
+        }
+
+        got = Option(
+            text="Pick me",
+            value="picked",
+            description="Pick this",
+            url="https://example.com",
+        ).build()
         assert got == want
 
 

@@ -195,7 +195,7 @@ Composition objects:
 
 x Confirmation dialog (Confirm) - https://api.slack.com/reference/block-kit/composition-objects#confirm
 x Conversation filter (ConversationFilter) - https://api.slack.com/reference/block-kit/composition-objects#filter_conversations
-- Dispatch action configuration (DispatchActionConfig) - https://api.slack.com/reference/block-kit/composition-objects#dispatch_action_config
+x Dispatch action configuration (DispatchActionConfig) - https://api.slack.com/reference/block-kit/composition-objects#dispatch_action_config
 - Option (Option) - https://api.slack.com/reference/block-kit/composition-objects#option
 - Option group (OptionGroup) - https://api.slack.com/reference/block-kit/composition-objects#option_group
 - Text (Text) - https://api.slack.com/reference/block-kit/composition-objects#text
@@ -470,6 +470,55 @@ class DispatchActionConfig(Component):
             ],
         )
         return self
+
+
+class Option(Component):
+    """
+    Option object
+
+    Defines a single item in a number of item selection elements.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#option
+    """
+
+    def __init__(
+        self,
+        text: str | PlainText | MarkdownText | None = None,
+        value: str | None = None,
+        description: str | PlainText | MarkdownText | None = None,
+        url: str | None = None,
+    ):
+        super().__init__()
+        self.text(text)
+        self.value(value)
+        self.description(description)
+        self.url(url)
+
+    # TODO: markdown should be available in checkboxex and radiobuttons
+    def text(self, text: str | PlainText | MarkdownText):
+        return self._add_field(
+            "text",
+            str_to_plain(text),
+            validators=[Typed(PlainText, MarkdownText), Required(), MaxLength(75)],
+        )
+
+    def value(self, value: str):
+        return self._add_field(
+            "value", value, validators=[Typed(str), Required(), MaxLength(150)]
+        )
+
+    # TODO: markdown should be available in checkbox group and radiobutton group
+    def description(self, description: str | PlainText | MarkdownText):
+        return self._add_field(
+            "description",
+            str_to_plain(description),
+            validators=[Typed(PlainText, MarkdownText), Required(), MaxLength(75)],
+        )
+
+    # TODO: should be available in overflow menus only
+    def url(self, url: str | None = None):
+        return self._add_field("url", url, validators=[Typed(str), MaxLength(3000)])
 
 
 class Button(Component):
