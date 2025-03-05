@@ -183,11 +183,18 @@ class Component:
     def build(self):
         self.validate()
         fields = {field.name: field.value for field in self._fields.values()}
-        return {
-            k: v.build() if hasattr(v, "build") else v
-            for k, v in fields.items()
-            if v is not None
-        }
+        obj = {}
+        for name, value in fields.items():
+            if value is None:
+                continue
+            obj[name] = value
+            if hasattr(value, "build"):
+                obj[name] = value.build()
+            if isinstance(value, (list, tuple, set)):
+                obj[name] = [
+                    item.build() if hasattr(item, "build") else item for item in value
+                ]
+        return obj
 
 
 """
@@ -196,7 +203,7 @@ Composition objects:
 x Confirmation dialog (Confirm) - https://api.slack.com/reference/block-kit/composition-objects#confirm
 x Conversation filter (ConversationFilter) - https://api.slack.com/reference/block-kit/composition-objects#filter_conversations
 x Dispatch action configuration (DispatchActionConfig) - https://api.slack.com/reference/block-kit/composition-objects#dispatch_action_config
-- Option (Option) - https://api.slack.com/reference/block-kit/composition-objects#option
+x Option (Option) - https://api.slack.com/reference/block-kit/composition-objects#option
 - Option group (OptionGroup) - https://api.slack.com/reference/block-kit/composition-objects#option_group
 - Text (Text) - https://api.slack.com/reference/block-kit/composition-objects#text
 - Trigger (Trigger) - https://api.slack.com/reference/block-kit/composition-objects#trigger
@@ -519,6 +526,43 @@ class Option(Component):
     # TODO: should be available in overflow menus only
     def url(self, url: str | None = None) -> "Option":
         return self._add_field("url", url, validators=[Typed(str), MaxLength(3000)])
+
+
+class OptionGroup(Component):
+    """
+    Option group object
+
+    Defines a way to group options in a menu.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#option_group
+    """
+
+    def __init__(
+        self, label: str | PlainText | None = None, options: list[Option] | None = None
+    ):
+        super().__init__()
+        if options is None:
+            options = []
+        self.label(label)
+        self.options(*options)
+
+    def label(self, label: str | PlainText) -> "OptionGroup":
+        return self._add_field(
+            "label",
+            str_to_plain(label),
+            validators=[Typed(PlainText), Required(), MaxLength(75)],
+        )
+
+    def options(self, *options: tuple[Option]) -> "OptionGroup":
+        return self._add_field(
+            "options", list(options), validators=[Typed(Option), Required()]
+        )
+
+    def add_option(self, option: Option) -> "OptionGroup":
+        field = self._get_field("options")
+        field.value.append(option)
+        return self
 
 
 class Button(Component):

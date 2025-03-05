@@ -13,6 +13,7 @@ from blockkit.core import (
     MaxLength,
     NonEmpty,
     Option,
+    OptionGroup,
     PlainText,
     Required,
     Typed,
@@ -318,6 +319,53 @@ class TestOption:
             .url("https://example.com")
             .build()
         )
+        assert got == want
+
+
+class TestOptionGroup:
+    def test_builds(self):
+        want = {
+            "label": {
+                "type": "plain_text",
+                "text": "Options",
+            },
+            "options": [
+                {
+                    "text": {"type": "plain_text", "text": "Option 1"},
+                    "value": "option_1",
+                },
+                {
+                    "text": {"type": "plain_text", "text": "Option 2"},
+                    "value": "option_2",
+                },
+            ],
+        }
+
+        got = OptionGroup(
+            label="Options",
+            options=[
+                Option(text="Option 1", value="option_1"),
+                Option(text="Option 2", value="option_2"),
+            ],
+        ).build()
+        assert got == want
+
+        got = (
+            OptionGroup()
+            .label("Options")
+            .options(
+                Option(text="Option 1", value="option_1"),
+                Option(text="Option 2", value="option_2"),
+            )
+        ).build()
+        assert got == want
+
+        got = (
+            OptionGroup()
+            .label("Options")
+            .add_option(Option(text="Option 1", value="option_1"))
+            .add_option(Option(text="Option 2", value="option_2"))
+        ).build()
         assert got == want
 
 
