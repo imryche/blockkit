@@ -513,7 +513,7 @@ class Option(Component):
         return self._add_field(
             "description",
             str_to_plain(description),
-            validators=[Typed(PlainText, MarkdownText), Required(), MaxLength(75)],
+            validators=[Typed(PlainText, MarkdownText), MaxLength(75)],
         )
 
     # TODO: should be available in overflow menus only
