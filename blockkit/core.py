@@ -1,3 +1,4 @@
+import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Sequence, Type
@@ -504,6 +505,55 @@ class OptionGroup(Component):
         field = self._get_field("options")
         field.value.append(option)
         return self
+
+
+def is_md(text):
+    patterns = [
+        # Bold, italic, strikethrough, inline code: *text*, _text_, ~text~, `text`
+        r"(?:^|\s)([*_~`])([^\1]+)\1(?:$|\s)",
+        # Code block: line starting with ```
+        r"^```",
+        # Quote: line starting with >
+        r"^>",
+        # Links and mentions: <http...>, <@USERID>, <#CHANNELID|channel>
+        r"<[^>]+>",
+    ]
+    for pattern in patterns:
+        if re.search(pattern, text, re.MULTILINE):
+            return True
+    return False
+
+
+class Text(Component):
+    def __init__(
+        self,
+        text: str | None = None,
+        emoji: bool | None = None,
+        verbatim: bool | None = None,
+        type: str | None = None,
+    ):
+        super().__init__()
+        self.text(text)
+        self.emoji(emoji)
+        self.verbatim(verbatim)
+        if type is None:
+            type = "mrkdwn" if is_md(text) else "plain_text"
+        self.type(type)
+
+    def text(self, text: str) -> "Text":
+        # TODO: min length is 1 symbol
+        return self._add_field(
+            "text", text, validators=[Typed(str), Required(), MaxLength(3000)]
+        )
+
+    def emoji(self, emoji: bool) -> "Text":
+        return self._add_field("emoji", emoji, validators=[])
+
+    def verbatim(self, verbatim: bool) -> "Text":
+        return self._add_field("verbatim", verbatim, validators=[])
+
+    def type(self, type: str) -> "Text":
+        return self._add_field("type", type, validators=[])
 
 
 """

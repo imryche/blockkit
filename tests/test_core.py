@@ -16,6 +16,7 @@ from blockkit.core import (
     OptionGroup,
     PlainText,
     Required,
+    Text,
     Typed,
     Values,
 )
@@ -366,6 +367,26 @@ class TestOptionGroup:
             .add_option(Option(text="Option 1", value="option_1"))
             .add_option(Option(text="Option 2", value="option_2"))
         ).build()
+        assert got == want
+
+
+class TestText:
+    def test_plain_text(self):
+        want = {
+            "type": "plain_text",
+            "text": "hello, alice!",
+            "emoji": True,
+        }
+        got = Text("hello, alice!", emoji=True).build()
+        assert got == want
+
+    def test_mrkdwn_text(self):
+        want = {
+            "type": "mrkdwn",
+            "text": "_hello, alice!_",
+            "verbatim": True,
+        }
+        got = Text("_hello, alice!_", verbatim=True).build()
         assert got == want
 
 
