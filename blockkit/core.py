@@ -1,7 +1,8 @@
-import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Sequence, Type
+
+from blockkit.utils import is_md
 
 
 class FieldValidationError(Exception):
@@ -505,23 +506,6 @@ class OptionGroup(Component):
         field = self._get_field("options")
         field.value.append(option)
         return self
-
-
-def is_md(text):
-    patterns = [
-        # Bold, italic, strikethrough, inline code: *text*, _text_, ~text~, `text`
-        r"(?:^|\s)([*_~`])([^\1]+)\1(?:$|\s)",
-        # Code block: line starting with ```
-        r"^```",
-        # Quote: line starting with >
-        r"^>",
-        # Links and mentions: <http...>, <@USERID>, <#CHANNELID|channel>
-        r"<[^>]+>",
-    ]
-    for pattern in patterns:
-        if re.search(pattern, text, re.MULTILINE):
-            return True
-    return False
 
 
 class Text(Component):
