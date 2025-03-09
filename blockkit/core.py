@@ -33,14 +33,21 @@ class NonEmpty(FieldValidator):
             raise FieldValidationError(field_name, "Value cannot be empty")
 
 
-class MaxLength(FieldValidator):
-    def __init__(self, max_length):
-        self.max_length = max_length
+class Length(FieldValidator):
+    def __init__(self, min=0, max=999999):
+        self.min = min
+        self.max = max
 
     def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is not None and len(field_value) > self.max_length:
+        if field_value is None:
+            return
+
+        value_length = len(field_value)
+        if not (self.min <= value_length <= self.max):
             raise FieldValidationError(
-                field_name, f"Length must be less or equal {self.max_length}"
+                field_name,
+                f"Length must be between {self.min} and {self.max} "
+                f"(got {value_length})",
             )
 
 
@@ -233,7 +240,7 @@ class TextObject(Component):
         return self._add_field(
             "text",
             text,
-            validators=[Required(), NonEmpty(), MaxLength(3000)],
+            validators=[Required(), NonEmpty(), Length(max=3000)],
         )
 
     def verbatim(self, verbatim: bool = True):
@@ -309,7 +316,7 @@ class Confirm(Component):
         self._add_field(
             "title",
             str_to_plain(title),
-            validators=[Typed(PlainText), Required(), MaxLength(100)],
+            validators=[Typed(PlainText), Required(), Length(1, 100)],
         )
         return self
 
@@ -317,7 +324,7 @@ class Confirm(Component):
         self._add_field(
             "text",
             str_to_plain(text),
-            validators=[Typed(PlainText), Required(), MaxLength(300)],
+            validators=[Typed(PlainText), Required(), Length(1, 300)],
         )
         return self
 
@@ -325,7 +332,7 @@ class Confirm(Component):
         self._add_field(
             "confirm",
             str_to_plain(confirm),
-            validators=[Typed(PlainText), Required(), MaxLength(30)],
+            validators=[Typed(PlainText), Required(), Length(1, 30)],
         )
         return self
 
@@ -333,7 +340,7 @@ class Confirm(Component):
         self._add_field(
             "deny",
             str_to_plain(deny),
-            validators=[Typed(PlainText), Required(), MaxLength(30)],
+            validators=[Typed(PlainText), Required(), Length(1, 30)],
         )
         return self
 
@@ -450,12 +457,12 @@ class Option(Component):
         return self._add_field(
             "text",
             str_to_plain(text),
-            validators=[Typed(PlainText, MarkdownText), Required(), MaxLength(75)],
+            validators=[Typed(PlainText, MarkdownText), Required(), Length(1, 75)],
         )
 
     def value(self, value: str) -> "Option":
         return self._add_field(
-            "value", value, validators=[Typed(str), Required(), MaxLength(150)]
+            "value", value, validators=[Typed(str), Required(), Length(1, 150)]
         )
 
     # TODO: markdown should be available in checkbox group and radiobutton group
@@ -463,12 +470,12 @@ class Option(Component):
         return self._add_field(
             "description",
             str_to_plain(description),
-            validators=[Typed(PlainText, MarkdownText), MaxLength(75)],
+            validators=[Typed(PlainText, MarkdownText), Length(1, 75)],
         )
 
     # TODO: should be available in overflow menus only
     def url(self, url: str | None = None) -> "Option":
-        return self._add_field("url", url, validators=[Typed(str), MaxLength(3000)])
+        return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
 
 
 class OptionGroup(Component):
@@ -494,7 +501,7 @@ class OptionGroup(Component):
         return self._add_field(
             "label",
             str_to_plain(label),
-            validators=[Typed(PlainText), Required(), MaxLength(75)],
+            validators=[Typed(PlainText), Required(), Length(1, 75)],
         )
 
     def options(self, *options: tuple[Option]) -> "OptionGroup":
@@ -536,7 +543,7 @@ class Text(Component):
         return self._add_field(
             "text",
             text,
-            validators=[Typed(str), Required(), MaxLength(3000)],
+            validators=[Typed(str), Required(), Length(1, 3000)],
         )
 
     def emoji(self, emoji: bool = True) -> "Text":
@@ -647,7 +654,7 @@ class Button(Component):
             text = PlainText(text)
 
         return self._add_field(
-            "text", text, validators=[Typed(PlainText), Required(), MaxLength(75)]
+            "text", text, validators=[Typed(PlainText), Required(), Length(1, 75)]
         )
 
     def action_id(self, action_id: str):

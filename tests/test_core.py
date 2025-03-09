@@ -9,7 +9,7 @@ from blockkit.core import (
     DispatchActionConfig,
     Either,
     FieldValidationError,
-    MaxLength,
+    Length,
     NonEmpty,
     Option,
     OptionGroup,
@@ -95,17 +95,24 @@ class TestNonEmpty:
         plain_text.validate()
 
 
-class TestMaxLength:
-    def test_invalid(self, plain_text):
+class TestLength:
+    def test_invalid_upper(self, plain_text):
         plain_text.text("hello, alice!")
-        plain_text._add_validator(MaxLength(10), field_name="text")
+        plain_text._add_validator(Length(max=10), field_name="text")
         with pytest.raises(FieldValidationError) as e:
             plain_text.validate()
-        assert "Length must be less or equal 10" in str(e.value)
+        assert "Length must be between 0 and 10 (got 13)" in str(e.value)
+
+    def test_invalid_lower(self, plain_text):
+        plain_text.text("hello, alice!")
+        plain_text._add_validator(Length(min=15, max=25), field_name="text")
+        with pytest.raises(FieldValidationError) as e:
+            plain_text.validate()
+        assert "Length must be between 15 and 25 (got 13)" in str(e.value)
 
     def test_valid(self, plain_text):
         plain_text.text("hello, alice!")
-        plain_text._add_validator(MaxLength(13), field_name="text")
+        plain_text._add_validator(Length(max=13), field_name="text")
         plain_text.validate()
 
 
