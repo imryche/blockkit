@@ -394,6 +394,7 @@ class TestText:
         assert got == want
 
         got = Text().text("_hello, alice!_").verbatim().build()
+        assert got == want
 
 
 class TestButton:
