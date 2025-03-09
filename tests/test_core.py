@@ -9,7 +9,6 @@ from blockkit.core import (
     DispatchActionConfig,
     Either,
     FieldValidationError,
-    MarkdownText,
     MaxLength,
     NonEmpty,
     Option,
@@ -377,7 +376,11 @@ class TestText:
             "text": "hello, alice!",
             "emoji": True,
         }
+
         got = Text("hello, alice!", emoji=True).build()
+        assert got == want
+
+        got = Text().text("hello, alice!").emoji().build()
         assert got == want
 
     def test_mrkdwn_text(self):
@@ -386,19 +389,11 @@ class TestText:
             "text": "_hello, alice!_",
             "verbatim": True,
         }
+
         got = Text("_hello, alice!_", verbatim=True).build()
         assert got == want
 
-
-class TestMarkdownText:
-    def test_builds(self):
-        want = {"type": "mrkdwn", "text": "hello alice!", "verbatim": True}
-
-        got = MarkdownText("hello alice!", verbatim=True).build()
-        assert got == want
-
-        got = MarkdownText().text("hello alice!").verbatim().build()
-        assert got == want
+        got = Text().text("_hello, alice!_").verbatim().build()
 
 
 class TestButton:

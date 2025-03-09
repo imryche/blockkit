@@ -509,6 +509,9 @@ class OptionGroup(Component):
 
 
 class Text(Component):
+    PLAIN = "plain_text"
+    MD = "mrkdwn"
+
     def __init__(
         self,
         text: str | None = None,
@@ -520,24 +523,34 @@ class Text(Component):
         self.text(text)
         self.emoji(emoji)
         self.verbatim(verbatim)
-        if type is None:
-            type = "mrkdwn" if is_md(text) else "plain_text"
-        self.type(type)
+        if type:
+            self.type(type)
+
+    def _detect_type(self, text):
+        if text is None:
+            return self.PLAIN
+        return self.MD if is_md(text) else self.PLAIN
 
     def text(self, text: str) -> "Text":
-        # TODO: min length is 1 symbol
+        self.type(self._detect_type(text))
         return self._add_field(
-            "text", text, validators=[Typed(str), Required(), MaxLength(3000)]
+            "text",
+            text,
+            validators=[Typed(str), Required(), MaxLength(3000)],
         )
 
-    def emoji(self, emoji: bool) -> "Text":
+    def emoji(self, emoji: bool = True) -> "Text":
         return self._add_field("emoji", emoji, validators=[])
 
-    def verbatim(self, verbatim: bool) -> "Text":
+    def verbatim(self, verbatim: bool = True) -> "Text":
         return self._add_field("verbatim", verbatim, validators=[])
 
     def type(self, type: str) -> "Text":
-        return self._add_field("type", type, validators=[])
+        return self._add_field(
+            "type",
+            type,
+            validators=[Typed(str), Required(), Values("plain_text", "mrkdwn")],
+        )
 
 
 """
