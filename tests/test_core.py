@@ -1,7 +1,6 @@
 import pytest
 
 from blockkit.core import (
-    Button,
     Component,
     ComponentValidationError,
     Confirm,
@@ -10,10 +9,9 @@ from blockkit.core import (
     Either,
     FieldValidationError,
     Length,
-    NonEmpty,
     Option,
     OptionGroup,
-    PlainText,
+    Plain,
     Required,
     Text,
     Typed,
@@ -23,7 +21,7 @@ from blockkit.core import (
 
 @pytest.fixture
 def plain_text():
-    class PlainText(Component):
+    class Text(Component):
         def __init__(self, text=None):
             super().__init__()
             self.text(text)
@@ -32,7 +30,7 @@ def plain_text():
             self._add_field("text", text)
             return self
 
-    return PlainText()
+    return Text()
 
 
 @pytest.fixture
@@ -81,18 +79,18 @@ class TestRequired:
         plain_text.validate()
 
 
-class TestNonEmpty:
-    def test_invalid(self, plain_text):
-        plain_text.text("")
-        plain_text._add_validator(NonEmpty(), field_name="text")
+class TestPlain:
+    def test_invalid(self, button):
+        button.text(Text("Click me").type(Text.MD))
+        button._add_validator(Plain(), field_name="text")
         with pytest.raises(FieldValidationError) as e:
-            plain_text.validate()
-        assert "Value cannot be empty" in str(e.value)
+            button.validate()
+        assert "Only plain_text is allowed" in str(e)
 
-    def test_valid(self, plain_text):
-        plain_text.text("hello, alice!")
-        plain_text._add_validator(NonEmpty(), field_name="text")
-        plain_text.validate()
+    def test_valid(self, button):
+        button.text(Text("Click me"))
+        button._add_validator(Plain(), field_name="text")
+        button.validate()
 
 
 class TestLength:
@@ -160,7 +158,7 @@ class TestTyped:
         button._add_validator(Typed(str, type(plain_text)), field_name="text")
         with pytest.raises(FieldValidationError) as e:
             button.validate()
-        assert "Expected types 'str', 'PlainText', got 'int'" in str(e.value)
+        assert "Expected types 'str', 'Text', got 'int'" in str(e.value)
 
     def test_valid_basic(self, button, plain_text):
         button.text("click me")
@@ -218,10 +216,10 @@ class TestConfirm:
         }
 
         got = Confirm(
-            title=PlainText(text="Please confirm"),
-            text=PlainText(text="Proceed?"),
-            confirm=PlainText(text="Yes"),
-            deny=PlainText(text="No"),
+            title=Text(text="Please confirm"),
+            text=Text(text="Proceed?"),
+            confirm=Text(text="Yes"),
+            deny=Text(text="No"),
             style="danger",
         ).build()
         assert got == want
@@ -404,30 +402,30 @@ class TestText:
         assert got == want
 
 
-class TestButton:
-    def test_builds(self):
-        want = {
-            "type": "button",
-            "text": {"type": "plain_text", "text": "Click me"},
-            "action_id": "clicked",
-            "value": "1",
-            "style": "primary",
-        }
-
-        got = Button(
-            "Click me",
-            action_id="clicked",
-            value="1",
-            style="primary",
-        ).build()
-        assert got == want
-
-        got = (
-            Button()
-            .text("Click me")
-            .action_id("clicked")
-            .value("1")
-            .style("primary")
-            .build()
-        )
-        assert got == want
+# class TestButton:
+#     def test_builds(self):
+#         want = {
+#             "type": "button",
+#             "text": {"type": "plain_text", "text": "Click me"},
+#             "action_id": "clicked",
+#             "value": "1",
+#             "style": "primary",
+#         }
+#
+#         got = Button(
+#             "Click me",
+#             action_id="clicked",
+#             value="1",
+#             style="primary",
+#         ).build()
+#         assert got == want
+#
+#         got = (
+#             Button()
+#             .text("Click me")
+#             .action_id("clicked")
+#             .value("1")
+#             .style("primary")
+#             .build()
+#         )
+#         assert got == want

@@ -27,10 +27,14 @@ class Required(FieldValidator):
             raise FieldValidationError(field_name, "Value is required")
 
 
-class NonEmpty(FieldValidator):
+class Plain(FieldValidator):
     def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value == "":
-            raise FieldValidationError(field_name, "Value cannot be empty")
+        if field_value is None:
+            return
+
+        type_field = field_value._get_field("type")
+        if not type_field or type_field.value != Text.PLAIN:
+            raise FieldValidationError(field_name, "Only plain_text is allowed")
 
 
 class Length(FieldValidator):
@@ -138,9 +142,9 @@ class Either(ComponentValidator):
             )
 
 
-def str_to_plain(value: str) -> "PlainText":
+def str_to_plain(value: str) -> "Text":
     if isinstance(value, str):
-        return PlainText(value)
+        return Text(value).type(Text.PLAIN)
     return value
 
 
@@ -217,74 +221,53 @@ x Option group (OptionGroup) - https://api.slack.com/reference/block-kit/composi
 """
 
 
-"""
-Composition objects
-"""
+class Text(Component):
+    PLAIN = "plain_text"
+    MD = "mrkdwn"
 
-
-class TextObject(Component):
     def __init__(
         self,
         text: str | None = None,
+        emoji: bool | None = None,
         verbatim: bool | None = None,
+        type: str | None = None,
     ):
         super().__init__()
         self.text(text)
+        self.emoji(emoji)
         self.verbatim(verbatim)
+        if type:
+            self.type(type)
 
     def __len__(self):
         text = self._get_field("text")
         return len(text.value or "")
 
-    def text(self, text: str):
+    def _detect_type(self, text):
+        if text is None:
+            return self.PLAIN
+        return self.MD if is_md(text) else self.PLAIN
+
+    def text(self, text: str) -> "Text":
+        self.type(self._detect_type(text))
         return self._add_field(
             "text",
             text,
-            validators=[Required(), NonEmpty(), Length(max=3000)],
+            validators=[Typed(str), Required(), Length(1, 3000)],
         )
 
-    def verbatim(self, verbatim: bool = True):
-        return self._add_field("verbatim", verbatim)
+    def emoji(self, emoji: bool = True) -> "Text":
+        return self._add_field("emoji", emoji, validators=[])
 
+    def verbatim(self, verbatim: bool = True) -> "Text":
+        return self._add_field("verbatim", verbatim, validators=[])
 
-class PlainText(TextObject):
-    """
-    Displays basic text.
-
-    Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#text
-    """
-
-    def __init__(
-        self,
-        text: str | None = None,
-        emoji: bool | None = None,
-        verbatim: bool | None = None,
-    ):
-        super().__init__(text, verbatim)
-        self._add_field("type", "plain_text")
-        self.emoji(emoji)
-
-    def emoji(self, emoji: bool):
-        self._add_field("emoji", emoji)
-
-
-class MarkdownText(TextObject):
-    """
-    Displays text formatted as Slack's markdown.
-
-    Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#text
-    """
-
-    def __init__(
-        self,
-        text: str | None = None,
-        emoji: bool | None = None,
-        verbatim: bool | None = None,
-    ):
-        super().__init__(text, verbatim)
-        self._add_field("type", "mrkdwn")
+    def type(self, type: str) -> "Text":
+        return self._add_field(
+            "type",
+            type,
+            validators=[Typed(str), Required(), Values("plain_text", "mrkdwn")],
+        )
 
 
 class Confirm(Component):
@@ -299,10 +282,10 @@ class Confirm(Component):
 
     def __init__(
         self,
-        title: str | PlainText | None = None,
-        text: str | PlainText | None = None,
-        confirm: str | PlainText | None = None,
-        deny: str | PlainText | None = None,
+        title: str | Text | None = None,
+        text: str | Text | None = None,
+        confirm: str | Text | None = None,
+        deny: str | Text | None = None,
         style: str | None = None,
     ):
         super().__init__()
@@ -312,35 +295,35 @@ class Confirm(Component):
         self.deny(deny)
         self.style(style)
 
-    def title(self, title: str | PlainText) -> "Confirm":
+    def title(self, title: str | Text) -> "Confirm":
         self._add_field(
             "title",
             str_to_plain(title),
-            validators=[Typed(PlainText), Required(), Length(1, 100)],
+            validators=[Typed(Text), Required(), Plain(), Length(1, 100)],
         )
         return self
 
-    def text(self, text: str | PlainText) -> "Confirm":
+    def text(self, text: str | Text) -> "Confirm":
         self._add_field(
             "text",
             str_to_plain(text),
-            validators=[Typed(PlainText), Required(), Length(1, 300)],
+            validators=[Typed(Text), Required(), Plain(), Length(1, 300)],
         )
         return self
 
-    def confirm(self, confirm: str | PlainText) -> "Confirm":
+    def confirm(self, confirm: str | Text) -> "Confirm":
         self._add_field(
             "confirm",
             str_to_plain(confirm),
-            validators=[Typed(PlainText), Required(), Length(1, 30)],
+            validators=[Typed(Text), Required(), Plain(), Length(1, 30)],
         )
         return self
 
-    def deny(self, deny: str | PlainText) -> "Confirm":
+    def deny(self, deny: str | Text) -> "Confirm":
         self._add_field(
             "deny",
             str_to_plain(deny),
-            validators=[Typed(PlainText), Required(), Length(1, 30)],
+            validators=[Typed(Text), Required(), Plain(), Length(1, 30)],
         )
         return self
 
@@ -441,9 +424,9 @@ class Option(Component):
 
     def __init__(
         self,
-        text: str | PlainText | MarkdownText | None = None,
+        text: str | Text | None = None,
         value: str | None = None,
-        description: str | PlainText | MarkdownText | None = None,
+        description: str | Text | None = None,
         url: str | None = None,
     ):
         super().__init__()
@@ -453,11 +436,11 @@ class Option(Component):
         self.url(url)
 
     # TODO: markdown should be available in checkboxex and radiobuttons
-    def text(self, text: str | PlainText | MarkdownText) -> "Option":
+    def text(self, text: str | Text) -> "Option":
         return self._add_field(
             "text",
             str_to_plain(text),
-            validators=[Typed(PlainText, MarkdownText), Required(), Length(1, 75)],
+            validators=[Typed(Text), Required(), Plain(), Length(1, 75)],
         )
 
     def value(self, value: str) -> "Option":
@@ -466,11 +449,11 @@ class Option(Component):
         )
 
     # TODO: markdown should be available in checkbox group and radiobutton group
-    def description(self, description: str | PlainText | MarkdownText) -> "Option":
+    def description(self, description: str | Text) -> "Option":
         return self._add_field(
             "description",
             str_to_plain(description),
-            validators=[Typed(PlainText, MarkdownText), Length(1, 75)],
+            validators=[Typed(Text), Plain(), Length(1, 75)],
         )
 
     # TODO: should be available in overflow menus only
@@ -489,7 +472,7 @@ class OptionGroup(Component):
     """
 
     def __init__(
-        self, label: str | PlainText | None = None, options: list[Option] | None = None
+        self, label: str | Text | None = None, options: list[Option] | None = None
     ):
         super().__init__()
         if options is None:
@@ -497,67 +480,24 @@ class OptionGroup(Component):
         self.label(label)
         self.options(*options)
 
-    def label(self, label: str | PlainText) -> "OptionGroup":
+    def label(self, label: str | Text) -> "OptionGroup":
         return self._add_field(
             "label",
             str_to_plain(label),
-            validators=[Typed(PlainText), Required(), Length(1, 75)],
+            validators=[Typed(Text), Required(), Plain(), Length(1, 75)],
         )
 
     def options(self, *options: tuple[Option]) -> "OptionGroup":
         return self._add_field(
-            "options", list(options), validators=[Typed(Option), Required()]
+            "options",
+            list(options),
+            validators=[Typed(Option), Required(), Length(1, 100)],
         )
 
     def add_option(self, option: Option) -> "OptionGroup":
         field = self._get_field("options")
         field.value.append(option)
         return self
-
-
-class Text(Component):
-    PLAIN = "plain_text"
-    MD = "mrkdwn"
-
-    def __init__(
-        self,
-        text: str | None = None,
-        emoji: bool | None = None,
-        verbatim: bool | None = None,
-        type: str | None = None,
-    ):
-        super().__init__()
-        self.text(text)
-        self.emoji(emoji)
-        self.verbatim(verbatim)
-        if type:
-            self.type(type)
-
-    def _detect_type(self, text):
-        if text is None:
-            return self.PLAIN
-        return self.MD if is_md(text) else self.PLAIN
-
-    def text(self, text: str) -> "Text":
-        self.type(self._detect_type(text))
-        return self._add_field(
-            "text",
-            text,
-            validators=[Typed(str), Required(), Length(1, 3000)],
-        )
-
-    def emoji(self, emoji: bool = True) -> "Text":
-        return self._add_field("emoji", emoji, validators=[])
-
-    def verbatim(self, verbatim: bool = True) -> "Text":
-        return self._add_field("verbatim", verbatim, validators=[])
-
-    def type(self, type: str) -> "Text":
-        return self._add_field(
-            "type",
-            type,
-            validators=[Typed(str), Required(), Values("plain_text", "mrkdwn")],
-        )
 
 
 """
@@ -624,47 +564,47 @@ Blocks:
 """
 
 
-class Button(Component):
-    """
-    Allows users a direct path to performing basic actions.
-
-    Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#button
-    """
-
-    def __init__(
-        self,
-        text: str | PlainText | None = None,
-        action_id: str | None = None,
-        url: str | None = None,
-        value: str | None = None,
-        style: str | None = None,
-    ):
-        super().__init__()
-        self._add_field("type", "button")
-
-        self.text(text)
-        self.action_id(action_id)
-        self.url(url)
-        self.value(value)
-        self.style(style)
-
-    def text(self, text: str | PlainText):
-        if isinstance(text, str):
-            text = PlainText(text)
-
-        return self._add_field(
-            "text", text, validators=[Typed(PlainText), Required(), Length(1, 75)]
-        )
-
-    def action_id(self, action_id: str):
-        return self._add_field("action_id", action_id)
-
-    def url(self, url: str):
-        return self._add_field("url", url)
-
-    def value(self, value: str):
-        return self._add_field("value", value)
-
-    def style(self, style: str):
-        return self._add_field("style", style)
+# class Button(Component):
+#     """
+#     Allows users a direct path to performing basic actions.
+#
+#     Slack docs:
+#         https://api.slack.com/reference/block-kit/block-elements#button
+#     """
+#
+#     def __init__(
+#         self,
+#         text: str | PlainText | None = None,
+#         action_id: str | None = None,
+#         url: str | None = None,
+#         value: str | None = None,
+#         style: str | None = None,
+#     ):
+#         super().__init__()
+#         self._add_field("type", "button")
+#
+#         self.text(text)
+#         self.action_id(action_id)
+#         self.url(url)
+#         self.value(value)
+#         self.style(style)
+#
+#     def text(self, text: str | PlainText):
+#         if isinstance(text, str):
+#             text = PlainText(text)
+#
+#         return self._add_field(
+#             "text", text, validators=[Typed(PlainText), Required(), Length(1, 75)]
+#         )
+#
+#     def action_id(self, action_id: str):
+#         return self._add_field("action_id", action_id)
+#
+#     def url(self, url: str):
+#         return self._add_field("url", url)
+#
+#     def value(self, value: str):
+#         return self._add_field("value", value)
+#
+#     def style(self, style: str):
+#         return self._add_field("style", style)
