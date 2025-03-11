@@ -6,9 +6,12 @@ from blockkit.core import (
     ConversationFilter,
     DispatchActionConfig,
     FieldValidationError,
+    InputParameter,
     Option,
     OptionGroup,
     Text,
+    Trigger,
+    Workflow,
 )
 
 
@@ -329,6 +332,54 @@ class TestText:
         assert got == want
 
         got = Text().text("_hello, alice!_").verbatim().build()
+        assert got == want
+
+
+class TestWorkflow:
+    def test_builds(self):
+        want = {
+            "trigger": {
+                "url": "https://slack.com/shortcuts/Ft0123ABC456/321zyx",
+                "customizable_input_parameters": [
+                    {"name": "input_parameter_a", "value": "Value for input param A"},
+                    {"name": "input_parameter_b", "value": "Value for input param B"},
+                ],
+            }
+        }
+
+        got = Workflow(
+            trigger=Trigger(
+                url="https://slack.com/shortcuts/Ft0123ABC456/321zyx",
+                customizable_input_parameters=[
+                    InputParameter(
+                        name="input_parameter_a", value="Value for input param A"
+                    ),
+                    InputParameter(
+                        name="input_parameter_b", value="Value for input param B"
+                    ),
+                ],
+            )
+        ).build()
+        assert got == want
+
+        got = (
+            Workflow()
+            .trigger(
+                Trigger()
+                .url("https://slack.com/shortcuts/Ft0123ABC456/321zyx")
+                .add_input_parameter(
+                    InputParameter(
+                        name="input_parameter_a", value="Value for input param A"
+                    )
+                )
+                .add_input_parameter(
+                    InputParameter(
+                        name="input_parameter_b", value="Value for input param B"
+                    )
+                )
+            )
+            .build()
+        )
         assert got == want
 
 

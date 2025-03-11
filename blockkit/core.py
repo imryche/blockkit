@@ -236,6 +236,7 @@ x Conversation filter (ConversationFilter) - https://api.slack.com/reference/blo
 x Dispatch action configuration (DispatchActionConfig) - https://api.slack.com/reference/block-kit/composition-objects#dispatch_action_config
 x Option (Option) - https://api.slack.com/reference/block-kit/composition-objects#option
 x Option group (OptionGroup) - https://api.slack.com/reference/block-kit/composition-objects#option_group
+x Text (Text) - https://api.slack.com/reference/block-kit/composition-objects#text
 """
 
 
@@ -520,8 +521,67 @@ class OptionGroup(Component):
         return self
 
 
+class InputParameter(Component):
+    def __init__(self, name: str | None = None, value: str | None = None):
+        super().__init__()
+        self.name(name)
+        self.value(value)
+
+    def name(self, name: str) -> "InputParameter":
+        return self._add_field(
+            "name", name, validators=[Typed(str), Required(), Length(1, 3000)]
+        )
+
+    def value(self, value: str) -> "InputParameter":
+        return self._add_field(
+            "value", value, validators=[Typed(str), Required(), Length(1, 3000)]
+        )
+
+
+class Trigger(Component):
+    def __init__(
+        self,
+        url: str | None = None,
+        customizable_input_parameters: list[InputParameter] | None = None,
+    ):
+        super().__init__()
+        self.url(url)
+        self.customizable_input_parameters(customizable_input_parameters)
+
+    def url(self, url: str) -> "Trigger":
+        return self._add_field(
+            "url", url, validators=[Typed(str), Required(), Length(1, 3000)]
+        )
+
+    def customizable_input_parameters(
+        self, customizable_input_parameters: list[InputParameter]
+    ):
+        return self._add_field(
+            "customizable_input_parameters",
+            customizable_input_parameters,
+            validators=[Typed(InputParameter), Length(1, 100)],
+        )
+
+    def add_input_parameter(self, input_parameter: InputParameter) -> "Trigger":
+        field = self._get_field("customizable_input_parameters")
+        if field.value is None:
+            field.value = []
+        field.value.append(input_parameter)
+        return self
+
+
+class Workflow(Component):
+    def __init__(self, trigger: Trigger | None = None):
+        super().__init__()
+        self.trigger(trigger)
+
+    def trigger(self, trigger: Trigger) -> "Workflow":
+        return self._add_field(
+            "trigger", trigger, validators=[Typed(Trigger), Required()]
+        )
+
+
 """
-- Text (Text) - https://api.slack.com/reference/block-kit/composition-objects#text
 - Trigger (Trigger) - https://api.slack.com/reference/block-kit/composition-objects#trigger
 - Workflow (Workflow) - https://api.slack.com/reference/block-kit/composition-objects#workflow
 - Slack file (SlackFile) - https://api.slack.com/reference/block-kit/composition-objects#slack_file
