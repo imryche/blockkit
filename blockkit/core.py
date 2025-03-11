@@ -496,10 +496,8 @@ class OptionGroup(Component):
         self, label: str | Text | None = None, options: list[Option] | None = None
     ):
         super().__init__()
-        if options is None:
-            options = []
         self.label(label)
-        self.options(*options)
+        self.options(*options or ())
 
     def label(self, label: str | Text) -> "OptionGroup":
         return self._add_field(
@@ -546,7 +544,7 @@ class Trigger(Component):
     ):
         super().__init__()
         self.url(url)
-        self.customizable_input_parameters(customizable_input_parameters)
+        self.customizable_input_parameters(*customizable_input_parameters or ())
 
     def url(self, url: str) -> "Trigger":
         return self._add_field(
@@ -554,18 +552,16 @@ class Trigger(Component):
         )
 
     def customizable_input_parameters(
-        self, customizable_input_parameters: list[InputParameter]
+        self, *customizable_input_parameters: tuple[InputParameter]
     ):
         return self._add_field(
             "customizable_input_parameters",
-            customizable_input_parameters,
+            list(customizable_input_parameters),
             validators=[Typed(InputParameter), Length(1, 100)],
         )
 
     def add_input_parameter(self, input_parameter: InputParameter) -> "Trigger":
         field = self._get_field("customizable_input_parameters")
-        if field.value is None:
-            field.value = []
         field.value.append(input_parameter)
         return self
 
