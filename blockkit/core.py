@@ -266,7 +266,7 @@ class Text(Component):
     def _detect_type(self, text):
         if text is None:
             return self.PLAIN
-        return self.MD if is_md(text) else self.PLAIN
+        return self.MD if is_md(str(text)) else self.PLAIN
 
     def text(self, text: str) -> "Text":
         self.type(self._detect_type(text))

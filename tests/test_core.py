@@ -1,180 +1,97 @@
 import pytest
 
 from blockkit.core import (
-    Component,
     ComponentValidationError,
     Confirm,
     ConversationFilter,
     DispatchActionConfig,
     FieldValidationError,
-    Length,
     Option,
     OptionGroup,
-    Plain,
-    Required,
     Text,
-    Typed,
-    Values,
 )
 
 
-@pytest.fixture
-def plain_text():
-    class Text(Component):
-        def __init__(self, text=None):
-            super().__init__()
-            self.text(text)
-
-        def text(self, text):
-            self._add_field("text", text)
-            return self
-
-    return Text()
-
-
-@pytest.fixture
-def button():
-    class Button(Component):
-        def __init__(self, text=None):
-            super().__init__()
-            self.text(text)
-
-        def text(self, text):
-            self._add_field("text", text)
-            return self
-
-    return Button()
-
-
-@pytest.fixture
-def conversation_filter():
-    class ConversationFilter(Component):
-        def __init__(self, include=None, exclude_bot_users=None):
-            super().__init__()
-            self.include(include)
-            self.exclude_bot_users(exclude_bot_users)
-
-        def include(self, include):
-            self._add_field("include", include)
-            return self
-
-        def exclude_bot_users(self, exclude_bot_users):
-            self._add_field("exclude_bot_users", exclude_bot_users)
-            return self
-
-    return ConversationFilter()
-
-
 class TestRequired:
-    def test_invalid(self, plain_text):
-        plain_text._add_validator(Required(), field_name="text")
+    def test_invalid(self):
         with pytest.raises(FieldValidationError) as e:
-            plain_text.validate()
+            Text().validate()
         assert "Value is required" in str(e.value)
 
-    def test_valid(self, plain_text):
-        plain_text.text("hello alice")
-        plain_text._add_validator(Required(), field_name="text")
-        plain_text.validate()
+    def test_valid(self):
+        Text("hello, alice!").validate()
 
 
 class TestPlain:
-    def test_invalid(self, button):
-        button.text(Text("Click me").type(Text.MD))
-        button._add_validator(Plain(), field_name="text")
+    def test_invalid(self):
         with pytest.raises(FieldValidationError) as e:
-            button.validate()
+            Confirm(title="title", confirm="confirm", deny="deny").text(
+                Text("Click me").type(Text.MD)
+            ).validate()
         assert "Only plain_text is allowed" in str(e)
 
-    def test_valid(self, button):
-        button.text(Text("Click me"))
-        button._add_validator(Plain(), field_name="text")
-        button.validate()
+    def test_valid(self):
+        Confirm(title="title", confirm="confirm", deny="deny").text(
+            Text("Click me").type(Text.PLAIN)
+        ).validate()
 
 
 class TestLength:
-    def test_invalid_upper(self, plain_text):
-        plain_text.text("hello, alice!")
-        plain_text._add_validator(Length(max=10), field_name="text")
+    def test_invalid_upper(self):
         with pytest.raises(FieldValidationError) as e:
-            plain_text.validate()
-        assert "Length must be between 0 and 10 (got 13)" in str(e.value)
+            Text("hello, alice!" * 300).validate()
+        assert "Length must be between 1 and 3000" in str(e.value)
 
-    def test_invalid_lower(self, plain_text):
-        plain_text.text("hello, alice!")
-        plain_text._add_validator(Length(min=15, max=25), field_name="text")
+    def test_invalid_lower(self):
         with pytest.raises(FieldValidationError) as e:
-            plain_text.validate()
-        assert "Length must be between 15 and 25 (got 13)" in str(e.value)
+            Text("").validate()
+        assert "Length must be between 1 and 3000" in str(e.value)
 
-    def test_valid(self, plain_text):
-        plain_text.text("hello, alice!")
-        plain_text._add_validator(Length(max=13), field_name="text")
-        plain_text.validate()
+    def test_valid(self):
+        Text("hello, alice!").validate()
 
 
 class TestValues:
-    def test_invalid_single(self, plain_text):
-        plain_text.text("hello, charlie!")
-        plain_text._add_validator(
-            Values("hello, alice!", "hello, bob!"), field_name="text"
-        )
+    def test_invalid_single(self):
         with pytest.raises(FieldValidationError) as e:
-            plain_text.validate()
-        assert (
-            "Expected values 'hello, alice!', 'hello, bob!', got 'hello, charlie!'"
-            in str(e.value)
-        )
+            Confirm(title="title", text="text", confirm="confirm", deny="deny").style(
+                "warning"
+            ).validate()
+        assert "Expected values 'primary', 'danger', got 'warning'" in str(e.value)
 
-    def test_valid_single(self, plain_text):
-        plain_text.text("hello, alice!")
-        plain_text._add_validator(Values("hello, alice!"), field_name="text")
-        plain_text.validate()
+    def test_valid_single(self):
+        Confirm(title="title", text="text", confirm="confirm", deny="deny").style(
+            "primary"
+        ).validate()
 
-    def test_invalid_multi(self, conversation_filter):
-        conversation_filter.include(["im", "external"])
-        conversation_filter._add_validator(
-            Values("im", "mpim", "private", "public"), field_name="include"
-        )
+    def test_invalid_multi(self):
         with pytest.raises(FieldValidationError) as e:
-            conversation_filter.validate()
+            ConversationFilter(include=["im", "external"]).validate()
         assert (
             "Expected values 'im', 'mpim', 'private', 'public', "
             "got unexpected 'external'" in str(e.value)
         )
 
-    def test_valid_multi(self, conversation_filter):
-        conversation_filter.include(["private", "public"])
-        conversation_filter._add_validator(
-            Values("im", "mpim", "private", "public"), field_name="include"
-        )
-        conversation_filter.validate()
+    def test_valid_multi(self):
+        ConversationFilter(include=["private", "public"]).validate()
 
 
 class TestTyped:
-    def test_invalid_basic(self, button, plain_text):
-        button.text(123)
-        button._add_validator(Typed(str, type(plain_text)), field_name="text")
+    def test_invalid_basic(self):
         with pytest.raises(FieldValidationError) as e:
-            button.validate()
-        assert "Expected types 'str', 'Text', got 'int'" in str(e.value)
-
-    def test_valid_basic(self, button, plain_text):
-        button.text("click me")
-        button._add_validator(Typed(str, type(plain_text)), field_name="text")
-        button.validate()
-
-    def test_invalid_list(self, conversation_filter):
-        conversation_filter.include(["im", 123])
-        conversation_filter._add_validator(Typed(str), field_name="include")
-        with pytest.raises(FieldValidationError) as e:
-            conversation_filter.validate()
+            Text(123).validate()
         assert "Expected type 'str', got 'int'" in str(e.value)
 
-    def test_valid_list(self, conversation_filter):
-        conversation_filter.include(["im", "public"])
-        conversation_filter._add_validator(Typed(str), field_name="include")
-        conversation_filter.validate()
+    def test_valid_basic(self):
+        Text("hello, alice!").validate()
+
+    def test_invalid_list(self):
+        with pytest.raises(FieldValidationError) as e:
+            ConversationFilter(include=["im", 123]).validate()
+        assert "Expected type 'str', got 'int'" in str(e.value)
+
+    def test_valid_list(self):
+        ConversationFilter(include=["im", "public"]).validate()
 
 
 class TestEither:
@@ -187,7 +104,7 @@ class TestEither:
             in str(e.value)
         )
 
-    def test_valid(self, conversation_filter):
+    def test_valid(self):
         ConversationFilter(include=["private", "public"]).validate()
 
 
