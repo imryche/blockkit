@@ -6,7 +6,6 @@ from blockkit.core import (
     Confirm,
     ConversationFilter,
     DispatchActionConfig,
-    Either,
     FieldValidationError,
     Length,
     Option,
@@ -179,18 +178,17 @@ class TestTyped:
 
 
 class TestEither:
-    def test_invalid(self, conversation_filter):
-        conversation_filter._add_validator(Either("include", "exclude_bot_users"))
+    def test_invalid(self):
         with pytest.raises(ComponentValidationError) as e:
-            conversation_filter.validate()
+            ConversationFilter().validate()
         assert (
             "At least one of the following fields is required "
-            "'include', 'exclude_bot_users'" in str(e.value)
+            "'include', 'exclude_bot_users', 'exclude_external_shared_channels'"
+            in str(e.value)
         )
 
     def test_valid(self, conversation_filter):
-        conversation_filter.include(["private", "public"])
-        conversation_filter.validate()
+        ConversationFilter(include=["private", "public"]).validate()
 
 
 class TestOnlyIf:
