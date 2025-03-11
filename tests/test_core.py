@@ -193,6 +193,21 @@ class TestEither:
         conversation_filter.validate()
 
 
+class TestOnlyIf:
+    def test_invalid(self):
+        with pytest.raises(ComponentValidationError) as e:
+            Text("hello, alice!", verbatim=True).type(Text.PLAIN).validate()
+        assert "'verbatim' is only allowed when 'type' is 'mrkdwn'" in str(e)
+
+        with pytest.raises(ComponentValidationError) as e:
+            Text("_hello, alice!_", emoji=True).type(Text.MD).validate()
+        assert "'emoji' is only allowed when 'type' is 'plain_text'" in str(e)
+
+    def test_valid(self):
+        Text("hello, alice!", emoji=True).type(Text.PLAIN).validate()
+        Text("_hello, alice!_", verbatim=True).type(Text.MD).validate()
+
+
 class TestConfirm:
     def test_builds(self):
         want = {

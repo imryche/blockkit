@@ -142,6 +142,24 @@ class Either(ComponentValidator):
             )
 
 
+class OnlyIf(ComponentValidator):
+    def __init__(self, dependent_field: str, required_field: str, required_value: Any):
+        self.dependent_field = dependent_field
+        self.required_field = required_field
+        self.required_value = required_value
+
+    def validate(self, component: "Component") -> None:
+        dependent_value = component._get_field(self.dependent_field).value
+        required_value = component._get_field(self.required_field).value
+
+        if dependent_value and required_value != self.required_value:
+            raise ComponentValidationError(
+                component.__class__.__name__,
+                f"'{self.dependent_field}' is only allowed when "
+                f"'{self.required_field}' is '{self.required_value}'",
+            )
+
+
 def str_to_plain(value: str) -> "Text":
     if isinstance(value, str):
         return Text(value).type(Text.PLAIN)
@@ -238,6 +256,8 @@ class Text(Component):
         self.verbatim(verbatim)
         if type:
             self.type(type)
+        self._add_validator(OnlyIf("verbatim", "type", self.MD))
+        self._add_validator(OnlyIf("emoji", "type", self.PLAIN))
 
     def __len__(self):
         text = self._get_field("text")
@@ -257,10 +277,10 @@ class Text(Component):
         )
 
     def emoji(self, emoji: bool = True) -> "Text":
-        return self._add_field("emoji", emoji, validators=[])
+        return self._add_field("emoji", emoji, validators=[Typed(bool)])
 
     def verbatim(self, verbatim: bool = True) -> "Text":
-        return self._add_field("verbatim", verbatim, validators=[])
+        return self._add_field("verbatim", verbatim, validators=[Typed(bool)])
 
     def type(self, type: str) -> "Text":
         return self._add_field(
@@ -435,7 +455,7 @@ class Option(Component):
         self.description(description)
         self.url(url)
 
-    # TODO: markdown should be available in checkboxex and radiobuttons
+    # TODO: markdown should be available in checkboxes and radiobuttons
     def text(self, text: str | Text) -> "Option":
         return self._add_field(
             "text",
