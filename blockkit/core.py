@@ -649,7 +649,79 @@ class SlackFile(Component):
 """
 Block elements:
 
-- Button (Button) - https://api.slack.com/reference/block-kit/block-elements#button
+x Button (Button) - https://api.slack.com/reference/block-kit/block-elements#button
+"""
+
+
+class Button(Component):
+    """
+    Button element
+
+    Allows users a direct path to performing basic actions.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#button
+    """
+
+    PRIMARY = "primary"
+    DANGER = "danger"
+
+    def __init__(
+        self,
+        text: str | Text | None = None,
+        action_id: str | None = None,
+        url: str | None = None,
+        value: str | None = None,
+        style: str | None = None,
+        confirm: Confirm | None = None,
+        accessibility_label: str | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "button")
+
+        self.text(text)
+        self.action_id(action_id)
+        self.url(url)
+        self.value(value)
+        self.style(style)
+        self.confirm(confirm)
+        self.accessibility_label(accessibility_label)
+
+    def text(self, text: str | Text) -> "Button":
+        return self._add_field(
+            "text",
+            str_to_plain(text),
+            validators=[Typed(Text), Required(), Plain(), Length(1, 75)],
+        )
+
+    def action_id(self, action_id: str) -> "Button":
+        return self._add_field(
+            "action_id", action_id, validators=[Typed(str), Length(1, 255)]
+        )
+
+    def url(self, url: str) -> "Button":
+        return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
+
+    def value(self, value: str) -> "Button":
+        return self._add_field("value", value, validators=[Typed(str), Length(1, 2000)])
+
+    def style(self, style: str) -> "Button":
+        return self._add_field(
+            "style", style, validators=[Typed(str), Values(self.PRIMARY, self.DANGER)]
+        )
+
+    def confirm(self, confirm: Confirm) -> "Button":
+        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
+
+    def accessibility_label(self, accessibility_label: str) -> "Button":
+        return self._add_field(
+            "accessibility_label",
+            accessibility_label,
+            validators=[Typed(str), Length(1, 75)],
+        )
+
+
+"""
 - Checkboxes (Checkboxes) - https://api.slack.com/reference/block-kit/block-elements#checkboxes
 - Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-elements#datepicker
 - Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/block-elements#datetimepicker
@@ -703,49 +775,3 @@ Blocks:
 - Video (Video) - https://api.slack.com/reference/block-kit/blocks#video
 
 """
-
-
-# class Button(Component):
-#     """
-#     Allows users a direct path to performing basic actions.
-#
-#     Slack docs:
-#         https://api.slack.com/reference/block-kit/block-elements#button
-#     """
-#
-#     def __init__(
-#         self,
-#         text: str | PlainText | None = None,
-#         action_id: str | None = None,
-#         url: str | None = None,
-#         value: str | None = None,
-#         style: str | None = None,
-#     ):
-#         super().__init__()
-#         self._add_field("type", "button")
-#
-#         self.text(text)
-#         self.action_id(action_id)
-#         self.url(url)
-#         self.value(value)
-#         self.style(style)
-#
-#     def text(self, text: str | PlainText):
-#         if isinstance(text, str):
-#             text = PlainText(text)
-#
-#         return self._add_field(
-#             "text", text, validators=[Typed(PlainText), Required(), Length(1, 75)]
-#         )
-#
-#     def action_id(self, action_id: str):
-#         return self._add_field("action_id", action_id)
-#
-#     def url(self, url: str):
-#         return self._add_field("url", url)
-#
-#     def value(self, value: str):
-#         return self._add_field("value", value)
-#
-#     def style(self, style: str):
-#         return self._add_field("style", style)

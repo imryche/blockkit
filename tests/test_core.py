@@ -1,6 +1,7 @@
 import pytest
 
 from blockkit.core import (
+    Button,
     ComponentValidationError,
     Confirm,
     ConversationFilter,
@@ -420,30 +421,65 @@ class TestSlackFile:
         got == want
 
 
-# class TestButton:
-#     def test_builds(self):
-#         want = {
-#             "type": "button",
-#             "text": {"type": "plain_text", "text": "Click me"},
-#             "action_id": "clicked",
-#             "value": "1",
-#             "style": "primary",
-#         }
-#
-#         got = Button(
-#             "Click me",
-#             action_id="clicked",
-#             value="1",
-#             style="primary",
-#         ).build()
-#         assert got == want
-#
-#         got = (
-#             Button()
-#             .text("Click me")
-#             .action_id("clicked")
-#             .value("1")
-#             .style("primary")
-#             .build()
-#         )
-#         assert got == want
+class TestButton:
+    def test_builds(self):
+        want = {
+            "type": "button",
+            "text": {"type": "plain_text", "text": "Click me"},
+            "action_id": "clicked",
+            "value": "1",
+            "style": "primary",
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "accessibility_label": "Click me",
+        }
+
+        got = Button(
+            "Click me",
+            action_id="clicked",
+            value="1",
+            style="primary",
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            accessibility_label="Click me",
+        ).build()
+        assert got == want
+
+        got = (
+            Button()
+            .text("Click me")
+            .action_id("clicked")
+            .value("1")
+            .style("primary")
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .accessibility_label("Click me")
+            .build()
+        )
+        assert got == want
