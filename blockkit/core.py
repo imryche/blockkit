@@ -123,7 +123,7 @@ class ComponentValidator(ABC):
         pass
 
     def __call__(self, component: "Component") -> None:
-        return self.validate(self, component)
+        return self.validate(component)
 
 
 class Either(ComponentValidator):
