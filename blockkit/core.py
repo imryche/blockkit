@@ -127,7 +127,7 @@ class ComponentValidator(ABC):
 
 
 class Either(ComponentValidator):
-    def __init__(self, *field_names):
+    def __init__(self, *field_names: tuple[str]):
         self.field_names = field_names
 
     def validate(self, component: "Component") -> None:
@@ -137,8 +137,25 @@ class Either(ComponentValidator):
         ):
             expected_names = ", ".join(f"'{n}'" for n in self.field_names)
             raise ComponentValidationError(
-                type(component).__name__,
+                component.__class__.__name__,
                 f"At least one of the following fields is required {expected_names}",
+            )
+
+
+class OnlyOne(ComponentValidator):
+    def __init__(self, *field_names: tuple[str]):
+        self.field_names = field_names
+
+    def validate(self, component: "Component") -> None:
+        field_count = sum(
+            bool(getattr(component._get_field(name), "value", None))
+            for name in self.field_names
+        )
+        if field_count > 1:
+            allowed_names = ", ".join(f"'{n}'" for n in self.field_names)
+            raise ComponentValidationError(
+                component.__class__.__name__,
+                f"Only one of the following fields is allowed {allowed_names}",
             )
 
 
@@ -602,6 +619,20 @@ class Workflow(Component):
         return self._add_field(
             "trigger", trigger, validators=[Typed(Trigger), Required()]
         )
+
+
+class SlackFile(Component):
+    def __init__(self, url: str | None = None, id: str | None = None):
+        super().__init__()
+        self.url(url)
+        self.id(id)
+        self._add_validator(OnlyOne("url", "id"))
+
+    def url(self, url: str) -> "SlackFile":
+        return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
+
+    def id(self, id: str) -> "SlackFile":
+        return self._add_field("id", id, validators=[Typed(str), Length(1, 30)])
 
 
 """

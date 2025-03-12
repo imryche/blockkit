@@ -9,6 +9,7 @@ from blockkit.core import (
     InputParameter,
     Option,
     OptionGroup,
+    SlackFile,
     Text,
     Trigger,
     Workflow,
@@ -109,6 +110,19 @@ class TestEither:
 
     def test_valid(self):
         ConversationFilter(include=["private", "public"]).validate()
+
+
+class TestOnlyOne:
+    def test_invalid(self):
+        with pytest.raises(ComponentValidationError) as e:
+            SlackFile(
+                url="https://files.slack.com/files-pri/T0123456-F0123456/xyz.png",
+                id="F123456",
+            ).validate()
+        assert "Only one of the following fields is allowed 'url', 'id'" in str(e)
+
+    def test_valid(self):
+        SlackFile(id="F123456").validate()
 
 
 class TestOnlyIf:
@@ -381,6 +395,29 @@ class TestWorkflow:
             .build()
         )
         assert got == want
+
+
+class TestSlackFile:
+    def test_builds(self):
+        want = {"url": "https://files.slack.com/files-pri/T0123456-F0123456/xyz.png"}
+        got = SlackFile(
+            url="https://files.slack.com/files-pri/T0123456-F0123456/xyz.png"
+        ).build()
+        got == want
+
+        got = (
+            SlackFile()
+            .url("https://files.slack.com/files-pri/T0123456-F0123456/xyz.png")
+            .build()
+        )
+        got == want
+
+        want = {"id": "F0123456"}
+        got = SlackFile(id="F0123456").build()
+        got == want
+
+        got = SlackFile().id("F0123456").build()
+        got == want
 
 
 # class TestButton:
