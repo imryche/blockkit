@@ -237,6 +237,8 @@ x Dispatch action configuration (DispatchActionConfig) - https://api.slack.com/r
 x Option (Option) - https://api.slack.com/reference/block-kit/composition-objects#option
 x Option group (OptionGroup) - https://api.slack.com/reference/block-kit/composition-objects#option_group
 x Text (Text) - https://api.slack.com/reference/block-kit/composition-objects#text
+- Trigger (Trigger) - https://api.slack.com/reference/block-kit/composition-objects#trigger
+- Workflow (Workflow) - https://api.slack.com/reference/block-kit/composition-objects#workflow
 """
 
 
@@ -520,6 +522,13 @@ class OptionGroup(Component):
 
 
 class InputParameter(Component):
+    """
+    Input parameter object
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#input_parameter
+    """
+
     def __init__(self, name: str | None = None, value: str | None = None):
         super().__init__()
         self.name(name)
@@ -537,6 +546,15 @@ class InputParameter(Component):
 
 
 class Trigger(Component):
+    """
+    Trigger object
+
+    Defines an object containing trigger information.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#trigger
+    """
+
     def __init__(
         self,
         url: str | None = None,
@@ -553,7 +571,7 @@ class Trigger(Component):
 
     def customizable_input_parameters(
         self, *customizable_input_parameters: tuple[InputParameter]
-    ):
+    ) -> "Trigger":
         return self._add_field(
             "customizable_input_parameters",
             list(customizable_input_parameters),
@@ -567,6 +585,15 @@ class Trigger(Component):
 
 
 class Workflow(Component):
+    """
+    Workflow object
+
+    Defines an object containing workflow information.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#workflow
+    """
+
     def __init__(self, trigger: Trigger | None = None):
         super().__init__()
         self.trigger(trigger)
@@ -578,8 +605,6 @@ class Workflow(Component):
 
 
 """
-- Trigger (Trigger) - https://api.slack.com/reference/block-kit/composition-objects#trigger
-- Workflow (Workflow) - https://api.slack.com/reference/block-kit/composition-objects#workflow
 - Slack file (SlackFile) - https://api.slack.com/reference/block-kit/composition-objects#slack_file
 
 Block elements:
