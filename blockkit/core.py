@@ -254,8 +254,9 @@ x Dispatch action configuration (DispatchActionConfig) - https://api.slack.com/r
 x Option (Option) - https://api.slack.com/reference/block-kit/composition-objects#option
 x Option group (OptionGroup) - https://api.slack.com/reference/block-kit/composition-objects#option_group
 x Text (Text) - https://api.slack.com/reference/block-kit/composition-objects#text
-- Trigger (Trigger) - https://api.slack.com/reference/block-kit/composition-objects#trigger
-- Workflow (Workflow) - https://api.slack.com/reference/block-kit/composition-objects#workflow
+x Trigger (Trigger) - https://api.slack.com/reference/block-kit/composition-objects#trigger
+x Workflow (Workflow) - https://api.slack.com/reference/block-kit/composition-objects#workflow
+x Slack file (SlackFile) - https://api.slack.com/reference/block-kit/composition-objects#slack_file
 """
 
 
@@ -622,6 +623,16 @@ class Workflow(Component):
 
 
 class SlackFile(Component):
+    """
+    Slack file object
+
+    Defines an object containing Slack file information to be used
+    in an image block or image element.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/composition-objects#slack_file
+    """
+
     def __init__(self, url: str | None = None, id: str | None = None):
         super().__init__()
         self.url(url)
@@ -636,8 +647,6 @@ class SlackFile(Component):
 
 
 """
-- Slack file (SlackFile) - https://api.slack.com/reference/block-kit/composition-objects#slack_file
-
 Block elements:
 
 - Button (Button) - https://api.slack.com/reference/block-kit/block-elements#button
