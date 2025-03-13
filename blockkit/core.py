@@ -721,6 +721,38 @@ class Button(Component):
         )
 
 
+class Checkboxes(Component):
+    def __init__(
+        self,
+        action_id: str | None = None,
+        options: Sequence[Option] | None = None,
+        initial_options: Sequence[Option] | None = None,
+        confirm: Confirm | None = None,
+        focus_on_load: bool | None = None,
+    ):
+        super().__init__()
+        self.action_id(action_id)
+        self.options(*options or ())
+        self.initial_options(*initial_options or ())
+        self.confirm(confirm)
+        self.focus_on_load(focus_on_load)
+
+    def action_id(self, action_id: str) -> "Checkboxes":
+        return self._add_field("action_id", action_id, validators=[])
+
+    def options(self, *options: Option) -> "Checkboxes":
+        return self._add_field("options", options, validators=[])
+
+    def initial_options(self, *initial_options: Option) -> "Checkboxes":
+        return self._add_field("initial_options", initial_options, validators=[])
+
+    def confirm(self, confirm: Confirm) -> "Checkboxes":
+        return self._add_field("confirm", confirm, validators=[])
+
+    def focus_on_load(self, focus_on_load: bool) -> "Checkboxes":
+        return self._add_field("focus_on_load", focus_on_load, validators=[])
+
+
 """
 - Checkboxes (Checkboxes) - https://api.slack.com/reference/block-kit/block-elements#checkboxes
 - Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-elements#datepicker
