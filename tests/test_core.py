@@ -6,6 +6,7 @@ from blockkit.core import (
     ComponentValidationError,
     Confirm,
     ConversationFilter,
+    DatePicker,
     DispatchActionConfig,
     FieldValidationError,
     InputParameter,
@@ -551,3 +552,31 @@ class TestCheckboxes:
             focus_on_load=True,
         ).build()
         assert got == want
+
+
+class TestDatePicker:
+    def test_builds(self):
+        want = {
+            "type": "datepicker",
+            "action_id": "datepicker_picked",
+            "initial_date": "1990-04-28",
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select a date",
+            },
+        }
+
+        got = DatePicker(
+            action_id="datepicker_picked",
+            initial_date="1990-04-28",
+            placeholder="Select a date",
+        ).build()
+        assert got == want
+
+        got = (
+            DatePicker()
+            .action_id("datepicker_picked")
+            .initial_date("1990-04-28")
+            .placeholder("Select a date")
+            .build()
+        )

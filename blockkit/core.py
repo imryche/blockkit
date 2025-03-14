@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any, Sequence, Type
 
 from blockkit.utils import is_md
@@ -770,6 +771,51 @@ class Checkboxes(Component):
 
     def focus_on_load(self, focus_on_load: bool) -> "Checkboxes":
         return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
+
+
+class DatePicker(Component):
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_date: str | date | None = None,
+        confirm: Confirm | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "datepicker")
+        self.action_id(action_id)
+        self.initial_date(initial_date)
+        self.confirm(confirm)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def action_id(self, action_id: str) -> "DatePicker":
+        return self._add_field(
+            "action_id", action_id, validators=[Typed(str), Length(1, 255)]
+        )
+
+    def initial_date(self, initial_date: str | date) -> "DatePicker":
+        # TODO: convert date to str
+        # TODO: validate date format
+        return self._add_field(
+            "initial_date",
+            initial_date,
+            validators=[Typed(str)],
+        )
+
+    def confirm(self, confirm: Confirm) -> "DatePicker":
+        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
+
+    def focus_on_load(self, focus_on_load: bool) -> "DatePicker":
+        return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
+
+    def placeholder(self, placeholder: str | Text) -> "DatePicker":
+        return self._add_field(
+            "placeholder",
+            str_to_plain(placeholder),
+            validators=[Typed(Text), Length(1, 150)],
+        )
 
 
 """
