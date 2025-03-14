@@ -481,7 +481,7 @@ class Option(Component):
         return self._add_field(
             "text",
             str_to_plain(text),
-            validators=[Typed(Text), Required(), Plain(), Length(1, 75)],
+            validators=[Typed(Text), Required(), Length(1, 75)],
         )
 
     def value(self, value: str) -> "Option":
@@ -494,7 +494,7 @@ class Option(Component):
         return self._add_field(
             "description",
             str_to_plain(description),
-            validators=[Typed(Text), Plain(), Length(1, 75)],
+            validators=[Typed(Text), Length(1, 75)],
         )
 
     # TODO: should be available in overflow menus only
@@ -650,6 +650,7 @@ class SlackFile(Component):
 Block elements:
 
 x Button (Button) - https://api.slack.com/reference/block-kit/block-elements#button
+x Checkboxes (Checkboxes) - https://api.slack.com/reference/block-kit/block-elements#checkboxes
 """
 
 
@@ -722,6 +723,15 @@ class Button(Component):
 
 
 class Checkboxes(Component):
+    """
+    Checkboxes element
+
+    Allows users to choose multiple items from a list of options.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#checkboxes
+    """
+
     def __init__(
         self,
         action_id: str | None = None,
@@ -731,6 +741,7 @@ class Checkboxes(Component):
         focus_on_load: bool | None = None,
     ):
         super().__init__()
+        self._add_field("type", "checkboxes")
         self.action_id(action_id)
         self.options(*options or ())
         self.initial_options(*initial_options or ())
@@ -738,23 +749,30 @@ class Checkboxes(Component):
         self.focus_on_load(focus_on_load)
 
     def action_id(self, action_id: str) -> "Checkboxes":
-        return self._add_field("action_id", action_id, validators=[])
+        return self._add_field(
+            "action_id", action_id, validators=[Typed(str), Length(1, 255)]
+        )
 
     def options(self, *options: Option) -> "Checkboxes":
-        return self._add_field("options", options, validators=[])
+        return self._add_field(
+            "options", options, validators=[Typed(Option), Required(), Length(1, 10)]
+        )
 
     def initial_options(self, *initial_options: Option) -> "Checkboxes":
-        return self._add_field("initial_options", initial_options, validators=[])
+        return self._add_field(
+            "initial_options",
+            initial_options,
+            validators=[Typed(Option), Length(1, 10)],
+        )
 
     def confirm(self, confirm: Confirm) -> "Checkboxes":
-        return self._add_field("confirm", confirm, validators=[])
+        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
 
     def focus_on_load(self, focus_on_load: bool) -> "Checkboxes":
-        return self._add_field("focus_on_load", focus_on_load, validators=[])
+        return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
 
 
 """
-- Checkboxes (Checkboxes) - https://api.slack.com/reference/block-kit/block-elements#checkboxes
 - Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-elements#datepicker
 - Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/block-elements#datetimepicker
 - Email input (EmailInput) - https://api.slack.com/reference/block-kit/block-elements#email
