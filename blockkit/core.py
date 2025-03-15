@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import Any, Sequence, Type
+from typing import Any, Self, Sequence, Type
 
 from blockkit.utils import is_md
 
@@ -285,15 +285,20 @@ class Component:
 
 
 class ActionIdMixin:
-    def action_id(self, action_id: str) -> "Button":
+    def action_id(self, action_id: str) -> Self:
         return self._add_field(
             "action_id", action_id, validators=[Typed(str), Length(1, 255)]
         )
 
 
 class FocusOnLoadMixin:
-    def focus_on_load(self, focus_on_load: bool = True) -> "Checkboxes":
+    def focus_on_load(self, focus_on_load: bool = True) -> Self:
         return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
+
+
+class ConfirmMixin:
+    def confirm(self, confirm: "Confirm") -> Self:
+        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
 
 
 """
@@ -707,7 +712,7 @@ x Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/b
 """
 
 
-class Button(Component, ActionIdMixin):
+class Button(Component, ActionIdMixin, ConfirmMixin):
     """
     Button element
 
@@ -759,9 +764,6 @@ class Button(Component, ActionIdMixin):
             "style", style, validators=[Typed(str), Values(self.PRIMARY, self.DANGER)]
         )
 
-    def confirm(self, confirm: Confirm) -> "Button":
-        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
-
     def accessibility_label(self, accessibility_label: str) -> "Button":
         return self._add_field(
             "accessibility_label",
@@ -770,7 +772,7 @@ class Button(Component, ActionIdMixin):
         )
 
 
-class Checkboxes(Component, ActionIdMixin, FocusOnLoadMixin):
+class Checkboxes(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
     """
     Checkboxes element
 
@@ -820,11 +822,8 @@ class Checkboxes(Component, ActionIdMixin, FocusOnLoadMixin):
         field.value.append(initial_option)
         return self
 
-    def confirm(self, confirm: Confirm) -> "Checkboxes":
-        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
 
-
-class DatePicker(Component, ActionIdMixin, FocusOnLoadMixin):
+class DatePicker(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
     """
     Date picker element
 
@@ -857,9 +856,6 @@ class DatePicker(Component, ActionIdMixin, FocusOnLoadMixin):
             validators=[Typed(str), IsoDate()],
         )
 
-    def confirm(self, confirm: Confirm) -> "DatePicker":
-        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
-
     def placeholder(self, placeholder: str | Text) -> "DatePicker":
         return self._add_field(
             "placeholder",
@@ -868,7 +864,7 @@ class DatePicker(Component, ActionIdMixin, FocusOnLoadMixin):
         )
 
 
-class DatetimePicker(Component, ActionIdMixin, FocusOnLoadMixin):
+class DatetimePicker(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
     """
     Datetime picker element
 
@@ -900,9 +896,6 @@ class DatetimePicker(Component, ActionIdMixin, FocusOnLoadMixin):
             datetime_to_str(initial_date_time),
             validators=[Typed(str), UnixTimestamp()],
         )
-
-    def confirm(self, confirm: Confirm) -> "DatetimePicker":
-        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
 
     def placeholder(self, placeholder: str | Text) -> "DatetimePicker":
         return self._add_field(
