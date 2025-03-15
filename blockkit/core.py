@@ -284,6 +284,13 @@ class Component:
         return obj
 
 
+class ActionIdMixin:
+    def action_id(self, action_id: str) -> "Button":
+        return self._add_field(
+            "action_id", action_id, validators=[Typed(str), Length(1, 255)]
+        )
+
+
 """
 Composition objects:
 
@@ -695,7 +702,7 @@ x Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/b
 """
 
 
-class Button(Component):
+class Button(Component, ActionIdMixin):
     """
     Button element
 
@@ -736,11 +743,6 @@ class Button(Component):
             validators=[Typed(Text), Required(), Plain(), Length(1, 75)],
         )
 
-    def action_id(self, action_id: str) -> "Button":
-        return self._add_field(
-            "action_id", action_id, validators=[Typed(str), Length(1, 255)]
-        )
-
     def url(self, url: str) -> "Button":
         return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
 
@@ -763,7 +765,7 @@ class Button(Component):
         )
 
 
-class Checkboxes(Component):
+class Checkboxes(Component, ActionIdMixin):
     """
     Checkboxes element
 
@@ -788,11 +790,6 @@ class Checkboxes(Component):
         self.initial_options(*initial_options or ())
         self.confirm(confirm)
         self.focus_on_load(focus_on_load)
-
-    def action_id(self, action_id: str) -> "Checkboxes":
-        return self._add_field(
-            "action_id", action_id, validators=[Typed(str), Length(1, 255)]
-        )
 
     def options(self, *options: Option) -> "Checkboxes":
         return self._add_field(
@@ -825,7 +822,7 @@ class Checkboxes(Component):
         return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
 
 
-class DatePicker(Component):
+class DatePicker(Component, ActionIdMixin):
     """
     Date picker element
 
@@ -851,11 +848,6 @@ class DatePicker(Component):
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
 
-    def action_id(self, action_id: str) -> "DatePicker":
-        return self._add_field(
-            "action_id", action_id, validators=[Typed(str), Length(1, 255)]
-        )
-
     def initial_date(self, initial_date: str | date) -> "DatePicker":
         return self._add_field(
             "initial_date",
@@ -877,7 +869,7 @@ class DatePicker(Component):
         )
 
 
-class DatetimePicker(Component):
+class DatetimePicker(Component, ActionIdMixin):
     """
     Datetime picker element
 
@@ -902,11 +894,6 @@ class DatetimePicker(Component):
         self.confirm(confirm)
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
-
-    def action_id(self, action_id: str) -> "DatetimePicker":
-        return self._add_field(
-            "action_id", action_id, validators=[Typed(str), Length(1, 255)]
-        )
 
     def initial_date_time(self, initial_date_time: str | datetime) -> "DatetimePicker":
         return self._add_field(
