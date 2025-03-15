@@ -184,6 +184,12 @@ def str_to_plain(value: str) -> "Text":
     return value
 
 
+def date_to_str(value: str) -> str:
+    if isinstance(value, date):
+        return value.strftime("%Y-%m-%d")
+    return value
+
+
 @dataclass
 class Field:
     name: str
@@ -796,11 +802,10 @@ class DatePicker(Component):
         )
 
     def initial_date(self, initial_date: str | date) -> "DatePicker":
-        # TODO: convert date to str
         # TODO: validate date format
         return self._add_field(
             "initial_date",
-            initial_date,
+            date_to_str(initial_date),
             validators=[Typed(str)],
         )
 

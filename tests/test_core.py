@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 
 from blockkit.core import (
@@ -568,7 +570,7 @@ class TestDatePicker:
 
         got = DatePicker(
             action_id="datepicker_picked",
-            initial_date="1990-04-28",
+            initial_date=date(1990, 4, 28),
             placeholder="Select a date",
         ).build()
         assert got == want
@@ -580,3 +582,4 @@ class TestDatePicker:
             .placeholder("Select a date")
             .build()
         )
+        assert got == want
