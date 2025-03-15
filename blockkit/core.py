@@ -301,6 +301,15 @@ class ConfirmMixin:
         return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
 
 
+class PlaceholderMixin:
+    def placeholder(self, placeholder: "str | Text") -> Self:
+        return self._add_field(
+            "placeholder",
+            str_to_plain(placeholder),
+            validators=[Typed(Text), Length(1, 150)],
+        )
+
+
 """
 Composition objects:
 
@@ -823,7 +832,9 @@ class Checkboxes(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
         return self
 
 
-class DatePicker(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
+class DatePicker(
+    Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin, PlaceholderMixin
+):
     """
     Date picker element
 
@@ -856,15 +867,10 @@ class DatePicker(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
             validators=[Typed(str), IsoDate()],
         )
 
-    def placeholder(self, placeholder: str | Text) -> "DatePicker":
-        return self._add_field(
-            "placeholder",
-            str_to_plain(placeholder),
-            validators=[Typed(Text), Length(1, 150)],
-        )
 
-
-class DatetimePicker(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
+class DatetimePicker(
+    Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin, PlaceholderMixin
+):
     """
     Datetime picker element
 
@@ -895,13 +901,6 @@ class DatetimePicker(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
             "initial_date_time",
             datetime_to_str(initial_date_time),
             validators=[Typed(str), UnixTimestamp()],
-        )
-
-    def placeholder(self, placeholder: str | Text) -> "DatetimePicker":
-        return self._add_field(
-            "placeholder",
-            str_to_plain(placeholder),
-            validators=[Typed(Text), Length(1, 150)],
         )
 
 
