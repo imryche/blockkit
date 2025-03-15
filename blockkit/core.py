@@ -671,6 +671,7 @@ Block elements:
 
 x Button (Button) - https://api.slack.com/reference/block-kit/block-elements#button
 x Checkboxes (Checkboxes) - https://api.slack.com/reference/block-kit/block-elements#checkboxes
+x Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-elements#datepicker
 """
 
 
@@ -793,6 +794,15 @@ class Checkboxes(Component):
 
 
 class DatePicker(Component):
+    """
+    Date picker element
+
+    Allows users to select a date from a calendar style UI.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#datepicker
+    """
+
     def __init__(
         self,
         action_id: str | None = None,
@@ -836,7 +846,6 @@ class DatePicker(Component):
 
 
 """
-- Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-elements#datepicker
 - Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/block-elements#datetimepicker
 - Email input (EmailInput) - https://api.slack.com/reference/block-kit/block-elements#email
 - Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
