@@ -796,15 +796,27 @@ class Checkboxes(Component):
 
     def options(self, *options: Option) -> "Checkboxes":
         return self._add_field(
-            "options", options, validators=[Typed(Option), Required(), Length(1, 10)]
+            "options",
+            list(options),
+            validators=[Typed(Option), Required(), Length(1, 10)],
         )
+
+    def add_option(self, option: Option) -> "Checkboxes":
+        field = self._get_field("options")
+        field.value.append(option)
+        return self
 
     def initial_options(self, *initial_options: Option) -> "Checkboxes":
         return self._add_field(
             "initial_options",
-            initial_options,
+            list(initial_options),
             validators=[Typed(Option), Length(1, 10)],
         )
+
+    def add_initial_option(self, initial_option: Option) -> "Checkboxes":
+        field = self._get_field("initial_options")
+        field.value.append(initial_option)
+        return self
 
     def confirm(self, confirm: Confirm) -> "Checkboxes":
         return self._add_field("confirm", confirm, validators=[Typed(Confirm)])

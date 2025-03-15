@@ -576,6 +576,33 @@ class TestCheckboxes:
         ).build()
         assert got == want
 
+        got = (
+            Checkboxes()
+            .action_id("action_id")
+            .add_initial_option(Option(text="Option 1", value="option_1"))
+            .add_option(
+                Option(text="Option 1", value="option_1"),
+            )
+            .add_option(
+                Option(
+                    text="Option 2",
+                    description=Text("*A description of option two*"),
+                    value="option_2",
+                ),
+            )
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .focus_on_load()
+            .build()
+        )
+        assert got == want
+
 
 class TestDatePicker:
     def test_builds(self):
