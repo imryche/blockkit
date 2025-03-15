@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 import pytest
 
@@ -9,6 +9,7 @@ from blockkit.core import (
     Confirm,
     ConversationFilter,
     DatePicker,
+    DatetimePicker,
     DispatchActionConfig,
     FieldValidationError,
     InputParameter,
@@ -93,6 +94,16 @@ class TestIsoDate:
 
     def test_valid(self):
         DatePicker(initial_date="2025-04-05").validate()
+
+
+class TestUnixTimestamp:
+    def test_invalid(self):
+        with pytest.raises(FieldValidationError) as e:
+            DatetimePicker(initial_date_time="1628633820000").validate()
+        assert "Invalid datetime format. Expected UNIX timestamp" in str(e)
+
+    def test_valid(self):
+        DatetimePicker(initial_date_time="1628633820").validate()
 
 
 class TestTyped:
@@ -572,6 +583,7 @@ class TestDatePicker:
             "type": "datepicker",
             "action_id": "datepicker_picked",
             "initial_date": "1990-04-28",
+            "focus_on_load": True,
             "placeholder": {
                 "type": "plain_text",
                 "text": "Select a date",
@@ -581,6 +593,7 @@ class TestDatePicker:
         got = DatePicker(
             action_id="datepicker_picked",
             initial_date=date(1990, 4, 28),
+            focus_on_load=True,
             placeholder="Select a date",
         ).build()
         assert got == want
@@ -589,6 +602,36 @@ class TestDatePicker:
             DatePicker()
             .action_id("datepicker_picked")
             .initial_date("1990-04-28")
+            .focus_on_load()
+            .placeholder("Select a date")
+            .build()
+        )
+        assert got == want
+
+
+class TestDatetimePicker:
+    def test_builds(self):
+        want = {
+            "type": "datetimepicker",
+            "action_id": "datetimepicker_picked",
+            "initial_date_time": "1628633820",
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select a date",
+            },
+        }
+
+        got = DatetimePicker(
+            action_id="datetimepicker_picked",
+            initial_date_time=datetime.fromtimestamp(1628633820),
+            placeholder="Select a date",
+        ).build()
+        assert got == want
+
+        got = (
+            DatetimePicker()
+            .action_id("datetimepicker_picked")
+            .initial_date_time("1628633820")
             .placeholder("Select a date")
             .build()
         )

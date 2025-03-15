@@ -95,6 +95,19 @@ class IsoDate(FieldValidator):
             )
 
 
+class UnixTimestamp(FieldValidator):
+    def validate(self, field_name: str, field_value: Any) -> None:
+        if field_value is None:
+            return
+
+        try:
+            datetime.fromtimestamp(int(field_value))
+        except ValueError:
+            raise FieldValidationError(
+                field_name, "Invalid datetime format. Expected UNIX timestamp"
+            )
+
+
 class Typed(FieldValidator):
     def __init__(self, *types: Type):
         if not types:
@@ -197,9 +210,15 @@ def str_to_plain(value: str) -> "Text":
     return value
 
 
-def date_to_str(value: str) -> str:
+def date_to_str(value: date) -> str:
     if isinstance(value, date):
         return value.strftime("%Y-%m-%d")
+    return value
+
+
+def datetime_to_str(value: datetime) -> str:
+    if isinstance(value, datetime):
+        return str(int(value.timestamp()))
     return value
 
 
@@ -672,6 +691,7 @@ Block elements:
 x Button (Button) - https://api.slack.com/reference/block-kit/block-elements#button
 x Checkboxes (Checkboxes) - https://api.slack.com/reference/block-kit/block-elements#checkboxes
 x Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-elements#datepicker
+x Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/block-elements#datetimepicker
 """
 
 
@@ -789,7 +809,7 @@ class Checkboxes(Component):
     def confirm(self, confirm: Confirm) -> "Checkboxes":
         return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
 
-    def focus_on_load(self, focus_on_load: bool) -> "Checkboxes":
+    def focus_on_load(self, focus_on_load: bool = True) -> "Checkboxes":
         return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
 
 
@@ -834,7 +854,7 @@ class DatePicker(Component):
     def confirm(self, confirm: Confirm) -> "DatePicker":
         return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
 
-    def focus_on_load(self, focus_on_load: bool) -> "DatePicker":
+    def focus_on_load(self, focus_on_load: bool = True) -> "DatePicker":
         return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
 
     def placeholder(self, placeholder: str | Text) -> "DatePicker":
@@ -845,8 +865,59 @@ class DatePicker(Component):
         )
 
 
+class DatetimePicker(Component):
+    """
+    Datetime picker element
+
+    Allows users to select both a date and a time of day, formatted as a Unix timestamp.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#datetimepicker
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_date_time: str | datetime | None = None,
+        confirm: Confirm | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "datetimepicker")
+        self.action_id(action_id)
+        self.initial_date_time(initial_date_time)
+        self.confirm(confirm)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def action_id(self, action_id: str) -> "DatetimePicker":
+        return self._add_field(
+            "action_id", action_id, validators=[Typed(str), Length(1, 255)]
+        )
+
+    def initial_date_time(self, initial_date_time: str | datetime) -> "DatetimePicker":
+        return self._add_field(
+            "initial_date_time",
+            datetime_to_str(initial_date_time),
+            validators=[Typed(str), UnixTimestamp()],
+        )
+
+    def confirm(self, confirm: Confirm) -> "DatetimePicker":
+        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
+
+    def focus_on_load(self, focus_on_load: bool = True) -> "DatetimePicker":
+        return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
+
+    def placeholder(self, placeholder: str | Text) -> "DatetimePicker":
+        return self._add_field(
+            "placeholder",
+            str_to_plain(placeholder),
+            validators=[Typed(Text), Length(1, 150)],
+        )
+
+
 """
-- Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/block-elements#datetimepicker
 - Email input (EmailInput) - https://api.slack.com/reference/block-kit/block-elements#email
 - Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
 - Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
