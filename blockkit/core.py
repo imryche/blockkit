@@ -291,6 +291,11 @@ class ActionIdMixin:
         )
 
 
+class FocusOnLoadMixin:
+    def focus_on_load(self, focus_on_load: bool = True) -> "Checkboxes":
+        return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
+
+
 """
 Composition objects:
 
@@ -765,7 +770,7 @@ class Button(Component, ActionIdMixin):
         )
 
 
-class Checkboxes(Component, ActionIdMixin):
+class Checkboxes(Component, ActionIdMixin, FocusOnLoadMixin):
     """
     Checkboxes element
 
@@ -818,11 +823,8 @@ class Checkboxes(Component, ActionIdMixin):
     def confirm(self, confirm: Confirm) -> "Checkboxes":
         return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
 
-    def focus_on_load(self, focus_on_load: bool = True) -> "Checkboxes":
-        return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
 
-
-class DatePicker(Component, ActionIdMixin):
+class DatePicker(Component, ActionIdMixin, FocusOnLoadMixin):
     """
     Date picker element
 
@@ -858,9 +860,6 @@ class DatePicker(Component, ActionIdMixin):
     def confirm(self, confirm: Confirm) -> "DatePicker":
         return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
 
-    def focus_on_load(self, focus_on_load: bool = True) -> "DatePicker":
-        return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
-
     def placeholder(self, placeholder: str | Text) -> "DatePicker":
         return self._add_field(
             "placeholder",
@@ -869,7 +868,7 @@ class DatePicker(Component, ActionIdMixin):
         )
 
 
-class DatetimePicker(Component, ActionIdMixin):
+class DatetimePicker(Component, ActionIdMixin, FocusOnLoadMixin):
     """
     Datetime picker element
 
@@ -904,9 +903,6 @@ class DatetimePicker(Component, ActionIdMixin):
 
     def confirm(self, confirm: Confirm) -> "DatetimePicker":
         return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
-
-    def focus_on_load(self, focus_on_load: bool = True) -> "DatetimePicker":
-        return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
 
     def placeholder(self, placeholder: str | Text) -> "DatetimePicker":
         return self._add_field(
