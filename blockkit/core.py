@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from typing import Any, Sequence, Type
 
 from blockkit.utils import is_md
@@ -80,6 +80,19 @@ class Values(FieldValidator):
                     field_name,
                     f"Expected values {expected_values}, got '{field_value}'",
                 )
+
+
+class IsoDate(FieldValidator):
+    def validate(self, field_name: str, field_value: Any) -> None:
+        if field_value is None:
+            return
+
+        try:
+            datetime.strptime(field_value, "%Y-%m-%d")
+        except ValueError:
+            raise FieldValidationError(
+                field_name, "Invalid date format. Expected YYYY-MM-DD"
+            )
 
 
 class Typed(FieldValidator):
@@ -802,11 +815,10 @@ class DatePicker(Component):
         )
 
     def initial_date(self, initial_date: str | date) -> "DatePicker":
-        # TODO: validate date format
         return self._add_field(
             "initial_date",
             date_to_str(initial_date),
-            validators=[Typed(str)],
+            validators=[Typed(str), IsoDate()],
         )
 
     def confirm(self, confirm: Confirm) -> "DatePicker":

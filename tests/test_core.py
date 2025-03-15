@@ -85,6 +85,16 @@ class TestValues:
         ConversationFilter(include=["private", "public"]).validate()
 
 
+class TestIsoDate:
+    def test_invalid(self):
+        with pytest.raises(FieldValidationError) as e:
+            DatePicker(initial_date="2025/04/05").validate()
+        assert "Invalid date format. Expected YYYY-MM-DD" in str(e)
+
+    def test_valid(self):
+        DatePicker(initial_date="2025-04-05").validate()
+
+
 class TestTyped:
     def test_invalid_basic(self):
         with pytest.raises(FieldValidationError) as e:
