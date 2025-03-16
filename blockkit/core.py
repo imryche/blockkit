@@ -56,7 +56,7 @@ class Length(FieldValidator):
             )
 
 
-class Values(FieldValidator):
+class Strings(FieldValidator):
     def __init__(self, *values: Sequence[str]):
         self.values = values
 
@@ -372,7 +372,7 @@ class Text(Component):
         return self._add_field(
             "type",
             type,
-            validators=[Typed(str), Required(), Values("plain_text", "mrkdwn")],
+            validators=[Typed(str), Required(), Strings("plain_text", "mrkdwn")],
         )
 
 
@@ -435,7 +435,7 @@ class Confirm(Component):
 
     def style(self, style: str) -> "Confirm":
         self._add_field(
-            "style", style, validators=[Typed(str), Values("primary", "danger")]
+            "style", style, validators=[Typed(str), Strings("primary", "danger")]
         )
         return self
 
@@ -469,7 +469,7 @@ class ConversationFilter(Component):
         self._add_field(
             "include",
             include,
-            validators=[Typed(str), Values("im", "mpim", "private", "public")],
+            validators=[Typed(str), Strings("im", "mpim", "private", "public")],
         )
         return self
 
@@ -512,7 +512,7 @@ class DispatchActionConfig(Component):
             validators=[
                 Typed(str),
                 Required(),
-                Values("on_enter_pressed", "on_character_entered"),
+                Strings("on_enter_pressed", "on_character_entered"),
             ],
         )
         return self
@@ -771,7 +771,7 @@ class Button(Component, ActionIdMixin, ConfirmMixin):
 
     def style(self, style: str) -> "Button":
         return self._add_field(
-            "style", style, validators=[Typed(str), Values(self.PRIMARY, self.DANGER)]
+            "style", style, validators=[Typed(str), Strings(self.PRIMARY, self.DANGER)]
         )
 
     def accessibility_label(self, accessibility_label: str) -> "Button":
@@ -989,7 +989,7 @@ class FileInput(Component, ActionIdMixin):
         return self._add_field(
             "filetypes",
             list(filetypes),
-            validators=[Typed(str), Values(*self.FILE_TYPES)],
+            validators=[Typed(str), Strings(*self.FILE_TYPES)],
         )
 
     def max_files(self, max_files: int) -> "FileInput":
