@@ -946,7 +946,58 @@ class EmailInput(Component, ActionIdMixin, FocusOnLoadMixin, PlaceholderMixin):
         )
 
 
+class FileInput(Component, ActionIdMixin):
+    """
+    File input element
+
+    Allows user to upload files.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#file_input
+    """
+
+    FILE_TYPES = [
+        "auto", "text", "ai", "apk", "applescript", "binary", "bmp", "boxnote", "c",
+        "csharp", "cpp", "css", "csv", "clojure", "coffeescript", "cfm", "d", "dart",
+        "diff", "doc", "docx", "dockerfile", "dotx", "eml", "eps", "epub", "erlang",
+        "fla", "flv", "fsharp", "fortran", "gdoc", "gdraw", "gif", "go", "gpres",
+        "groovy", "gsheet", "gzip", "html", "handlebars", "haskell", "haxe", "indd",
+        "java", "javascript", "jpg", "json", "keynote", "kotlin", "latex", "lisp",
+        "lua", "m4a", "markdown", "matlab", "mhtml", "mkv", "mov", "mp3", "mp4",
+        "mpg", "mumps", "numbers", "nzb", "objc", "ocaml", "odg", "odi", "odp", "ods",
+        "odt", "ogg", "ogv", "pages", "pascal", "pdf", "perl", "php", "pig", "png",
+        "post", "powershell", "ppt", "pptx", "psd", "puppet", "python", "qtz", "r",
+        "rtf", "ruby", "rust", "sql", "sass", "scala", "scheme", "sketch", "shell",
+        "smalltalk", "svg", "swf", "swift", "tar", "tiff", "tsv", "vb", "vbscript",
+        "vcard", "velocity", "verilog", "wav", "webm", "wmv", "xls", "xlsx", "xlsb",
+        "xlsm", "xltx", "xml", "yaml", "zip"
+    ]  # fmt: skip
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        filetypes: Sequence[str] | None = None,
+        max_files: int | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "file_input")
+        self.action_id(action_id)
+        self.filetypes(*filetypes or ())
+        self.max_files(max_files)
+
+    def filetypes(self, *filetypes: str) -> "FileInput":
+        return self._add_field(
+            "filetypes",
+            list(filetypes),
+            validators=[Typed(str), Values(*self.FILE_TYPES)],
+        )
+
+    def max_files(self, max_files: int) -> "FileInput":
+        return self._add_field("max_files", max_files, validators=[Typed(int)])
+
+
 """
+- File input - https://api.slack.com/reference/block-kit/block-elements#file_input
 - Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
 - Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
 - Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select

@@ -13,6 +13,7 @@ from blockkit.core import (
     DispatchActionConfig,
     EmailInput,
     FieldValidationError,
+    FileInput,
     InputParameter,
     Option,
     OptionGroup,
@@ -768,6 +769,32 @@ class TestEmailInput:
             )
             .focus_on_load()
             .placeholder("Select an email")
+            .build()
+        )
+        assert got == want
+
+
+class TestFileInput:
+    def test_builds(self):
+        want = {
+            "type": "file_input",
+            "action_id": "file_input_action",
+            "filetypes": ["csv", "yaml"],
+            "max_files": 1,
+        }
+
+        got = FileInput(
+            action_id="file_input_action",
+            filetypes=["csv", "yaml"],
+            max_files=1,
+        ).build()
+        assert got == want
+
+        got = (
+            FileInput()
+            .action_id("file_input_action")
+            .filetypes("csv", "yaml")
+            .max_files(1)
             .build()
         )
         assert got == want
