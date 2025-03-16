@@ -718,6 +718,7 @@ x Button (Button) - https://api.slack.com/reference/block-kit/block-elements#but
 x Checkboxes (Checkboxes) - https://api.slack.com/reference/block-kit/block-elements#checkboxes
 x Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-elements#datepicker
 x Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/block-elements#datetimepicker
+x Email input (EmailInput) - https://api.slack.com/reference/block-kit/block-elements#email
 """
 
 
@@ -904,8 +905,48 @@ class DatetimePicker(
         )
 
 
+class EmailInput(Component, ActionIdMixin, FocusOnLoadMixin, PlaceholderMixin):
+    """
+    Email input element
+
+    Allows user to enter an email into a single-line field.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#email
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_value: str | None = None,
+        dispatch_action_config: DispatchActionConfig | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "email_text_input")
+        self.action_id(action_id)
+        self.initial_value(initial_value)
+        self.dispatch_action_config(dispatch_action_config)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def initial_value(self, initial_value: str) -> "EmailInput":
+        return self._add_field(
+            "initial_value", initial_value, validators=[Typed(str), Length(1, 255)]
+        )
+
+    def dispatch_action_config(
+        self, dispatch_action_config: DispatchActionConfig
+    ) -> "EmailInput":
+        return self._add_field(
+            "dispatch_action_config",
+            dispatch_action_config,
+            validators=[Typed(DispatchActionConfig)],
+        )
+
+
 """
-- Email input (EmailInput) - https://api.slack.com/reference/block-kit/block-elements#email
 - Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
 - Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
 - Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select

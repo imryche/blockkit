@@ -11,6 +11,7 @@ from blockkit.core import (
     DatePicker,
     DatetimePicker,
     DispatchActionConfig,
+    EmailInput,
     FieldValidationError,
     InputParameter,
     Option,
@@ -514,7 +515,7 @@ class TestCheckboxes:
     def test_builds(self):
         want = {
             "type": "checkboxes",
-            "action_id": "action_id",
+            "action_id": "checkboxes_action",
             "options": [
                 {
                     "value": "option_1",
@@ -556,7 +557,7 @@ class TestCheckboxes:
             "focus_on_load": True,
         }
         got = Checkboxes(
-            action_id="action_id",
+            action_id="checkboxes_action",
             initial_options=[Option(text="Option 1", value="option_1")],
             options=[
                 Option(text="Option 1", value="option_1"),
@@ -578,7 +579,7 @@ class TestCheckboxes:
 
         got = (
             Checkboxes()
-            .action_id("action_id")
+            .action_id("checkboxes_action")
             .add_initial_option(Option(text="Option 1", value="option_1"))
             .add_option(
                 Option(text="Option 1", value="option_1"),
@@ -608,7 +609,7 @@ class TestDatePicker:
     def test_builds(self):
         want = {
             "type": "datepicker",
-            "action_id": "datepicker_picked",
+            "action_id": "datepicker_action",
             "initial_date": "1990-04-28",
             "confirm": {
                 "title": {
@@ -636,7 +637,7 @@ class TestDatePicker:
         }
 
         got = DatePicker(
-            action_id="datepicker_picked",
+            action_id="datepicker_action",
             initial_date=date(1990, 4, 28),
             confirm=Confirm(
                 title="Please confirm",
@@ -651,7 +652,7 @@ class TestDatePicker:
 
         got = (
             DatePicker()
-            .action_id("datepicker_picked")
+            .action_id("datepicker_action")
             .initial_date("1990-04-28")
             .confirm(
                 Confirm(
@@ -672,7 +673,7 @@ class TestDatetimePicker:
     def test_builds(self):
         want = {
             "type": "datetimepicker",
-            "action_id": "datetimepicker_picked",
+            "action_id": "datetimepicker_action",
             "initial_date_time": "1628633820",
             "confirm": {
                 "title": {
@@ -699,7 +700,7 @@ class TestDatetimePicker:
         }
 
         got = DatetimePicker(
-            action_id="datetimepicker_picked",
+            action_id="datetimepicker_action",
             initial_date_time=datetime.fromtimestamp(1628633820),
             confirm=Confirm(
                 title="Please confirm",
@@ -713,7 +714,7 @@ class TestDatetimePicker:
 
         got = (
             DatetimePicker()
-            .action_id("datetimepicker_picked")
+            .action_id("datetimepicker_action")
             .initial_date_time("1628633820")
             .confirm(
                 Confirm(
@@ -724,6 +725,49 @@ class TestDatetimePicker:
                 )
             )
             .placeholder("Select a date")
+            .build()
+        )
+        assert got == want
+
+
+class TestEmailInput:
+    def test_builds(self):
+        want = {
+            "type": "email_text_input",
+            "action_id": "email_text_input_action",
+            "initial_value": "alice@wonderland.com",
+            "dispatch_action_config": {
+                "trigger_actions_on": [
+                    "on_character_entered",
+                ]
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select an email",
+            },
+        }
+
+        got = EmailInput(
+            action_id="email_text_input_action",
+            initial_value="alice@wonderland.com",
+            dispatch_action_config=DispatchActionConfig(
+                trigger_actions_on=["on_character_entered"]
+            ),
+            focus_on_load=True,
+            placeholder="Select an email",
+        ).build()
+        assert got == want
+
+        got = (
+            EmailInput()
+            .action_id("email_text_input_action")
+            .initial_value("alice@wonderland.com")
+            .dispatch_action_config(
+                DispatchActionConfig(trigger_actions_on=["on_character_entered"])
+            )
+            .focus_on_load()
+            .placeholder("Select an email")
             .build()
         )
         assert got == want
