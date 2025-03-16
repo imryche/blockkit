@@ -735,6 +735,7 @@ x Checkboxes (Checkboxes) - https://api.slack.com/reference/block-kit/block-elem
 x Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-elements#datepicker
 x Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/block-elements#datetimepicker
 x Email input (EmailInput) - https://api.slack.com/reference/block-kit/block-elements#email
+x File input - https://api.slack.com/reference/block-kit/block-elements#file_input
 """
 
 
@@ -1015,7 +1016,6 @@ class FileInput(Component, ActionIdMixin):
 
 
 """
-- File input - https://api.slack.com/reference/block-kit/block-elements#file_input
 - Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
 - Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
 - Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select
