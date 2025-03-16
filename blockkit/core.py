@@ -82,6 +82,22 @@ class Strings(FieldValidator):
                 )
 
 
+class Ints(FieldValidator):
+    def __init__(self, min=0, max=999999):
+        self.min = min
+        self.max = max
+
+    def validate(self, field_name: str, field_value: Any) -> None:
+        if field_value is None:
+            return
+
+        if not (self.min <= field_value <= self.max):
+            raise FieldValidationError(
+                field_name,
+                f"Value must be between {self.min} and {self.max} (got {field_value})",
+            )
+
+
 class IsoDate(FieldValidator):
     def validate(self, field_name: str, field_value: Any) -> None:
         if field_value is None:
@@ -993,7 +1009,9 @@ class FileInput(Component, ActionIdMixin):
         )
 
     def max_files(self, max_files: int) -> "FileInput":
-        return self._add_field("max_files", max_files, validators=[Typed(int)])
+        return self._add_field(
+            "max_files", max_files, validators=[Typed(int), Ints(1, 10)]
+        )
 
 
 """

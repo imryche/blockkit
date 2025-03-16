@@ -63,7 +63,7 @@ class TestLength:
         Text("hello, alice!").validate()
 
 
-class TestValues:
+class TestStrings:
     def test_invalid_single(self):
         with pytest.raises(FieldValidationError) as e:
             Confirm(title="title", text="text", confirm="confirm", deny="deny").style(
@@ -86,6 +86,16 @@ class TestValues:
 
     def test_valid_multi(self):
         ConversationFilter(include=["private", "public"]).validate()
+
+
+class TestInts:
+    def test_invalid(self):
+        with pytest.raises(FieldValidationError) as e:
+            FileInput(max_files=11).validate()
+        assert "Value must be between 1 and 10 (got 11)" in str(e)
+
+    def test_valid(self):
+        FileInput(max_files=10).validate()
 
 
 class TestIsoDate:
