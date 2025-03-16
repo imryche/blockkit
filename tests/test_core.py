@@ -610,6 +610,24 @@ class TestDatePicker:
             "type": "datepicker",
             "action_id": "datepicker_picked",
             "initial_date": "1990-04-28",
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
             "focus_on_load": True,
             "placeholder": {
                 "type": "plain_text",
@@ -620,6 +638,12 @@ class TestDatePicker:
         got = DatePicker(
             action_id="datepicker_picked",
             initial_date=date(1990, 4, 28),
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
             focus_on_load=True,
             placeholder="Select a date",
         ).build()
@@ -629,6 +653,14 @@ class TestDatePicker:
             DatePicker()
             .action_id("datepicker_picked")
             .initial_date("1990-04-28")
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
             .focus_on_load()
             .placeholder("Select a date")
             .build()
@@ -642,6 +674,24 @@ class TestDatetimePicker:
             "type": "datetimepicker",
             "action_id": "datetimepicker_picked",
             "initial_date_time": "1628633820",
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
             "placeholder": {
                 "type": "plain_text",
                 "text": "Select a date",
@@ -651,6 +701,12 @@ class TestDatetimePicker:
         got = DatetimePicker(
             action_id="datetimepicker_picked",
             initial_date_time=datetime.fromtimestamp(1628633820),
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
             placeholder="Select a date",
         ).build()
         assert got == want
@@ -659,6 +715,14 @@ class TestDatetimePicker:
             DatetimePicker()
             .action_id("datetimepicker_picked")
             .initial_date_time("1628633820")
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
             .placeholder("Select a date")
             .build()
         )
