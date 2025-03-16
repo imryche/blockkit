@@ -15,25 +15,25 @@ class FieldValidationError(Exception):
 
 class FieldValidator(ABC):
     @abstractmethod
-    def validate(self, field_name: str, field_value: Any) -> None:
+    def validate(self, field_name: str, value: Any) -> None:
         pass
 
-    def __call__(self, field_name: str, field_value: Any) -> None:
-        return self.validate(field_name, field_value)
+    def __call__(self, field_name: str, value: Any) -> None:
+        return self.validate(field_name, value)
 
 
 class Required(FieldValidator):
-    def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is None:
+    def validate(self, field_name: str, value: Any) -> None:
+        if value is None:
             raise FieldValidationError(field_name, "Value is required")
 
 
 class Plain(FieldValidator):
-    def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is None:
+    def validate(self, field_name: str, value: Any) -> None:
+        if value is None:
             return
 
-        type_field = field_value._get_field("type")
+        type_field = value._get_field("type")
         if not type_field or type_field.value != Text.PLAIN:
             raise FieldValidationError(field_name, "Only plain_text is allowed")
 
@@ -43,11 +43,11 @@ class Length(FieldValidator):
         self.min = min
         self.max = max
 
-    def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is None:
+    def validate(self, field_name: str, value: Any) -> None:
+        if value is None:
             return
 
-        value_length = len(field_value)
+        value_length = len(value)
         if not (self.min <= value_length <= self.max):
             raise FieldValidationError(
                 field_name,
@@ -60,13 +60,13 @@ class Strings(FieldValidator):
     def __init__(self, *values: Sequence[str]):
         self.values = values
 
-    def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is None:
+    def validate(self, field_name: str, value: Any) -> None:
+        if value is None:
             return
 
         expected_values = ", ".join(f"'{v}'" for v in self.values)
-        if isinstance(field_value, (list, tuple, set)):
-            unexpected = set(field_value).difference(self.values)
+        if isinstance(value, (list, tuple, set)):
+            unexpected = set(value).difference(self.values)
             if unexpected:
                 pretty_unexpected = ", ".join(f"'{v}'" for v in unexpected)
                 raise FieldValidationError(
@@ -75,10 +75,10 @@ class Strings(FieldValidator):
                     f"got unexpected {pretty_unexpected}",
                 )
         else:
-            if field_value not in self.values:
+            if value not in self.values:
                 raise FieldValidationError(
                     field_name,
-                    f"Expected values {expected_values}, got '{field_value}'",
+                    f"Expected values {expected_values}, got '{value}'",
                 )
 
 
@@ -87,24 +87,24 @@ class Ints(FieldValidator):
         self.min = min
         self.max = max
 
-    def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is None:
+    def validate(self, field_name: str, value: Any) -> None:
+        if value is None:
             return
 
-        if not (self.min <= field_value <= self.max):
+        if not (self.min <= value <= self.max):
             raise FieldValidationError(
                 field_name,
-                f"Value must be between {self.min} and {self.max} (got {field_value})",
+                f"Value must be between {self.min} and {self.max} (got {value})",
             )
 
 
 class IsoDate(FieldValidator):
-    def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is None:
+    def validate(self, field_name: str, value: Any) -> None:
+        if value is None:
             return
 
         try:
-            datetime.strptime(field_value, "%Y-%m-%d")
+            datetime.strptime(value, "%Y-%m-%d")
         except ValueError:
             raise FieldValidationError(
                 field_name, "Invalid date format. Expected YYYY-MM-DD"
@@ -112,12 +112,12 @@ class IsoDate(FieldValidator):
 
 
 class UnixTimestamp(FieldValidator):
-    def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is None:
+    def validate(self, field_name: str, value: Any) -> None:
+        if value is None:
             return
 
         try:
-            datetime.fromtimestamp(int(field_value))
+            datetime.fromtimestamp(int(value))
         except ValueError:
             raise FieldValidationError(
                 field_name, "Invalid datetime format. Expected UNIX timestamp"
@@ -130,15 +130,11 @@ class Typed(FieldValidator):
             raise ValueError("At least one type must be specified")
         self.types = types
 
-    def validate(self, field_name: str, field_value: Any) -> None:
-        if field_value is None:
+    def validate(self, field_name: str, value: Any) -> None:
+        if value is None:
             return
 
-        values = (
-            [field_value]
-            if not isinstance(field_value, (list, tuple, set))
-            else field_value
-        )
+        values = [value] if not isinstance(value, (list, tuple, set)) else value
 
         for value in values:
             if isinstance(value, self.types):
