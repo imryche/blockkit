@@ -14,6 +14,7 @@ from blockkit.core import (
     EmailInput,
     FieldValidationError,
     FileInput,
+    ImageEl,
     InputParameter,
     Option,
     OptionGroup,
@@ -805,6 +806,49 @@ class TestFileInput:
             .action_id("file_input_action")
             .filetypes("csv", "yaml")
             .max_files(1)
+            .build()
+        )
+        assert got == want
+
+
+class TestImageEl:
+    def test_builds(self):
+        want = {
+            "type": "image",
+            "alt_text": "alice in wonderland",
+            "image_url": "https://wonderland.com/static/alice.png",
+        }
+
+        got = ImageEl(
+            alt_text="alice in wonderland",
+            image_url="https://wonderland.com/static/alice.png",
+        ).build()
+        assert got == want
+
+        got = (
+            ImageEl()
+            .alt_text("alice in wonderland")
+            .image_url("https://wonderland.com/static/alice.png")
+            .build()
+        )
+        assert got == want
+
+        want = {
+            "type": "image",
+            "alt_text": "alice in wonderland",
+            "slack_file": {"id": "F123456"},
+        }
+
+        got = ImageEl(
+            alt_text="alice in wonderland",
+            slack_file=SlackFile(id="F123456"),
+        ).build()
+        assert got == want
+
+        got = (
+            ImageEl()
+            .alt_text("alice in wonderland")
+            .slack_file(SlackFile(id="F123456"))
             .build()
         )
         assert got == want

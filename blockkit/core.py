@@ -732,6 +732,7 @@ x Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-ele
 x Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/block-elements#datetimepicker
 x Email input (EmailInput) - https://api.slack.com/reference/block-kit/block-elements#email
 x File input - https://api.slack.com/reference/block-kit/block-elements#file_input
+x Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
 """
 
 
@@ -1011,8 +1012,44 @@ class FileInput(Component, ActionIdMixin):
         )
 
 
+class ImageEl(Component):
+    """
+    Image element
+
+    Displays an image as part of a larger block of content.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#image
+    """
+
+    def __init__(
+        self,
+        alt_text: str | None = None,
+        image_url: str | None = None,
+        slack_file: SlackFile | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "image")
+        self.alt_text(alt_text)
+        self.image_url(image_url)
+        self.slack_file(slack_file)
+        self._add_validator(Either("image_url", "slack_file"))
+
+    def alt_text(self, alt_text: str) -> "ImageEl":
+        return self._add_field(
+            "alt_text", alt_text, validators=[Typed(str), Length(1, 255)]
+        )
+
+    def image_url(self, image_url: str) -> "ImageEl":
+        return self._add_field(
+            "image_url", image_url, validators=[Typed(str), Length(1, 3000)]
+        )
+
+    def slack_file(self, slack_file: SlackFile) -> "ImageEl":
+        return self._add_field("slack_file", slack_file, validators=[Typed(SlackFile)])
+
+
 """
-- Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
 - Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
 - Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select
 - Multi-select users (MultiUsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_multi_select
