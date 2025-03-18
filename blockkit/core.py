@@ -322,6 +322,24 @@ class PlaceholderMixin:
         )
 
 
+class OptionsMixin:
+    def options(self, *options: tuple["Option"]) -> Self:
+        return self._add_field(
+            "options",
+            list(options),
+            validators=[
+                Typed(Option),
+                Required(),
+                Length(1, getattr(self, "_max_options", 100)),
+            ],
+        )
+
+    def add_option(self, option: "Option") -> Self:
+        field = self._get_field("options")
+        field.value.append(option)
+        return self
+
+
 """
 Composition objects:
 
@@ -579,7 +597,7 @@ class Option(Component):
         return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
 
 
-class OptionGroup(Component):
+class OptionGroup(Component, OptionsMixin):
     """
     Option group object
 
@@ -602,18 +620,6 @@ class OptionGroup(Component):
             str_to_plain(label),
             validators=[Typed(Text), Required(), Plain(), Length(1, 75)],
         )
-
-    def options(self, *options: tuple[Option]) -> "OptionGroup":
-        return self._add_field(
-            "options",
-            list(options),
-            validators=[Typed(Option), Required(), Length(1, 100)],
-        )
-
-    def add_option(self, option: Option) -> "OptionGroup":
-        field = self._get_field("options")
-        field.value.append(option)
-        return self
 
 
 class InputParameter(Component):
@@ -796,7 +802,9 @@ class Button(Component, ActionIdMixin, ConfirmMixin):
         )
 
 
-class Checkboxes(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
+class Checkboxes(
+    Component, ActionIdMixin, OptionsMixin, FocusOnLoadMixin, ConfirmMixin
+):
     """
     Checkboxes element
 
@@ -815,24 +823,13 @@ class Checkboxes(Component, ActionIdMixin, FocusOnLoadMixin, ConfirmMixin):
         focus_on_load: bool | None = None,
     ):
         super().__init__()
+        self._max_options = 10
         self._add_field("type", "checkboxes")
         self.action_id(action_id)
         self.options(*options or ())
         self.initial_options(*initial_options or ())
         self.confirm(confirm)
         self.focus_on_load(focus_on_load)
-
-    def options(self, *options: Option) -> "Checkboxes":
-        return self._add_field(
-            "options",
-            list(options),
-            validators=[Typed(Option), Required(), Length(1, 10)],
-        )
-
-    def add_option(self, option: Option) -> "Checkboxes":
-        field = self._get_field("options")
-        field.value.append(option)
-        return self
 
     def initial_options(self, *initial_options: Option) -> "Checkboxes":
         return self._add_field(
