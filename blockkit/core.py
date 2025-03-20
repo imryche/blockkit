@@ -47,6 +47,9 @@ class Length(FieldValidator):
         if value is None:
             return
 
+        if isinstance(value, (list, tuple, set)) and len(value) < 1:
+            return
+
         value_length = len(value)
         if not (self.min <= value_length <= self.max):
             raise FieldValidationError(
@@ -270,7 +273,10 @@ class Component:
         self._validators.append(validator)
 
     def _get_field(self, field_name: str) -> Any:
-        return self._fields.get(field_name)
+        field = self._fields.get(field_name)
+        if not field:
+            raise AttributeError(f"Field '{field_name}' does not exist")
+        return field
 
     def validate(self):
         for field_ in self._fields.values():
@@ -285,6 +291,8 @@ class Component:
         obj = {}
         for name, value in fields.items():
             if value is None:
+                continue
+            if isinstance(value, (list, tuple, set)) and len(value) < 1:
                 continue
             obj[name] = value
             if hasattr(value, "build"):
@@ -490,7 +498,6 @@ class ConversationFilter(Component):
         self.include(include)
         self.exclude_bot_users(exclude_bot_users)
         self.exclude_external_shared_channels(exclude_external_shared_channels)
-
         self._add_validator(
             Either("include", "exclude_bot_users", "exclude_external_shared_channels")
         )
@@ -1044,6 +1051,70 @@ class ImageEl(Component):
 
     def slack_file(self, slack_file: SlackFile) -> "ImageEl":
         return self._add_field("slack_file", slack_file, validators=[Typed(SlackFile)])
+
+
+class MultiStaticSelect(
+    Component,
+    ActionIdMixin,
+    OptionsMixin,
+    ConfirmMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    def __init__(
+        self,
+        action_id: str | None = None,
+        options: Sequence[Option] | None = None,
+        option_groups: Sequence[OptionGroup] | None = None,
+        initial_options: Sequence[Option | OptionGroup] | None = None,
+        confirm: Confirm | None = None,
+        max_selected_items: int | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "multi_static_select")
+        self.action_id(action_id)
+        self.options(*options or ())
+        self.option_groups(*option_groups or ())
+        self.initial_options(*initial_options or ())
+        self.confirm(confirm)
+        self.max_selected_items(max_selected_items)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+        self._add_validator(Either("options", "option_groups"))
+
+    def option_groups(self, *option_groups: OptionGroup) -> Self:
+        return self._add_field(
+            "option_groups",
+            list(option_groups),
+            validators=[Typed(OptionGroup), Length(1, 100)],
+        )
+
+    def add_option_group(self, option_group: OptionGroup) -> Self:
+        field = self._get_field("option_groups")
+        field.value.append(option_group)
+        return self
+
+    def initial_options(self, *initial_options: Option | OptionGroup) -> Self:
+        return self._add_field(
+            "initial_options",
+            list(initial_options),
+            validators=[
+                Typed(Option, OptionGroup),
+                Length(1, 100),
+            ],  # TODO: validate that it intersects with the options or option_groups
+        )
+
+    def add_initial_option(self, option: Option | OptionGroup) -> Self:
+        field = self._get_field("initial_options")
+        field.value.append(option)
+        return self
+
+    def max_selected_items(self, max_selected_items: int) -> Self:
+        return self._add_field(
+            "max_selected_items", max_selected_items, validators=[Typed(int), Ints(1)]
+        )
 
 
 """

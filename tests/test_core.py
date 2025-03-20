@@ -16,6 +16,7 @@ from blockkit.core import (
     FileInput,
     ImageEl,
     InputParameter,
+    MultiStaticSelect,
     Option,
     OptionGroup,
     SlackFile,
@@ -849,6 +850,188 @@ class TestImageEl:
             ImageEl()
             .alt_text("alice in wonderland")
             .slack_file(SlackFile(id="F123456"))
+            .build()
+        )
+        assert got == want
+
+
+class TestMultiStaticSelect:
+    def test_builds_options(self):
+        want = {
+            "type": "multi_static_select",
+            "action_id": "multi_static_select_action",
+            "options": [
+                {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Option 1",
+                    },
+                    "value": "option_1",
+                },
+                {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Option 2",
+                    },
+                    "value": "option_2",
+                },
+            ],
+            "initial_options": [
+                {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Option 1",
+                    },
+                    "value": "option_1",
+                },
+            ],
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "max_selected_items": 2,
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select items",
+            },
+        }
+
+        got = MultiStaticSelect(
+            action_id="multi_static_select_action",
+            options=[
+                Option(text="Option 1", value="option_1"),
+                Option(text="Option 2", value="option_2"),
+            ],
+            initial_options=[Option(text="Option 1", value="option_1")],
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            max_selected_items=2,
+            focus_on_load=True,
+            placeholder="Select items",
+        ).build()
+        assert got == want
+
+        got = (
+            MultiStaticSelect()
+            .action_id("multi_static_select_action")
+            .add_option(Option(text="Option 1", value="option_1"))
+            .add_option(Option(text="Option 2", value="option_2"))
+            .add_initial_option(Option(text="Option 1", value="option_1"))
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .max_selected_items(2)
+            .focus_on_load()
+            .placeholder("Select items")
+            .build()
+        )
+        assert got == want
+
+    def test_builds_option_groups(self):
+        want = {
+            "type": "multi_static_select",
+            "action_id": "multi_static_select_action",
+            "option_groups": [
+                {
+                    "label": {
+                        "type": "plain_text",
+                        "text": "Group 1",
+                    },
+                    "options": [
+                        {
+                            "text": {"type": "plain_text", "text": "Option 1"},
+                            "value": "option_1",
+                        }
+                    ],
+                },
+                {
+                    "label": {
+                        "type": "plain_text",
+                        "text": "Group 2",
+                    },
+                    "options": [
+                        {
+                            "text": {"type": "plain_text", "text": "Option 2"},
+                            "value": "option_2",
+                        }
+                    ],
+                },
+            ],
+            "initial_options": [
+                {
+                    "label": {
+                        "type": "plain_text",
+                        "text": "Group 1",
+                    },
+                    "options": [
+                        {
+                            "text": {"type": "plain_text", "text": "Option 1"},
+                            "value": "option_1",
+                        }
+                    ],
+                },
+            ],
+        }
+        got = MultiStaticSelect(
+            action_id="multi_static_select_action",
+            option_groups=[
+                OptionGroup(
+                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
+                ),
+                OptionGroup(
+                    label="Group 2", options=[Option(text="Option 2", value="option_2")]
+                ),
+            ],
+            initial_options=[
+                OptionGroup(
+                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
+                )
+            ],
+        ).build()
+        assert got == want
+
+        got = (
+            MultiStaticSelect()
+            .action_id("multi_static_select_action")
+            .add_option_group(
+                OptionGroup(
+                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
+                )
+            )
+            .add_option_group(
+                OptionGroup(
+                    label="Group 2", options=[Option(text="Option 2", value="option_2")]
+                ),
+            )
+            .add_initial_option(
+                OptionGroup(
+                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
+                )
+            )
             .build()
         )
         assert got == want
