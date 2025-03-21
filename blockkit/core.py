@@ -253,6 +253,24 @@ class Component:
     _fields: dict[str, Field] = field(default_factory=dict)
     _validators: list[ComponentValidator] = field(default_factory=list)
 
+    def __eq__(self, other: "Component") -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self.build() == other.build()
+
+    def __hash__(self):
+        def make_hashable(obj):
+            if isinstance(obj, dict):
+                return tuple(sorted((k, make_hashable(v)) for k, v in obj.items()))
+            elif isinstance(obj, list):
+                return tuple(make_hashable(item) for item in obj)
+            elif isinstance(obj, (set, tuple)):
+                return tuple(make_hashable(item) for item in obj)
+            else:
+                return obj
+
+        return hash(make_hashable(self.build()))
+
     def _add_field(self, name, value, validators: Sequence[FieldValidator] = None):
         if not validators:
             validators = []
