@@ -1121,6 +1121,8 @@ class MultiStaticSelect(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
         self._add_validator(Either("options", "option_groups"))
+        # TODO: Doesn't handle the case where initial_options are set
+        # but options or option_groups are empty
         self._add_validator(Within("initial_options", "options"))
         self._add_validator(Within("initial_options", "option_groups"))
 
