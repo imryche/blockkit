@@ -219,6 +219,26 @@ class OnlyIf(ComponentValidator):
             )
 
 
+class Within(ComponentValidator):
+    def __init__(self, source_field: str, target_field: str):
+        self.source_field = source_field
+        self.target_field = target_field
+
+    def validate(self, component: "Component") -> None:
+        source_value = component._get_field(self.source_field).value
+        target_value = component._get_field(self.target_field).value
+
+        if not target_value:
+            return
+
+        if not set(source_value).issubset(set(target_value)):
+            raise ComponentValidationError(
+                component.__class__.__name__,
+                f"'{self.source_field}' has items that aren't "
+                f"present in the '{self.target_field}'",
+            )
+
+
 def str_to_plain(value: str) -> "Text":
     if isinstance(value, str):
         return Text(value).type(Text.PLAIN)
@@ -1070,6 +1090,15 @@ class MultiStaticSelect(
     FocusOnLoadMixin,
     PlaceholderMixin,
 ):
+    """
+    Multi-select menu element
+
+    Allows users to select multiple items from a list of options.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#multi_select
+    """
+
     def __init__(
         self,
         action_id: str | None = None,
@@ -1092,6 +1121,8 @@ class MultiStaticSelect(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
         self._add_validator(Either("options", "option_groups"))
+        self._add_validator(Within("initial_options", "options"))
+        self._add_validator(Within("initial_options", "option_groups"))
 
     def option_groups(self, *option_groups: OptionGroup) -> Self:
         return self._add_field(
