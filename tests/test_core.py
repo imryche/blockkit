@@ -16,6 +16,7 @@ from blockkit.core import (
     FileInput,
     ImageEl,
     InputParameter,
+    MultiExternalSelect,
     MultiStaticSelect,
     Option,
     OptionGroup,
@@ -1032,6 +1033,84 @@ class TestMultiStaticSelect:
                     label="Group 1", options=[Option(text="Option 1", value="option_1")]
                 )
             )
+            .build()
+        )
+        assert got == want
+
+
+class TestMultiExternalSelect:
+    def test_builds_options(self):
+        want = {
+            "type": "multi_external_select",
+            "action_id": "multi_external_select_action",
+            "min_query_length": 3,
+            "initial_options": [
+                {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Option 1",
+                    },
+                    "value": "option_1",
+                },
+            ],
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "max_selected_items": 3,
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select items",
+            },
+        }
+
+        got = MultiExternalSelect(
+            action_id="multi_external_select_action",
+            min_query_length=3,
+            initial_options=[Option(text="Option 1", value="option_1")],
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            max_selected_items=3,
+            focus_on_load=True,
+            placeholder="Select items",
+        ).build()
+        assert got == want
+
+        got = (
+            MultiExternalSelect()
+            .action_id("multi_external_select_action")
+            .min_query_length(3)
+            .add_initial_option(Option(text="Option 1", value="option_1"))
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .max_selected_items(3)
+            .focus_on_load()
+            .placeholder("Select items")
             .build()
         )
         assert got == want

@@ -368,6 +368,27 @@ class PlaceholderMixin:
         )
 
 
+class InitialOptionsMixin:
+    def initial_options(self, *initial_options: "Option | OptionGroup") -> Self:
+        return self._add_field(
+            "initial_options",
+            list(initial_options),
+            validators=[Typed(Option, OptionGroup), Length(1, 100)],
+        )
+
+    def add_initial_option(self, option: "Option | OptionGroup") -> Self:
+        field = self._get_field("initial_options")
+        field.value.append(option)
+        return self
+
+
+class MaxSelectedItemsMixin:
+    def max_selected_items(self, max_selected_items: int) -> Self:
+        return self._add_field(
+            "max_selected_items", max_selected_items, validators=[Typed(int), Ints(1)]
+        )
+
+
 class OptionsMixin:
     def options(self, *options: tuple["Option"]) -> Self:
         return self._add_field(
@@ -775,6 +796,8 @@ x Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/b
 x Email input (EmailInput) - https://api.slack.com/reference/block-kit/block-elements#email
 x File input - https://api.slack.com/reference/block-kit/block-elements#file_input
 x Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
+x Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
+x Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select
 """
 
 
@@ -1086,14 +1109,19 @@ class MultiStaticSelect(
     Component,
     ActionIdMixin,
     OptionsMixin,
+    InitialOptionsMixin,
     ConfirmMixin,
+    MaxSelectedItemsMixin,
     FocusOnLoadMixin,
     PlaceholderMixin,
 ):
     """
-    Multi-select menu element
+    Multi-select menu element (static options)
 
     Allows users to select multiple items from a list of options.
+
+    This is the most basic form of select menu, with a static list of
+    options passed in when defining the element.
 
     Slack docs:
         https://api.slack.com/reference/block-kit/block-elements#multi_select
@@ -1138,30 +1166,56 @@ class MultiStaticSelect(
         field.value.append(option_group)
         return self
 
-    def initial_options(self, *initial_options: Option | OptionGroup) -> Self:
-        return self._add_field(
-            "initial_options",
-            list(initial_options),
-            validators=[
-                Typed(Option, OptionGroup),
-                Length(1, 100),
-            ],  # TODO: validate that it intersects with the options or option_groups
-        )
 
-    def add_initial_option(self, option: Option | OptionGroup) -> Self:
-        field = self._get_field("initial_options")
-        field.value.append(option)
-        return self
+class MultiExternalSelect(
+    Component,
+    ActionIdMixin,
+    InitialOptionsMixin,
+    ConfirmMixin,
+    MaxSelectedItemsMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Multi-select menu element (external data source)
 
-    def max_selected_items(self, max_selected_items: int) -> Self:
+    Allows users to select multiple items from a list of options.
+
+    This menu will load its options from an external data source, allowing
+    for a dynamic list of options.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#external_multi_select
+
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        min_query_length: int | None = None,
+        initial_options: Sequence[Option | OptionGroup] | None = None,
+        confirm: Confirm | None = None,
+        max_selected_items: int | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "multi_external_select")
+        self.action_id(action_id)
+        self.min_query_length(min_query_length)
+        self.initial_options(*initial_options or ())
+        self.confirm(confirm)
+        self.max_selected_items(max_selected_items)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def min_query_length(self, min_query_length: int) -> Self:
         return self._add_field(
-            "max_selected_items", max_selected_items, validators=[Typed(int), Ints(1)]
+            "min_query_length", min_query_length, validators=[Typed(int), Ints(1)]
         )
 
 
 """
-- Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
-- Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select
 - Multi-select users (MultiUsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_multi_select
 - Multi-select conversations (MultiConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
 - Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
