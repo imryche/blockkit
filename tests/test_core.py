@@ -1114,3 +1114,34 @@ class TestMultiExternalSelect:
             .build()
         )
         assert got == want
+
+    def test_builds_option_groups(self):
+        want = {
+            "type": "multi_external_select",
+            "action_id": "multi_external_select_action",
+            "initial_options": [
+                {
+                    "label": {
+                        "type": "plain_text",
+                        "text": "Group 1",
+                    },
+                    "options": [
+                        {
+                            "text": {"type": "plain_text", "text": "Option 1"},
+                            "value": "option_1",
+                        }
+                    ],
+                },
+            ],
+        }
+
+        got = (
+            MultiExternalSelect()
+            .action_id("multi_external_select_action")
+            .add_initial_option(
+                OptionGroup(label="Group 1").add_option(
+                    Option(text="Option 1", value="option_1")
+                )
+            )
+        ).build()
+        assert got == want
