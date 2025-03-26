@@ -18,6 +18,7 @@ from blockkit.core import (
     InputParameter,
     MultiExternalSelect,
     MultiStaticSelect,
+    MultiUsersSelect,
     Option,
     OptionGroup,
     SlackFile,
@@ -1144,4 +1145,73 @@ class TestMultiExternalSelect:
                 )
             )
         ).build()
+        assert got == want
+
+
+class TestMultiUsersSelect:
+    def test_builds(self):
+        want = {
+            "type": "multi_users_select",
+            "action_id": "multi_users_select_action",
+            "initial_users": ["U02A1B2C3D4", "U1X9Y8Z7W6V", "U5L4K3J2H1G"],
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "max_selected_items": 3,
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select users",
+            },
+        }
+
+        got = MultiUsersSelect(
+            action_id="multi_users_select_action",
+            initial_users=["U02A1B2C3D4", "U1X9Y8Z7W6V", "U5L4K3J2H1G"],
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            max_selected_items=3,
+            focus_on_load=True,
+            placeholder="Select users",
+        ).build()
+        assert got == want
+
+        got = (
+            MultiUsersSelect()
+            .action_id("multi_users_select_action")
+            .add_initial_user("U02A1B2C3D4")
+            .add_initial_user("U1X9Y8Z7W6V")
+            .add_initial_user("U5L4K3J2H1G")
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .max_selected_items(3)
+            .focus_on_load()
+            .placeholder("Select users")
+            .build()
+        )
         assert got == want

@@ -798,6 +798,7 @@ x File input - https://api.slack.com/reference/block-kit/block-elements#file_inp
 x Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
 x Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
 x Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select
+x Multi-select users (MultiUsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_multi_select
 """
 
 
@@ -1186,7 +1187,6 @@ class MultiExternalSelect(
 
     Slack docs:
         https://api.slack.com/reference/block-kit/block-elements#external_multi_select
-
     """
 
     def __init__(
@@ -1215,8 +1215,56 @@ class MultiExternalSelect(
         )
 
 
+class MultiUsersSelect(
+    Component,
+    ActionIdMixin,
+    ConfirmMixin,
+    MaxSelectedItemsMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Multi-select menu element (user list)
+
+    Allows users to select multiple items from a list of options.
+
+    This multi-select menu will populate its options with a list of Slack users
+    visible to the current user in the active workspace.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#users_multi_select
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_users: Sequence[str] | None = None,
+        confirm: Confirm | None = None,
+        max_selected_items: int | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "multi_users_select")
+        self.action_id(action_id)
+        self.initial_users(*initial_users or ())
+        self.confirm(confirm)
+        self.max_selected_items(max_selected_items)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def initial_users(self, *initial_users: str) -> Self:
+        return self._add_field(
+            "initial_users", list(initial_users), validators=[Typed(str)]
+        )
+
+    def add_initial_user(self, user_id: str) -> Self:
+        field = self._get_field("initial_users")
+        field.value.append(user_id)
+        return self
+
+
 """
-- Multi-select users (MultiUsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_multi_select
 - Multi-select conversations (MultiConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
 - Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
 - Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-elements#number
