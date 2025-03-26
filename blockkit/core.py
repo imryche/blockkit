@@ -799,6 +799,7 @@ x Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#ima
 x Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
 x Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select
 x Multi-select users (MultiUsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_multi_select
+x Multi-select conversations (MultiConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
 """
 
 
@@ -1264,8 +1265,74 @@ class MultiUsersSelect(
         return self
 
 
+class MultiConversationsSelect(
+    Component,
+    ActionIdMixin,
+    ConfirmMixin,
+    MaxSelectedItemsMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Multi-select menu element (conversations list)
+
+    Allows users to select multiple items from a list of options.
+
+    This multi-select menu will populate its options with a list of public and private
+    channels, DMs, and MPIMs visible to the current user in the active workspace.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_conversations: Sequence[str] | None = None,
+        default_to_current_conversation: bool | None = None,
+        confirm: Confirm | None = None,
+        max_selected_items: int | None = None,
+        filter: ConversationFilter | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "multi_conversations_select")
+        self.action_id(action_id)
+        self.initial_conversations(*initial_conversations or ())
+        self.default_to_current_conversation(default_to_current_conversation)
+        self.confirm(confirm)
+        self.max_selected_items(max_selected_items)
+        self.filter(filter)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def initial_conversations(self, *initial_conversations: str) -> Self:
+        return self._add_field(
+            "initial_conversations",
+            list(initial_conversations),
+            validators=[Typed(str)],
+        )
+
+    def add_initial_conversation(self, conversation_id: str) -> Self:
+        field = self._get_field("initial_conversations")
+        field.value.append(conversation_id)
+        return self
+
+    def default_to_current_conversation(
+        self, default_to_current_conversation: bool = True
+    ) -> Self:
+        return self._add_field(
+            "default_to_current_conversation",
+            default_to_current_conversation,
+            validators=[Typed(bool)],
+        )
+
+    def filter(self, filter: ConversationFilter) -> Self:
+        return self._add_field("filter", filter, validators=[Typed(ConversationFilter)])
+
+
 """
-- Multi-select conversations (MultiConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
 - Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
 - Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-elements#number
 - Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-elements#overflow

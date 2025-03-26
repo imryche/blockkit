@@ -16,6 +16,7 @@ from blockkit.core import (
     FileInput,
     ImageEl,
     InputParameter,
+    MultiConversationsSelect,
     MultiExternalSelect,
     MultiStaticSelect,
     MultiUsersSelect,
@@ -1212,6 +1213,83 @@ class TestMultiUsersSelect:
             .max_selected_items(3)
             .focus_on_load()
             .placeholder("Select users")
+            .build()
+        )
+        assert got == want
+
+
+class TestMultiConversationsSelect:
+    def test_builds(self):
+        want = {
+            "type": "multi_conversations_select",
+            "action_id": "multi_conversations_select_action",
+            "initial_conversations": ["C01AB2CD3EF", "C9X8Y7Z6W5V", "C4T3R2Q1P0O"],
+            "default_to_current_conversation": True,
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "max_selected_items": 3,
+            "filter": {
+                "include": ["public", "private"],
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select conversations",
+            },
+        }
+
+        got = MultiConversationsSelect(
+            action_id="multi_conversations_select_action",
+            initial_conversations=["C01AB2CD3EF", "C9X8Y7Z6W5V", "C4T3R2Q1P0O"],
+            default_to_current_conversation=True,
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            filter=ConversationFilter(include=["public", "private"]),
+            max_selected_items=3,
+            focus_on_load=True,
+            placeholder="Select conversations",
+        ).build()
+        assert got == want
+
+        got = (
+            MultiConversationsSelect()
+            .action_id("multi_conversations_select_action")
+            .add_initial_conversation("C01AB2CD3EF")
+            .add_initial_conversation("C9X8Y7Z6W5V")
+            .add_initial_conversation("C4T3R2Q1P0O")
+            .default_to_current_conversation()
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .filter(ConversationFilter(include=["public", "private"]))
+            .max_selected_items(3)
+            .focus_on_load()
+            .placeholder("Select conversations")
             .build()
         )
         assert got == want
