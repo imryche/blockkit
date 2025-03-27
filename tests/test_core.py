@@ -21,6 +21,7 @@ from blockkit.core import (
     MultiExternalSelect,
     MultiStaticSelect,
     MultiUsersSelect,
+    NumberInput,
     Option,
     OptionGroup,
     SlackFile,
@@ -1362,4 +1363,40 @@ class TestMultiChannelsSelect:
             .placeholder("Select channels")
             .build()
         )
+        assert got == want
+
+
+class TestNumberInput:
+    def test_builds(self):
+        want = {
+            "type": "number_input",
+            "is_decimal_allowed": False,
+            "action_id": "number_input_action",
+            "initial_value": "7",
+            "min_value": "1",
+            "max_value": "10",
+            "dispatch_action_config": {
+                "trigger_actions_on": [
+                    "on_character_entered",
+                ]
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select a number",
+            },
+        }
+
+        got = NumberInput(
+            is_decimal_allowed=False,
+            action_id="number_input_action",
+            initial_value=7,
+            min_value=1,
+            max_value=10,
+            dispatch_action_config=DispatchActionConfig(
+                trigger_actions_on=["on_character_entered"]
+            ),
+            focus_on_load=True,
+            placeholder="Select a number",
+        ).build()
         assert got == want

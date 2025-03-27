@@ -407,6 +407,17 @@ class OptionsMixin:
         return self
 
 
+class DispatchActionConfigMixin:
+    def dispatch_action_config(
+        self, dispatch_action_config: "DispatchActionConfig"
+    ) -> Self:
+        return self._add_field(
+            "dispatch_action_config",
+            dispatch_action_config,
+            validators=[Typed(DispatchActionConfig)],
+        )
+
+
 """
 Composition objects:
 
@@ -978,7 +989,13 @@ class DatetimePicker(
         )
 
 
-class EmailInput(Component, ActionIdMixin, FocusOnLoadMixin, PlaceholderMixin):
+class EmailInput(
+    Component,
+    ActionIdMixin,
+    DispatchActionConfigMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
     """
     Email input element
 
@@ -1007,15 +1024,6 @@ class EmailInput(Component, ActionIdMixin, FocusOnLoadMixin, PlaceholderMixin):
     def initial_value(self, initial_value: str) -> Self:
         return self._add_field(
             "initial_value", initial_value, validators=[Typed(str), Length(1, 255)]
-        )
-
-    def dispatch_action_config(
-        self, dispatch_action_config: DispatchActionConfig
-    ) -> Self:
-        return self._add_field(
-            "dispatch_action_config",
-            dispatch_action_config,
-            validators=[Typed(DispatchActionConfig)],
         )
 
 
@@ -1382,6 +1390,57 @@ class MultiChannelsSelect(
         field = self._get_field("initial_channels")
         field.value.append(channel_id)
         return self
+
+
+class NumberInput(
+    Component,
+    ActionIdMixin,
+    DispatchActionConfigMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    def __init__(
+        self,
+        is_decimal_allowed: bool | None = None,
+        action_id: str | None = None,
+        initial_value: int | float | str | None = None,
+        min_value: int | float | str | None = None,
+        max_value: int | float | str | None = None,
+        dispatch_action_config: DispatchActionConfig | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "number_input")
+        self.is_decimal_allowed(is_decimal_allowed)
+        self.action_id(action_id)
+        self.initial_value(initial_value)
+        self.min_value(min_value)
+        self.max_value(max_value)
+        self.dispatch_action_config(dispatch_action_config)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def is_decimal_allowed(self, is_decimal_allowed: bool) -> Self:
+        self._add_field(
+            "is_decimal_allowed",
+            is_decimal_allowed,
+            validators=[Typed(bool), Required()],
+        )
+
+    # TODO: must be in range between provided min and max values
+    def initial_value(self, initial_value: int | float | str) -> Self:
+        return self._add_field(
+            "initial_value", str(initial_value), validators=[Typed(str)]
+        )
+
+    # TODO: cannot be greater than max value
+    def min_value(self, min_value: int | float | str) -> Self:
+        return self._add_field("min_value", str(min_value), validators=[Typed(str)])
+
+    # TODO: cannot be less than min value
+    def max_value(self, max_value: int | float | str) -> Self:
+        return self._add_field("max_value", str(max_value), validators=[Typed(str)])
 
 
 """
