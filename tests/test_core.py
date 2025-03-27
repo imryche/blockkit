@@ -16,6 +16,7 @@ from blockkit.core import (
     FileInput,
     ImageEl,
     InputParameter,
+    MultiChannelsSelect,
     MultiConversationsSelect,
     MultiExternalSelect,
     MultiStaticSelect,
@@ -1290,6 +1291,75 @@ class TestMultiConversationsSelect:
             .max_selected_items(3)
             .focus_on_load()
             .placeholder("Select conversations")
+            .build()
+        )
+        assert got == want
+
+
+class TestMultiChannelsSelect:
+    def test_builds(self):
+        want = {
+            "type": "multi_channels_select",
+            "action_id": "multi_channels_select_action",
+            "initial_channels": ["C01AB2CD3EF", "C9X8Y7Z6W5V", "C4T3R2Q1P0O"],
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "max_selected_items": 3,
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select channels",
+            },
+        }
+
+        got = MultiChannelsSelect(
+            action_id="multi_channels_select_action",
+            initial_channels=["C01AB2CD3EF", "C9X8Y7Z6W5V", "C4T3R2Q1P0O"],
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            max_selected_items=3,
+            focus_on_load=True,
+            placeholder="Select channels",
+        ).build()
+        assert got == want
+
+        got = (
+            MultiChannelsSelect()
+            .action_id("multi_channels_select_action")
+            .add_initial_channel("C01AB2CD3EF")
+            .add_initial_channel("C9X8Y7Z6W5V")
+            .add_initial_channel("C4T3R2Q1P0O")
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .max_selected_items(3)
+            .focus_on_load()
+            .placeholder("Select channels")
             .build()
         )
         assert got == want

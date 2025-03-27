@@ -800,6 +800,7 @@ x Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/bloc
 x Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select
 x Multi-select users (MultiUsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_multi_select
 x Multi-select conversations (MultiConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
+x Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
 """
 
 
@@ -1332,8 +1333,58 @@ class MultiConversationsSelect(
         return self._add_field("filter", filter, validators=[Typed(ConversationFilter)])
 
 
+class MultiChannelsSelect(
+    Component,
+    ActionIdMixin,
+    ConfirmMixin,
+    MaxSelectedItemsMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Multi-select menu element (public channels list)
+
+    Allows users to select multiple items from a list of options.
+
+    This multi-select menu will populate its options with a list of public
+    channels visible to the current user in the active workspace.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_channels: Sequence[str] | None = None,
+        confirm: Confirm | None = None,
+        max_selected_items: int | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "multi_channels_select")
+        self.action_id(action_id)
+        self.initial_channels(*initial_channels or ())
+        self.confirm(confirm)
+        self.max_selected_items(max_selected_items)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def initial_channels(self, *initial_channels: str) -> Self:
+        return self._add_field(
+            "initial_channels",
+            list(initial_channels),
+            validators=[Typed(str), Length(1)],
+        )
+
+    def add_initial_channel(self, channel_id: str) -> Self:
+        field = self._get_field("initial_channels")
+        field.value.append(channel_id)
+        return self
+
+
 """
-- Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
 - Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-elements#number
 - Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-elements#overflow
 - Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/block-elements#input
