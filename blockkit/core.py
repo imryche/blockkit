@@ -1257,7 +1257,7 @@ class MultiUsersSelect(
 
     def initial_users(self, *initial_users: str) -> Self:
         return self._add_field(
-            "initial_users", list(initial_users), validators=[Typed(str)]
+            "initial_users", list(initial_users), validators=[Typed(str), Length(1)]
         )
 
     def add_initial_user(self, user_id: str) -> Self:
@@ -1312,7 +1312,7 @@ class MultiConversationsSelect(
         return self._add_field(
             "initial_conversations",
             list(initial_conversations),
-            validators=[Typed(str)],
+            validators=[Typed(str), Length(1)],
         )
 
     def add_initial_conversation(self, conversation_id: str) -> Self:
