@@ -239,6 +239,61 @@ class Within(ComponentValidator):
             )
 
 
+class Ranging(ComponentValidator):
+    def __init__(self, source_field: str, min_field: str, max_field: str):
+        self.source_field = source_field
+        self.min_field = min_field
+        self.max_field = max_field
+
+    def validate(self, component: "Component") -> None:
+        source_value = component._get_field(self.source_field).value
+
+        if not source_value:
+            return
+
+        try:
+            source_value = float(source_value)
+        except (ValueError, TypeError):
+            raise ComponentValidationError(
+                component.__class__.__name__,
+                f"'{self.source_field}': '{source_value}' is not a valid number",
+            )
+
+        min_value = component._get_field(self.min_field).value
+        if min_value:
+            try:
+                min_value = float(min_value)
+            except (ValueError, TypeError):
+                raise ComponentValidationError(
+                    component.__class__.__name__,
+                    f"'{self.min_field}': '{min_value}' is not a valid number",
+                )
+
+            if source_value < min_value:
+                raise ComponentValidationError(
+                    component.__class__.__name__,
+                    f"'{self.source_field}' value must be greater than or equal to "
+                    f"'{min_value:.0f}', got '{source_value:.0f}'",
+                )
+
+        max_value = component._get_field(self.max_field).value
+        if max_value:
+            try:
+                max_value = float(max_value)
+            except (ValueError, TypeError):
+                raise ComponentValidationError(
+                    component.__class__.__name__,
+                    f"'{self.max_field}': '{max_value}' is not a valid number",
+                )
+
+            if source_value > max_value:
+                raise ComponentValidationError(
+                    component.__class__.__name__,
+                    f"'{self.source_field}' value must be less than or equal to "
+                    f"'{max_value:.0f}', got '{source_value:.0f}'",
+                )
+
+
 def str_to_plain(value: str) -> "Text":
     if isinstance(value, str):
         return Text(value).type(Text.PLAIN)
@@ -1420,6 +1475,7 @@ class NumberInput(
         self.dispatch_action_config(dispatch_action_config)
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
+        self._add_validator(Ranging("initial_value", "min_value", "max_value"))
 
     def is_decimal_allowed(self, is_decimal_allowed: bool) -> Self:
         self._add_field(
@@ -1428,17 +1484,14 @@ class NumberInput(
             validators=[Typed(bool), Required()],
         )
 
-    # TODO: must be in range between provided min and max values
     def initial_value(self, initial_value: int | float | str) -> Self:
         return self._add_field(
             "initial_value", str(initial_value), validators=[Typed(str)]
         )
 
-    # TODO: cannot be greater than max value
     def min_value(self, min_value: int | float | str) -> Self:
         return self._add_field("min_value", str(min_value), validators=[Typed(str)])
 
-    # TODO: cannot be less than min value
     def max_value(self, max_value: int | float | str) -> Self:
         return self._add_field("max_value", str(max_value), validators=[Typed(str)])
 

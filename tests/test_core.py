@@ -185,6 +185,32 @@ class TestOnlyIf:
         Text("_hello, alice!_", verbatim=True).type(Text.MD).validate()
 
 
+class TestRanging:
+    def test_invalid(self):
+        with pytest.raises(ComponentValidationError) as e:
+            NumberInput(
+                is_decimal_allowed=False, initial_value=11, min_value=1, max_value=10
+            ).validate()
+        assert (
+            "'initial_value' value must be less than or equal to '10', got '11'"
+            in str(e)
+        )
+
+        with pytest.raises(ComponentValidationError) as e:
+            NumberInput(
+                is_decimal_allowed=False, initial_value=0, min_value=1, max_value=10
+            ).validate()
+        assert (
+            "'initial_value' value must be greater than or equal to '1', got '0'"
+            in str(e)
+        )
+
+    def test_valid(self):
+        NumberInput(
+            is_decimal_allowed=False, initial_value=7, min_value=1, max_value=10
+        ).validate()
+
+
 class TestConfirm:
     def test_builds(self):
         want = {
