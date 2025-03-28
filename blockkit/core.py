@@ -1,5 +1,5 @@
+import dataclasses
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any, Self, Sequence, Type
 
@@ -247,51 +247,42 @@ class Ranging(ComponentValidator):
 
     def validate(self, component: "Component") -> None:
         source_value = component._get_field(self.source_field).value
-
-        if not source_value:
+        if source_value is None:
             return
 
-        try:
-            source_value = float(source_value)
-        except (ValueError, TypeError):
+        min_value = component._get_field(self.min_field).value
+        if min_value and source_value < min_value:
             raise ComponentValidationError(
                 component.__class__.__name__,
-                f"'{self.source_field}': '{source_value}' is not a valid number",
+                f"'{self.source_field}' value must be greater than or equal to "
+                f"'{min_value:.0f}', got '{source_value:.0f}'",
             )
 
-        min_value = component._get_field(self.min_field).value
-        if min_value:
-            try:
-                min_value = float(min_value)
-            except (ValueError, TypeError):
-                raise ComponentValidationError(
-                    component.__class__.__name__,
-                    f"'{self.min_field}': '{min_value}' is not a valid number",
-                )
-
-            if source_value < min_value:
-                raise ComponentValidationError(
-                    component.__class__.__name__,
-                    f"'{self.source_field}' value must be greater than or equal to "
-                    f"'{min_value:.0f}', got '{source_value:.0f}'",
-                )
-
         max_value = component._get_field(self.max_field).value
-        if max_value:
-            try:
-                max_value = float(max_value)
-            except (ValueError, TypeError):
-                raise ComponentValidationError(
-                    component.__class__.__name__,
-                    f"'{self.max_field}': '{max_value}' is not a valid number",
-                )
+        if max_value and source_value > max_value:
+            raise ComponentValidationError(
+                component.__class__.__name__,
+                f"'{self.source_field}' value must be less than or equal to "
+                f"'{max_value:.0f}', got '{source_value:.0f}'",
+            )
 
-            if source_value > max_value:
-                raise ComponentValidationError(
-                    component.__class__.__name__,
-                    f"'{self.source_field}' value must be less than or equal to "
-                    f"'{max_value:.0f}', got '{source_value:.0f}'",
-                )
+
+class DecimalAllowed(ComponentValidator):
+    def __init__(self, source_field: str, *fields: str):
+        self.source_field = source_field
+        self.fields = fields
+
+    def validate(self, component: "Component") -> None:
+        decimal_allowed = component._get_field(self.source_field).value
+        if decimal_allowed is None:
+            return
+
+        for field_name in self.fields:
+            field_value = component._get_field(field_name).value
+            if not field_value:
+                continue
+            if decimal_allowed:
+                pass
 
 
 def str_to_plain(value: str) -> "Text":
@@ -312,21 +303,22 @@ def datetime_to_str(value: datetime) -> str:
     return value
 
 
-@dataclass
+@dataclasses.dataclass
 class Field:
     name: str
     value: Any
-    validators: list[FieldValidator] = field(default_factory=list)
+    validators: list[FieldValidator] = dataclasses.field(default_factory=list)
+    stringify: bool = False
 
     def validate(self):
         for validator in self.validators:
             validator(self.name, self.value)
 
 
-@dataclass
+@dataclasses.dataclass
 class Component:
-    _fields: dict[str, Field] = field(default_factory=dict)
-    _validators: list[ComponentValidator] = field(default_factory=list)
+    _fields: dict[str, Field] = dataclasses.field(default_factory=dict)
+    _validators: list[ComponentValidator] = dataclasses.field(default_factory=list)
 
     def __eq__(self, other: "Component") -> bool:
         if not isinstance(other, self.__class__):
@@ -346,10 +338,21 @@ class Component:
 
         return hash(make_hashable(self.build()))
 
-    def _add_field(self, name, value, validators: Sequence[FieldValidator] = None):
+    def _add_field(
+        self,
+        name: str,
+        value: Any,
+        validators: Sequence[FieldValidator] = None,
+        stringify: bool = False,
+    ):
         if not validators:
             validators = []
-        field = Field(name=name, value=value, validators=validators)
+        field = Field(
+            name=name,
+            value=value,
+            validators=validators,
+            stringify=stringify,
+        )
         self._fields[name] = field
         return self
 
@@ -380,19 +383,21 @@ class Component:
 
     def build(self):
         self.validate()
-        fields = {field.name: field.value for field in self._fields.values()}
         obj = {}
-        for name, value in fields.items():
-            if value is None:
+        for field in self._fields.values():
+            if field.value is None:
                 continue
-            if isinstance(value, (list, tuple, set)) and len(value) < 1:
+            if isinstance(field.value, (list, tuple, set)) and len(field.value) < 1:
                 continue
-            obj[name] = value
-            if hasattr(value, "build"):
-                obj[name] = value.build()
-            if isinstance(value, (list, tuple, set)):
-                obj[name] = [
-                    item.build() if hasattr(item, "build") else item for item in value
+            if field.stringify:
+                field.value = str(field.value)
+            obj[field.name] = field.value
+            if hasattr(field.value, "build"):
+                obj[field.name] = field.value.build()
+            if isinstance(field.value, (list, tuple, set)):
+                obj[field.name] = [
+                    item.build() if hasattr(item, "build") else item
+                    for item in field.value
                 ]
         return obj
 
@@ -1458,9 +1463,9 @@ class NumberInput(
         self,
         is_decimal_allowed: bool | None = None,
         action_id: str | None = None,
-        initial_value: int | float | str | None = None,
-        min_value: int | float | str | None = None,
-        max_value: int | float | str | None = None,
+        initial_value: int | float | None = None,
+        min_value: int | float | None = None,
+        max_value: int | float | None = None,
         dispatch_action_config: DispatchActionConfig | None = None,
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
@@ -1476,6 +1481,11 @@ class NumberInput(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
         self._add_validator(Ranging("initial_value", "min_value", "max_value"))
+        # self._add_validator(
+        #     DecimalAllowed(
+        #         "is_decimal_allowed", "initial_value", "min_value", "max_value"
+        #     )
+        # )
 
     def is_decimal_allowed(self, is_decimal_allowed: bool) -> Self:
         self._add_field(
@@ -1484,16 +1494,23 @@ class NumberInput(
             validators=[Typed(bool), Required()],
         )
 
-    def initial_value(self, initial_value: int | float | str) -> Self:
+    def initial_value(self, initial_value: int | float) -> Self:
         return self._add_field(
-            "initial_value", str(initial_value), validators=[Typed(str)]
+            "initial_value",
+            initial_value,
+            validators=[Typed(int, float)],
+            stringify=True,
         )
 
-    def min_value(self, min_value: int | float | str) -> Self:
-        return self._add_field("min_value", str(min_value), validators=[Typed(str)])
+    def min_value(self, min_value: int | float) -> Self:
+        return self._add_field(
+            "min_value", min_value, validators=[Typed(int, float)], stringify=True
+        )
 
-    def max_value(self, max_value: int | float | str) -> Self:
-        return self._add_field("max_value", str(max_value), validators=[Typed(str)])
+    def max_value(self, max_value: int | float) -> Self:
+        return self._add_field(
+            "max_value", max_value, validators=[Typed(int, float)], stringify=True
+        )
 
 
 """
