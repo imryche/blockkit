@@ -275,14 +275,19 @@ class DecimalAllowed(ComponentValidator):
     def validate(self, component: "Component") -> None:
         decimal_allowed = component._get_field(self.source_field).value
         if decimal_allowed is None:
-            return
+            raise ValueError(f"'{self.source_field}' field not found")
 
         for field_name in self.fields:
             field_value = component._get_field(field_name).value
             if not field_value:
                 continue
-            if decimal_allowed:
-                pass
+
+            if not decimal_allowed and isinstance(field_value, float):
+                raise ComponentValidationError(
+                    component.__class__.__name__,
+                    f"'{field_name}' decimal values are not allowed, "
+                    f"got '{field_value}'",
+                )
 
 
 def str_to_plain(value: str) -> "Text":
@@ -872,6 +877,7 @@ x Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/
 x Multi-select users (MultiUsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_multi_select
 x Multi-select conversations (MultiConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
 x Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
+x Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-elements#number
 """
 
 
@@ -1459,6 +1465,15 @@ class NumberInput(
     FocusOnLoadMixin,
     PlaceholderMixin,
 ):
+    """
+    Number input element
+
+    Allows user to enter a number into a single-line field.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#number
+    """
+
     def __init__(
         self,
         is_decimal_allowed: bool | None = None,
@@ -1481,11 +1496,11 @@ class NumberInput(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
         self._add_validator(Ranging("initial_value", "min_value", "max_value"))
-        # self._add_validator(
-        #     DecimalAllowed(
-        #         "is_decimal_allowed", "initial_value", "min_value", "max_value"
-        #     )
-        # )
+        self._add_validator(
+            DecimalAllowed(
+                "is_decimal_allowed", "initial_value", "min_value", "max_value"
+            )
+        )
 
     def is_decimal_allowed(self, is_decimal_allowed: bool) -> Self:
         self._add_field(
@@ -1514,7 +1529,6 @@ class NumberInput(
 
 
 """
-- Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-elements#number
 - Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-elements#overflow
 - Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/block-elements#input
 - Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block-elements#radio

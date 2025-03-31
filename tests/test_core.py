@@ -211,6 +211,27 @@ class TestRanging:
         ).validate()
 
 
+class TestDecimalAllowed:
+    def test_invalid(self):
+        with pytest.raises(ComponentValidationError) as e:
+            NumberInput(
+                is_decimal_allowed=False, initial_value=3.0, min_value=1, max_value=10
+            ).validate()
+        assert "'initial_value' decimal values are not allowed, got '3.0'" in str(e)
+
+        with pytest.raises(ComponentValidationError) as e:
+            NumberInput(
+                is_decimal_allowed=False, initial_value=3, min_value=1.0, max_value=10
+            ).validate()
+        assert "'min_value' decimal values are not allowed, got '1.0'" in str(e)
+
+        with pytest.raises(ComponentValidationError) as e:
+            NumberInput(
+                is_decimal_allowed=False, initial_value=3, min_value=1, max_value=10.0
+            ).validate()
+        assert "'max_value' decimal values are not allowed, got '10.0'" in str(e)
+
+
 class TestConfirm:
     def test_builds(self):
         want = {
