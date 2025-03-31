@@ -153,10 +153,10 @@ class Typed(FieldValidator):
 
 
 class ComponentValidationError(Exception):
-    def __init__(self, component_name: str, message: str):
-        self.component_name = component_name
+    def __init__(self, component: "Component", message: str):
+        self.component = component
         self.message = message
-        super().__init__(f"Component '{component_name}': {message}")
+        super().__init__(f"Component '{component.__class__.__name__}': {message}")
 
 
 class ComponentValidator(ABC):
@@ -179,7 +179,7 @@ class Either(ComponentValidator):
         ):
             expected_names = ", ".join(f"'{n}'" for n in self.field_names)
             raise ComponentValidationError(
-                component.__class__.__name__,
+                component,
                 f"At least one of the following fields is required {expected_names}",
             )
 
@@ -196,7 +196,7 @@ class OnlyOne(ComponentValidator):
         if field_count > 1:
             allowed_names = ", ".join(f"'{n}'" for n in self.field_names)
             raise ComponentValidationError(
-                component.__class__.__name__,
+                component,
                 f"Only one of the following fields is allowed {allowed_names}",
             )
 
@@ -213,7 +213,7 @@ class OnlyIf(ComponentValidator):
 
         if dependent_value and required_value != self.required_value:
             raise ComponentValidationError(
-                component.__class__.__name__,
+                component,
                 f"'{self.dependent_field}' is only allowed when "
                 f"'{self.required_field}' is '{self.required_value}'",
             )
@@ -233,7 +233,7 @@ class Within(ComponentValidator):
 
         if not set(source_value).issubset(set(target_value)):
             raise ComponentValidationError(
-                component.__class__.__name__,
+                component,
                 f"'{self.source_field}' has items that aren't "
                 f"present in the '{self.target_field}'",
             )
@@ -253,7 +253,7 @@ class Ranging(ComponentValidator):
         min_value = component._get_field(self.min_field).value
         if min_value and source_value < min_value:
             raise ComponentValidationError(
-                component.__class__.__name__,
+                component,
                 f"'{self.source_field}' value must be greater than or equal to "
                 f"'{min_value:.0f}', got '{source_value:.0f}'",
             )
@@ -261,7 +261,7 @@ class Ranging(ComponentValidator):
         max_value = component._get_field(self.max_field).value
         if max_value and source_value > max_value:
             raise ComponentValidationError(
-                component.__class__.__name__,
+                component,
                 f"'{self.source_field}' value must be less than or equal to "
                 f"'{max_value:.0f}', got '{source_value:.0f}'",
             )
@@ -284,7 +284,7 @@ class DecimalAllowed(ComponentValidator):
 
             if not decimal_allowed and isinstance(field_value, float):
                 raise ComponentValidationError(
-                    component.__class__.__name__,
+                    component,
                     f"'{field_name}' decimal values are not allowed, "
                     f"got '{field_value}'",
                 )
