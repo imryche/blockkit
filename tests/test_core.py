@@ -24,6 +24,7 @@ from blockkit.core import (
     NumberInput,
     Option,
     OptionGroup,
+    Overflow,
     SlackFile,
     Text,
     Trigger,
@@ -1446,4 +1447,78 @@ class TestNumberInput:
             focus_on_load=True,
             placeholder="Select a number",
         ).build()
+        assert got == want
+
+
+class TestOverflow:
+    def test_builds(self):
+        want = {
+            "type": "overflow",
+            "action_id": "overflow_action",
+            "options": [
+                {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Option 1",
+                    },
+                    "value": "option_1",
+                },
+                {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Option 2",
+                    },
+                    "value": "option_2",
+                },
+            ],
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+        }
+
+        got = Overflow(
+            action_id="overflow_action",
+            options=[
+                Option(text="Option 1", value="option_1"),
+                Option(text="Option 2", value="option_2"),
+            ],
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+        ).build()
+        assert got == want
+
+        got = (
+            Overflow()
+            .action_id("overflow_action")
+            .add_option(Option(text="Option 1", value="option_1"))
+            .add_option(Option(text="Option 2", value="option_2"))
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .build()
+        )
         assert got == want

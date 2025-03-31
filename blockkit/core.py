@@ -878,6 +878,7 @@ x Multi-select users (MultiUsersSelect) - https://api.slack.com/reference/block-
 x Multi-select conversations (MultiConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
 x Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
 x Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-elements#number
+x Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-elements#overflow
 """
 
 
@@ -1528,8 +1529,31 @@ class NumberInput(
         )
 
 
+class Overflow(Component, ActionIdMixin, OptionsMixin, ConfirmMixin):
+    """
+    Overflow menu element
+
+    Allows users to press a button to view a list of options.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#overflow
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        options: Sequence[Option] | None = None,
+        confirm: Confirm | None = None,
+    ):
+        super().__init__()
+        self._max_options = 5
+        self._add_field("type", "overflow")
+        self.action_id(action_id)
+        self.options(*options or ())
+        self.confirm(confirm)
+
+
 """
-- Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-elements#overflow
 - Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/block-elements#input
 - Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block-elements#radio
 - Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/block-elements#rich_text_input
