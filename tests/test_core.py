@@ -496,21 +496,21 @@ class TestSlackFile:
         got = SlackFile(
             url="https://files.slack.com/files-pri/T0123456-F0123456/xyz.png"
         ).build()
-        got == want
+        assert got == want
 
         got = (
             SlackFile()
             .url("https://files.slack.com/files-pri/T0123456-F0123456/xyz.png")
             .build()
         )
-        got == want
+        assert got == want
 
         want = {"id": "F0123456"}
         got = SlackFile(id="F0123456").build()
-        got == want
+        assert got == want
 
         got = SlackFile().id("F0123456").build()
-        got == want
+        assert got == want
 
 
 class TestButton:
