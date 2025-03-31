@@ -1504,7 +1504,7 @@ class NumberInput(
         )
 
     def is_decimal_allowed(self, is_decimal_allowed: bool) -> Self:
-        self._add_field(
+        return self._add_field(
             "is_decimal_allowed",
             is_decimal_allowed,
             validators=[Typed(bool), Required()],
