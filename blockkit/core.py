@@ -250,6 +250,9 @@ class Ranging(ComponentValidator):
         if source_value is None:
             return
 
+        if isinstance(source_value, str):
+            source_value = len(source_value)
+
         min_value = component._get_field(self.min_field).value
         if min_value and source_value < min_value:
             raise ComponentValidationError(
@@ -879,6 +882,7 @@ x Multi-select conversations (MultiConversationsSelect) - https://api.slack.com/
 x Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
 x Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-elements#number
 x Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-elements#overflow
+x Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/block-elements#input
 """
 
 
@@ -1553,8 +1557,65 @@ class Overflow(Component, ActionIdMixin, OptionsMixin, ConfirmMixin):
         self.confirm(confirm)
 
 
+class PlainTextInput(
+    Component,
+    ActionIdMixin,
+    DispatchActionConfigMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Plain-text input element
+
+    Allows users to enter freeform text data into a single-line or multi-line field.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#input
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_value: str | None = None,
+        multiline: bool | None = None,
+        min_length: int | None = None,
+        max_length: int | None = None,
+        dispatch_action_config: DispatchActionConfig | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "plain_text_input")
+        self.action_id(action_id)
+        self.initial_value(initial_value)
+        self.multiline(multiline)
+        self.min_length(min_length)
+        self.max_length(max_length)
+        self.dispatch_action_config(dispatch_action_config)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+        self._add_validator(Ranging("initial_value", "min_length", "max_length"))
+
+    def initial_value(self, initial_value: str) -> Self:
+        return self._add_field(
+            "initial_value", initial_value, validators=[Typed(str), Length(1, 3000)]
+        )
+
+    def multiline(self, multiline: bool = True) -> Self:
+        return self._add_field("multiline", multiline, validators=[Typed(bool)])
+
+    def min_length(self, min_length: int) -> Self:
+        return self._add_field(
+            "min_length", min_length, validators=[Typed(int), Ints(0, 3000)]
+        )
+
+    def max_length(self, max_length: int) -> Self:
+        return self._add_field(
+            "max_length", max_length, validators=[Typed(int), Ints(1, 3000)]
+        )
+
+
 """
-- Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/block-elements#input
 - Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block-elements#radio
 - Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/block-elements#rich_text_input
 - Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_select

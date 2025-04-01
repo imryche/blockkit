@@ -25,6 +25,7 @@ from blockkit.core import (
     Option,
     OptionGroup,
     Overflow,
+    PlainTextInput,
     SlackFile,
     Text,
     Trigger,
@@ -1535,6 +1536,58 @@ class TestOverflow:
                     deny="No",
                 )
             )
+            .build()
+        )
+        assert got == want
+
+
+class TestPlainTextInput:
+    def test_builds(self):
+        want = {
+            "type": "plain_text_input",
+            "action_id": "plain_text_input_action",
+            "initial_value": "Initial value",
+            "multiline": True,
+            "min_length": 10,
+            "max_length": 2000,
+            "dispatch_action_config": {
+                "trigger_actions_on": [
+                    "on_character_entered",
+                ]
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Enter some text",
+            },
+        }
+
+        got = PlainTextInput(
+            action_id="plain_text_input_action",
+            initial_value="Initial value",
+            multiline=True,
+            min_length=10,
+            max_length=2000,
+            dispatch_action_config=DispatchActionConfig(
+                trigger_actions_on=["on_character_entered"]
+            ),
+            focus_on_load=True,
+            placeholder="Enter some text",
+        ).build()
+        assert got == want
+
+        got = (
+            PlainTextInput()
+            .action_id("plain_text_input_action")
+            .initial_value("Initial value")
+            .multiline()
+            .min_length(10)
+            .max_length(2000)
+            .dispatch_action_config(
+                DispatchActionConfig(trigger_actions_on=["on_character_entered"])
+            )
+            .focus_on_load()
+            .placeholder("Enter some text")
             .build()
         )
         assert got == want
