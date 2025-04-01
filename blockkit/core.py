@@ -219,6 +219,7 @@ class OnlyIf(ComponentValidator):
             )
 
 
+# TODO: add tests
 class Within(ComponentValidator):
     def __init__(self, source_field: str, target_field: str):
         self.source_field = source_field
@@ -230,6 +231,9 @@ class Within(ComponentValidator):
 
         if not target_value:
             return
+
+        if not isinstance(source_value, (list, tuple, set)):
+            source_value = [source_value]
 
         if not set(source_value).issubset(set(target_value)):
             raise ComponentValidationError(
@@ -883,6 +887,7 @@ x Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/
 x Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-elements#number
 x Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-elements#overflow
 x Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/block-elements#input
+x Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block-elements#radio
 """
 
 
@@ -1615,8 +1620,43 @@ class PlainTextInput(
         )
 
 
+class RadioButtons(
+    Component, ActionIdMixin, OptionsMixin, ConfirmMixin, FocusOnLoadMixin
+):
+    """
+    Radio button group element
+
+    Allows users to choose one item from a list of possible options.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#radio
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        options: Sequence[Option] | None = None,
+        initial_option: Option | None = None,
+        confirm: Confirm | None = None,
+        focus_on_load: bool | None = None,
+    ):
+        super().__init__()
+        self._max_options = 10
+        self._add_field("type", "radio_buttons")
+        self.action_id(action_id)
+        self.options(*options or ())
+        self.initial_option(initial_option)
+        self.confirm(confirm)
+        self.focus_on_load(focus_on_load)
+        self._add_validator(Within("initial_option", "options"))
+
+    def initial_option(self, initial_option: Option) -> Self:
+        return self._add_field(
+            "initial_option", initial_option, validators=[Typed(Option)]
+        )
+
+
 """
-- Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block-elements#radio
 - Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/block-elements#rich_text_input
 - Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_select
 - Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_select

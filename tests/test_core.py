@@ -26,6 +26,7 @@ from blockkit.core import (
     OptionGroup,
     Overflow,
     PlainTextInput,
+    RadioButtons,
     SlackFile,
     Text,
     Trigger,
@@ -1590,4 +1591,62 @@ class TestPlainTextInput:
             .placeholder("Enter some text")
             .build()
         )
+        assert got == want
+
+
+class TestRadioButtons:
+    def test_builds(self):
+        want = {
+            "type": "radio_buttons",
+            "action_id": "radio_buttons_action",
+            "options": [
+                {
+                    "text": {"type": "plain_text", "text": "Option 1"},
+                    "value": "option_1",
+                },
+                {
+                    "text": {"type": "plain_text", "text": "Option 2"},
+                    "value": "option_2",
+                },
+            ],
+            "initial_option": {
+                "text": {"type": "plain_text", "text": "Option 1"},
+                "value": "option_1",
+            },
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "focus_on_load": True,
+        }
+
+        got = RadioButtons(
+            action_id="radio_buttons_action",
+            options=[
+                Option(text="Option 1", value="option_1"),
+                Option(text="Option 2", value="option_2"),
+            ],
+            initial_option=Option(text="Option 1", value="option_1"),
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            focus_on_load=True,
+        ).build()
         assert got == want
