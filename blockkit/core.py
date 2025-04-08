@@ -454,6 +454,13 @@ class InitialOptionsMixin:
         return self
 
 
+class InitialOptionMixin:
+    def initial_option(self, initial_option: "Option | OptionGroup") -> Self:
+        return self._add_field(
+            "initial_option", initial_option, validators=[Typed(Option, OptionGroup)]
+        )
+
+
 class MaxSelectedItemsMixin:
     def max_selected_items(self, max_selected_items: int) -> Self:
         return self._add_field(
@@ -501,6 +508,13 @@ class DispatchActionConfigMixin:
             "dispatch_action_config",
             dispatch_action_config,
             validators=[Typed(DispatchActionConfig)],
+        )
+
+
+class MinQueryLengthMixin:
+    def min_query_length(self, min_query_length: int) -> Self:
+        return self._add_field(
+            "min_query_length", min_query_length, validators=[Typed(int), Ints(1)]
         )
 
 
@@ -904,6 +918,7 @@ x Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/
 x Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block-elements#radio
 x Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/block-elements#rich_text_input
 x Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_select
+x Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_select
 """
 
 
@@ -1262,6 +1277,7 @@ class MultiStaticSelect(
 class MultiExternalSelect(
     Component,
     ActionIdMixin,
+    MinQueryLengthMixin,
     InitialOptionsMixin,
     ConfirmMixin,
     MaxSelectedItemsMixin,
@@ -1299,11 +1315,6 @@ class MultiExternalSelect(
         self.max_selected_items(max_selected_items)
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
-
-    def min_query_length(self, min_query_length: int) -> Self:
-        return self._add_field(
-            "min_query_length", min_query_length, validators=[Typed(int), Ints(1)]
-        )
 
 
 class MultiUsersSelect(
@@ -1700,7 +1711,7 @@ class StaticSelect(
     ActionIdMixin,
     OptionsMixin,
     OptionGroupsMixin,
-    InitialOptionsMixin,
+    InitialOptionMixin,
     ConfirmMixin,
     MaxSelectedItemsMixin,
     FocusOnLoadMixin,
@@ -1743,14 +1754,50 @@ class StaticSelect(
         self._add_validator(Within("initial_option", "options"))
         self._add_validator(Within("initial_option", "option_groups"))
 
-    def initial_option(self, initial_option: Option | OptionGroup) -> Self:
-        return self._add_field(
-            "initial_option", initial_option, validators=[Typed(Option, OptionGroup)]
-        )
+
+class ExternalSelect(
+    Component,
+    ActionIdMixin,
+    MinQueryLengthMixin,
+    InitialOptionMixin,
+    ConfirmMixin,
+    MaxSelectedItemsMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Select menu element (external data source)
+
+    Allows users to choose an option from a drop down menu.
+
+    This select menu will load its options from an external data source,
+    allowing for a dynamic list of options.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#external_select
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        min_query_length: int | None = None,
+        initial_option: Option | OptionGroup | None = None,
+        confirm: Confirm | None = None,
+        max_selected_items: int | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "external_select")
+        self.action_id(action_id)
+        self.min_query_length(min_query_length)
+        self.initial_option(initial_option)
+        self.confirm(confirm)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
 
 
 """
-- Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_select
 - Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_select
 - Select conversations (ConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversations_select
 - Select channels (ChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channels_select

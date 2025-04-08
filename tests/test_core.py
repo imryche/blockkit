@@ -12,6 +12,7 @@ from blockkit.core import (
     DatetimePicker,
     DispatchActionConfig,
     EmailInput,
+    ExternalSelect,
     FieldValidationError,
     FileInput,
     ImageEl,
@@ -1864,4 +1865,106 @@ class TestStaticSelect:
             )
             .build()
         )
+        assert got == want
+
+
+class TestExternalSelect:
+    def test_builds_options(self):
+        want = {
+            "type": "external_select",
+            "action_id": "external_select_action",
+            "min_query_length": 3,
+            "initial_option": {
+                "text": {
+                    "type": "plain_text",
+                    "text": "Option 1",
+                },
+                "value": "option_1",
+            },
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select an item",
+            },
+        }
+
+        got = ExternalSelect(
+            action_id="external_select_action",
+            min_query_length=3,
+            initial_option=Option(text="Option 1", value="option_1"),
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            focus_on_load=True,
+            placeholder="Select an item",
+        ).build()
+        assert got == want
+
+        got = (
+            ExternalSelect()
+            .action_id("external_select_action")
+            .min_query_length(3)
+            .initial_option(Option(text="Option 1", value="option_1"))
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .focus_on_load()
+            .placeholder("Select an item")
+            .build()
+        )
+        assert got == want
+
+    def test_builds_option_groups(self):
+        want = {
+            "type": "external_select",
+            "action_id": "external_select_action",
+            "initial_option": {
+                "label": {
+                    "type": "plain_text",
+                    "text": "Group 1",
+                },
+                "options": [
+                    {
+                        "text": {"type": "plain_text", "text": "Option 1"},
+                        "value": "option_1",
+                    }
+                ],
+            },
+        }
+
+        got = (
+            ExternalSelect()
+            .action_id("external_select_action")
+            .initial_option(
+                OptionGroup(label="Group 1").add_option(
+                    Option(text="Option 1", value="option_1")
+                )
+            )
+        ).build()
         assert got == want
