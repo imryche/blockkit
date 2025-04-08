@@ -4,6 +4,7 @@ import pytest
 
 from blockkit.core import (
     Button,
+    ChannelsSelect,
     Checkboxes,
     ComponentValidationError,
     Confirm,
@@ -2106,6 +2107,73 @@ class TestConversationsSelect:
             .filter(ConversationFilter(include=["public", "private"]))
             .focus_on_load()
             .placeholder("Select a conversation")
+            .build()
+        )
+        assert got == want
+
+
+class TestChannelsSelect:
+    def test_builds(self):
+        want = {
+            "type": "channels_select",
+            "action_id": "channels_select_action",
+            "initial_channel": "C01AB2CD3EF",
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "response_url_enabled": True,
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select a channel",
+            },
+        }
+
+        got = ChannelsSelect(
+            action_id="channels_select_action",
+            initial_channel="C01AB2CD3EF",
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            response_url_enabled=True,
+            focus_on_load=True,
+            placeholder="Select a channel",
+        ).build()
+        assert got == want
+
+        got = (
+            ChannelsSelect()
+            .action_id("channels_select_action")
+            .initial_channel("C01AB2CD3EF")
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .response_url_enabled()
+            .focus_on_load()
+            .placeholder("Select a channel")
             .build()
         )
         assert got == want

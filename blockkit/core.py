@@ -534,6 +534,13 @@ class FilterMixin:
         return self._add_field("filter", filter, validators=[Typed(ConversationFilter)])
 
 
+class ResponseUrlEnabledMixin:
+    def response_url_enabled(self, response_url_enabled: bool = True) -> Self:
+        return self._add_field(
+            "response_url_enabled", response_url_enabled, validators=[Typed(bool)]
+        )
+
+
 """
 Composition objects:
 
@@ -937,6 +944,7 @@ x Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block
 x Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_select
 x Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_select
 x Select conversations (ConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversations_select
+x Select channels (ChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channels_select
 """
 
 
@@ -1852,6 +1860,7 @@ class ConversationsSelect(
     ActionIdMixin,
     DefaultToCurrentConversationMixin,
     ConfirmMixin,
+    ResponseUrlEnabledMixin,
     FilterMixin,
     MaxSelectedItemsMixin,
     FocusOnLoadMixin,
@@ -1899,14 +1908,54 @@ class ConversationsSelect(
             validators=[Typed(str), Length(1)],
         )
 
-    def response_url_enabled(self, response_url_enabled: bool = True) -> Self:
+
+class ChannelsSelect(
+    Component,
+    ActionIdMixin,
+    ConfirmMixin,
+    ResponseUrlEnabledMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Select menu element (public channels list)
+
+    Allows users to choose an option from a drop down menu.
+
+    This select menu will populate its options with a list of public channels visible
+    to the current user in the active workspace.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#channels_select
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_channel: str | None = None,
+        confirm: Confirm | None = None,
+        response_url_enabled: bool | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "channels_select")
+        self.action_id(action_id)
+        self.initial_channel(initial_channel)
+        self.confirm(confirm)
+        self.response_url_enabled(response_url_enabled)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def initial_channel(self, initial_channel: str) -> Self:
         return self._add_field(
-            "response_url_enabled", response_url_enabled, validators=[Typed(bool)]
+            "initial_channel",
+            initial_channel,
+            validators=[Typed(str), Length(1)],
         )
 
 
 """
-- Select channels (ChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channels_select
 - Time picker (TimePicker) - https://api.slack.com/reference/block-kit/block-elements#timepicker
 - URL input (UrlInput) - https://api.slack.com/reference/block-kit/block-elements#url
 - Workflow button (WorkflowButton) - https://api.slack.com/reference/block-kit/block-elements#workflow_button
