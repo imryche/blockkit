@@ -27,6 +27,7 @@ from blockkit.core import (
     Overflow,
     PlainTextInput,
     RadioButtons,
+    RichTextInput,
     SlackFile,
     Text,
     Trigger,
@@ -1649,4 +1650,44 @@ class TestRadioButtons:
             ),
             focus_on_load=True,
         ).build()
+        assert got == want
+
+
+class TestRichTextInput:
+    def test_builds(self):
+        want = {
+            "type": "rich_text_input",
+            "action_id": "rich_text_input_action",
+            "dispatch_action_config": {
+                "trigger_actions_on": [
+                    "on_character_entered",
+                ]
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Enter something",
+            },
+        }
+
+        got = RichTextInput(
+            action_id="rich_text_input_action",
+            dispatch_action_config=DispatchActionConfig(
+                trigger_actions_on=["on_character_entered"]
+            ),
+            focus_on_load=True,
+            placeholder="Enter something",
+        ).build()
+        assert got == want
+
+        got = (
+            RichTextInput()
+            .action_id("rich_text_input_action")
+            .dispatch_action_config(
+                DispatchActionConfig(trigger_actions_on=["on_character_entered"])
+            )
+            .focus_on_load()
+            .placeholder("Enter something")
+            .build()
+        )
         assert got == want

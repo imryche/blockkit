@@ -888,6 +888,7 @@ x Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-e
 x Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-elements#overflow
 x Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/block-elements#input
 x Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block-elements#radio
+x Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/block-elements#rich_text_input
 """
 
 
@@ -1656,8 +1657,41 @@ class RadioButtons(
         )
 
 
+class RichTextInput(
+    Component,
+    ActionIdMixin,
+    DispatchActionConfigMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Rich text input element
+
+    Allows users to enter formatted text in a WYSIWYG composer, offering the same
+    messaging writing experience as in Slack.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#rich_text_input
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        dispatch_action_config: DispatchActionConfig | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "rich_text_input")
+        self.action_id(action_id)
+        # TODO: implement after implementing RichText
+        # self.initial_value(initial_value)
+        self.dispatch_action_config(dispatch_action_config)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+
 """
-- Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/block-elements#rich_text_input
 - Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_select
 - Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_select
 - Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_select
