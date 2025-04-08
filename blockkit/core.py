@@ -479,6 +479,20 @@ class OptionsMixin:
         return self
 
 
+class OptionGroupsMixin:
+    def option_groups(self, *option_groups: "OptionGroup") -> Self:
+        return self._add_field(
+            "option_groups",
+            list(option_groups),
+            validators=[Typed(OptionGroup), Length(1, 100)],
+        )
+
+    def add_option_group(self, option_group: "OptionGroup") -> Self:
+        field = self._get_field("option_groups")
+        field.value.append(option_group)
+        return self
+
+
 class DispatchActionConfigMixin:
     def dispatch_action_config(
         self, dispatch_action_config: "DispatchActionConfig"
@@ -889,6 +903,7 @@ x Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-ele
 x Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/block-elements#input
 x Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block-elements#radio
 x Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/block-elements#rich_text_input
+x Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_select
 """
 
 
@@ -1197,6 +1212,7 @@ class MultiStaticSelect(
     Component,
     ActionIdMixin,
     OptionsMixin,
+    OptionGroupsMixin,
     InitialOptionsMixin,
     ConfirmMixin,
     MaxSelectedItemsMixin,
@@ -1241,18 +1257,6 @@ class MultiStaticSelect(
         # but options or option_groups are empty
         self._add_validator(Within("initial_options", "options"))
         self._add_validator(Within("initial_options", "option_groups"))
-
-    def option_groups(self, *option_groups: OptionGroup) -> Self:
-        return self._add_field(
-            "option_groups",
-            list(option_groups),
-            validators=[Typed(OptionGroup), Length(1, 100)],
-        )
-
-    def add_option_group(self, option_group: OptionGroup) -> Self:
-        field = self._get_field("option_groups")
-        field.value.append(option_group)
-        return self
 
 
 class MultiExternalSelect(
@@ -1691,8 +1695,61 @@ class RichTextInput(
         self.placeholder(placeholder)
 
 
+class StaticSelect(
+    Component,
+    ActionIdMixin,
+    OptionsMixin,
+    OptionGroupsMixin,
+    InitialOptionsMixin,
+    ConfirmMixin,
+    MaxSelectedItemsMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Select menu element (static options)
+
+    Allows users to choose an option from a drop down menu.
+
+    This is the most basic form of select menu, with a static list
+    of options passed in when defining the element.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#static_select
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        options: Sequence[Option] | None = None,
+        option_groups: Sequence[OptionGroup] | None = None,
+        initial_option: Option | OptionGroup | None = None,
+        confirm: Confirm | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "static_select")
+        self.action_id(action_id)
+        self.options(*options or ())
+        self.option_groups(*option_groups or ())
+        self.initial_option(initial_option)
+        self.confirm(confirm)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+        self._add_validator(Either("options", "option_groups"))
+        # TODO: Doesn't handle the case where initial_option is set
+        # but options or option_groups are empty
+        self._add_validator(Within("initial_option", "options"))
+        self._add_validator(Within("initial_option", "option_groups"))
+
+    def initial_option(self, initial_option: Option | OptionGroup) -> Self:
+        return self._add_field(
+            "initial_option", initial_option, validators=[Typed(Option, OptionGroup)]
+        )
+
+
 """
-- Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_select
 - Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_select
 - Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_select
 - Select conversations (ConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversations_select

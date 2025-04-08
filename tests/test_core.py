@@ -29,6 +29,7 @@ from blockkit.core import (
     RadioButtons,
     RichTextInput,
     SlackFile,
+    StaticSelect,
     Text,
     Trigger,
     Workflow,
@@ -1688,6 +1689,179 @@ class TestRichTextInput:
             )
             .focus_on_load()
             .placeholder("Enter something")
+            .build()
+        )
+        assert got == want
+
+
+class TestStaticSelect:
+    def test_builds_options(self):
+        want = {
+            "type": "static_select",
+            "action_id": "static_select_action",
+            "options": [
+                {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Option 1",
+                    },
+                    "value": "option_1",
+                },
+                {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Option 2",
+                    },
+                    "value": "option_2",
+                },
+            ],
+            "initial_option": {
+                "text": {
+                    "type": "plain_text",
+                    "text": "Option 1",
+                },
+                "value": "option_1",
+            },
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select an item",
+            },
+        }
+
+        got = StaticSelect(
+            action_id="static_select_action",
+            options=[
+                Option(text="Option 1", value="option_1"),
+                Option(text="Option 2", value="option_2"),
+            ],
+            initial_option=Option(text="Option 1", value="option_1"),
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            focus_on_load=True,
+            placeholder="Select an item",
+        ).build()
+        assert got == want
+
+        got = (
+            StaticSelect()
+            .action_id("static_select_action")
+            .add_option(Option(text="Option 1", value="option_1"))
+            .add_option(Option(text="Option 2", value="option_2"))
+            .initial_option(Option(text="Option 1", value="option_1"))
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .focus_on_load()
+            .placeholder("Select an item")
+            .build()
+        )
+        assert got == want
+
+    def test_builds_option_groups(self):
+        want = {
+            "type": "static_select",
+            "action_id": "static_select_action",
+            "option_groups": [
+                {
+                    "label": {
+                        "type": "plain_text",
+                        "text": "Group 1",
+                    },
+                    "options": [
+                        {
+                            "text": {"type": "plain_text", "text": "Option 1"},
+                            "value": "option_1",
+                        }
+                    ],
+                },
+                {
+                    "label": {
+                        "type": "plain_text",
+                        "text": "Group 2",
+                    },
+                    "options": [
+                        {
+                            "text": {"type": "plain_text", "text": "Option 2"},
+                            "value": "option_2",
+                        }
+                    ],
+                },
+            ],
+            "initial_option": {
+                "label": {
+                    "type": "plain_text",
+                    "text": "Group 1",
+                },
+                "options": [
+                    {
+                        "text": {"type": "plain_text", "text": "Option 1"},
+                        "value": "option_1",
+                    }
+                ],
+            },
+        }
+        got = StaticSelect(
+            action_id="static_select_action",
+            option_groups=[
+                OptionGroup(
+                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
+                ),
+                OptionGroup(
+                    label="Group 2", options=[Option(text="Option 2", value="option_2")]
+                ),
+            ],
+            initial_option=OptionGroup(
+                label="Group 1", options=[Option(text="Option 1", value="option_1")]
+            ),
+        ).build()
+        assert got == want
+
+        got = (
+            StaticSelect()
+            .action_id("static_select_action")
+            .add_option_group(
+                OptionGroup(
+                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
+                )
+            )
+            .add_option_group(
+                OptionGroup(
+                    label="Group 2", options=[Option(text="Option 2", value="option_2")]
+                ),
+            )
+            .initial_option(
+                OptionGroup(
+                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
+                )
+            )
             .build()
         )
         assert got == want
