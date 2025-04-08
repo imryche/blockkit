@@ -33,6 +33,7 @@ from blockkit.core import (
     StaticSelect,
     Text,
     Trigger,
+    UsersSelect,
     Workflow,
 )
 
@@ -1967,4 +1968,68 @@ class TestExternalSelect:
                 )
             )
         ).build()
+        assert got == want
+
+
+class TestUsersSelect:
+    def test_builds(self):
+        want = {
+            "type": "users_select",
+            "action_id": "users_select_action",
+            "initial_user": "U02A1B2C3D4",
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select a user",
+            },
+        }
+
+        got = UsersSelect(
+            action_id="users_select_action",
+            initial_user="U02A1B2C3D4",
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            focus_on_load=True,
+            placeholder="Select a user",
+        ).build()
+        assert got == want
+
+        got = (
+            UsersSelect()
+            .action_id("users_select_action")
+            .initial_user("U02A1B2C3D4")
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .focus_on_load()
+            .placeholder("Select a user")
+            .build()
+        )
         assert got == want

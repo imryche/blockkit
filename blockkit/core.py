@@ -919,6 +919,7 @@ x Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block
 x Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/block-elements#rich_text_input
 x Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_select
 x Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_select
+x Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_select
 """
 
 
@@ -1722,8 +1723,8 @@ class StaticSelect(
 
     Allows users to choose an option from a drop down menu.
 
-    This is the most basic form of select menu, with a static list
-    of options passed in when defining the element.
+    This is the most basic form of select menu, with a static list of
+    options passed in when defining the element.
 
     Slack docs:
         https://api.slack.com/reference/block-kit/block-elements#static_select
@@ -1797,8 +1798,49 @@ class ExternalSelect(
         self.placeholder(placeholder)
 
 
+class UsersSelect(
+    Component,
+    ActionIdMixin,
+    ConfirmMixin,
+    MaxSelectedItemsMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Select menu element (user list)
+
+    Allows users to choose an option from a drop down menu.
+
+    This select menu will populate its options with a list of Slack users visible to
+    the current user in the active workspace.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#users_select
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_user: str | None = None,
+        confirm: Confirm | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "users_select")
+        self.action_id(action_id)
+        self.initial_user(initial_user)
+        self.confirm(confirm)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def initial_user(self, initial_user: str) -> Self:
+        return self._add_field(
+            "initial_user", initial_user, validators=[Typed(str), Length(1)]
+        )
+
+
 """
-- Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_select
 - Select conversations (ConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversations_select
 - Select channels (ChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channels_select
 - Time picker (TimePicker) - https://api.slack.com/reference/block-kit/block-elements#timepicker
