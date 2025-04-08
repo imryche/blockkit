@@ -518,6 +518,22 @@ class MinQueryLengthMixin:
         )
 
 
+class DefaultToCurrentConversationMixin:
+    def default_to_current_conversation(
+        self, default_to_current_conversation: bool = True
+    ) -> Self:
+        return self._add_field(
+            "default_to_current_conversation",
+            default_to_current_conversation,
+            validators=[Typed(bool)],
+        )
+
+
+class FilterMixin:
+    def filter(self, filter: "ConversationFilter") -> Self:
+        return self._add_field("filter", filter, validators=[Typed(ConversationFilter)])
+
+
 """
 Composition objects:
 
@@ -920,6 +936,7 @@ x Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/bl
 x Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_select
 x Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_select
 x Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_select
+x Select conversations (ConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversations_select
 """
 
 
@@ -1370,8 +1387,10 @@ class MultiUsersSelect(
 class MultiConversationsSelect(
     Component,
     ActionIdMixin,
+    DefaultToCurrentConversationMixin,
     ConfirmMixin,
     MaxSelectedItemsMixin,
+    FilterMixin,
     FocusOnLoadMixin,
     PlaceholderMixin,
 ):
@@ -1420,18 +1439,6 @@ class MultiConversationsSelect(
         field = self._get_field("initial_conversations")
         field.value.append(conversation_id)
         return self
-
-    def default_to_current_conversation(
-        self, default_to_current_conversation: bool = True
-    ) -> Self:
-        return self._add_field(
-            "default_to_current_conversation",
-            default_to_current_conversation,
-            validators=[Typed(bool)],
-        )
-
-    def filter(self, filter: ConversationFilter) -> Self:
-        return self._add_field("filter", filter, validators=[Typed(ConversationFilter)])
 
 
 class MultiChannelsSelect(
@@ -1840,8 +1847,65 @@ class UsersSelect(
         )
 
 
+class ConversationsSelect(
+    Component,
+    ActionIdMixin,
+    DefaultToCurrentConversationMixin,
+    ConfirmMixin,
+    FilterMixin,
+    MaxSelectedItemsMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Select menu element (conversations list)
+
+    Allows users to choose an option from a drop down menu.
+
+    This select menu will populate its options with a list of public and
+    private channels, DMs, and MPIMs visible to the current user
+    in the active workspace.
+
+    Slack docs:
+        https://api.slack.com/reference/block-kit/block-elements#conversations_select
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_conversation: str | None = None,
+        default_to_current_conversation: bool | None = None,
+        confirm: Confirm | None = None,
+        response_url_enabled: bool | None = None,
+        filter: ConversationFilter | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "conversations_select")
+        self.action_id(action_id)
+        self.initial_conversation(initial_conversation)
+        self.default_to_current_conversation(default_to_current_conversation)
+        self.confirm(confirm)
+        self.response_url_enabled(response_url_enabled)
+        self.filter(filter)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def initial_conversation(self, initial_conversation: str) -> Self:
+        return self._add_field(
+            "initial_conversation",
+            initial_conversation,
+            validators=[Typed(str), Length(1)],
+        )
+
+    def response_url_enabled(self, response_url_enabled: bool = True) -> Self:
+        return self._add_field(
+            "response_url_enabled", response_url_enabled, validators=[Typed(bool)]
+        )
+
+
 """
-- Select conversations (ConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversations_select
 - Select channels (ChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channels_select
 - Time picker (TimePicker) - https://api.slack.com/reference/block-kit/block-elements#timepicker
 - URL input (UrlInput) - https://api.slack.com/reference/block-kit/block-elements#url

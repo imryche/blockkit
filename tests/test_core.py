@@ -8,6 +8,7 @@ from blockkit.core import (
     ComponentValidationError,
     Confirm,
     ConversationFilter,
+    ConversationsSelect,
     DatePicker,
     DatetimePicker,
     DispatchActionConfig,
@@ -2030,6 +2031,81 @@ class TestUsersSelect:
             )
             .focus_on_load()
             .placeholder("Select a user")
+            .build()
+        )
+        assert got == want
+
+
+class TestConversationsSelect:
+    def test_builds(self):
+        want = {
+            "type": "conversations_select",
+            "action_id": "conversations_select_action",
+            "initial_conversation": "C01AB2CD3EF",
+            "default_to_current_conversation": True,
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "response_url_enabled": True,
+            "filter": {
+                "include": ["public", "private"],
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select a conversation",
+            },
+        }
+
+        got = ConversationsSelect(
+            action_id="conversations_select_action",
+            initial_conversation="C01AB2CD3EF",
+            default_to_current_conversation=True,
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            response_url_enabled=True,
+            filter=ConversationFilter(include=["public", "private"]),
+            focus_on_load=True,
+            placeholder="Select a conversation",
+        ).build()
+        assert got == want
+
+        got = (
+            ConversationsSelect()
+            .action_id("conversations_select_action")
+            .initial_conversation("C01AB2CD3EF")
+            .default_to_current_conversation()
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .response_url_enabled()
+            .filter(ConversationFilter(include=["public", "private"]))
+            .focus_on_load()
+            .placeholder("Select a conversation")
             .build()
         )
         assert got == want
