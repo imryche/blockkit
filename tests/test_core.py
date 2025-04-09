@@ -1,6 +1,7 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 
 import pytest
+from zoneinfo import ZoneInfo
 
 from blockkit.core import (
     Button,
@@ -34,6 +35,7 @@ from blockkit.core import (
     SlackFile,
     StaticSelect,
     Text,
+    TimePicker,
     Trigger,
     UsersSelect,
     Workflow,
@@ -112,26 +114,6 @@ class TestInts:
 
     def test_valid(self):
         FileInput(max_files=10).validate()
-
-
-class TestIsoDate:
-    def test_invalid(self):
-        with pytest.raises(FieldValidationError) as e:
-            DatePicker(initial_date="2025/04/05").validate()
-        assert "Invalid date format. Expected YYYY-MM-DD" in str(e)
-
-    def test_valid(self):
-        DatePicker(initial_date="2025-04-05").validate()
-
-
-class TestUnixTimestamp:
-    def test_invalid(self):
-        with pytest.raises(FieldValidationError) as e:
-            DatetimePicker(initial_date_time="1628633820000").validate()
-        assert "Invalid datetime format. Expected UNIX timestamp" in str(e)
-
-    def test_valid(self):
-        DatetimePicker(initial_date_time="1628633820").validate()
 
 
 class TestTyped:
@@ -2174,6 +2156,73 @@ class TestChannelsSelect:
             .response_url_enabled()
             .focus_on_load()
             .placeholder("Select a channel")
+            .build()
+        )
+        assert got == want
+
+
+class TestTimePicker:
+    def test_builds(self):
+        want = {
+            "type": "timepicker",
+            "action_id": "timepicker_action",
+            "initial_time": "13:00",
+            "confirm": {
+                "title": {
+                    "type": "plain_text",
+                    "text": "Please confirm",
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "Proceed?",
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                },
+                "deny": {
+                    "type": "plain_text",
+                    "text": "No",
+                },
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Select a time",
+            },
+            "timezone": "Europe/Warsaw",
+        }
+
+        got = TimePicker(
+            action_id="timepicker_action",
+            initial_time="13:00",
+            confirm=Confirm(
+                title="Please confirm",
+                text="Proceed?",
+                confirm="Yes",
+                deny="No",
+            ),
+            focus_on_load=True,
+            placeholder="Select a time",
+            timezone="Europe/Warsaw",
+        ).build()
+        assert got == want
+
+        got = (
+            TimePicker()
+            .action_id("timepicker_action")
+            .initial_time(time.fromisoformat("13:00:00"))
+            .confirm(
+                Confirm(
+                    title="Please confirm",
+                    text="Proceed?",
+                    confirm="Yes",
+                    deny="No",
+                )
+            )
+            .focus_on_load()
+            .placeholder("Select a time")
+            .timezone(ZoneInfo("Europe/Warsaw"))
             .build()
         )
         assert got == want

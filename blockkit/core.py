@@ -1,7 +1,9 @@
 import dataclasses
 from abc import ABC, abstractmethod
-from datetime import date, datetime
+from datetime import date, datetime, time
 from typing import Any, Self, Sequence, Type
+
+from zoneinfo import ZoneInfo
 
 from blockkit.utils import is_md
 
@@ -303,18 +305,6 @@ def str_to_plain(value: str) -> "Text":
     return value
 
 
-def date_to_str(value: date) -> str:
-    if isinstance(value, date):
-        return value.strftime("%Y-%m-%d")
-    return value
-
-
-def datetime_to_str(value: datetime) -> str:
-    if isinstance(value, datetime):
-        return str(int(value.timestamp()))
-    return value
-
-
 @dataclasses.dataclass
 class Field:
     name: str
@@ -401,6 +391,14 @@ class Component:
                 continue
             if isinstance(field.value, (list, tuple, set)) and len(field.value) < 1:
                 continue
+            if type(field.value) is date:
+                field.value = field.value.strftime("%Y-%m-%d")
+            if type(field.value) is datetime:
+                field.value = str(int(field.value.timestamp()))
+            if isinstance(field.value, time):
+                field.value = field.value.strftime("%H:%M")
+            if isinstance(field.value, ZoneInfo):
+                field.value = str(field.value)
             if field.stringify:
                 field.value = str(field.value)
             obj[field.name] = field.value
@@ -945,6 +943,7 @@ x Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/b
 x Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_select
 x Select conversations (ConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversations_select
 x Select channels (ChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channels_select
+x Time picker (TimePicker) - https://api.slack.com/reference/block-kit/block-elements#timepicker
 """
 
 
@@ -1079,11 +1078,9 @@ class DatePicker(
         self.placeholder(placeholder)
 
     def initial_date(self, initial_date: str | date) -> Self:
-        return self._add_field(
-            "initial_date",
-            date_to_str(initial_date),
-            validators=[Typed(str), IsoDate()],
-        )
+        if isinstance(initial_date, str):
+            initial_date = datetime.strptime(initial_date, "%Y-%m-%d").date()
+        return self._add_field("initial_date", initial_date, validators=[Typed(date)])
 
 
 class DatetimePicker(
@@ -1115,10 +1112,10 @@ class DatetimePicker(
         self.placeholder(placeholder)
 
     def initial_date_time(self, initial_date_time: str | datetime) -> Self:
+        if isinstance(initial_date_time, str):
+            initial_date_time = datetime.fromtimestamp(int(initial_date_time))
         return self._add_field(
-            "initial_date_time",
-            datetime_to_str(initial_date_time),
-            validators=[Typed(str), UnixTimestamp()],
+            "initial_date_time", initial_date_time, validators=[Typed(datetime)]
         )
 
 
@@ -1955,8 +1952,52 @@ class ChannelsSelect(
         )
 
 
+class TimePicker(
+    Component,
+    ActionIdMixin,
+    ConfirmMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    Time picker element
+
+    Allows users to enter numerical data into a single-line field.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/block-elements/time-picker-element
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_time: str | time | None = None,
+        confirm: Confirm | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+        timezone: str | ZoneInfo | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "timepicker")
+        self.action_id(action_id)
+        self.initial_time(initial_time)
+        self.confirm(confirm)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+        self.timezone(timezone)
+
+    def initial_time(self, initial_time: str | time) -> Self:
+        if isinstance(initial_time, str):
+            initial_time = datetime.strptime(initial_time, "%H:%M").time()
+        return self._add_field("initial_time", initial_time, validators=[Typed(time)])
+
+    def timezone(self, timezone: str | ZoneInfo) -> Self:
+        if isinstance(timezone, str):
+            timezone = ZoneInfo(timezone)
+        return self._add_field("timezone", timezone, validators=[Typed(ZoneInfo)])
+
+
 """
-- Time picker (TimePicker) - https://api.slack.com/reference/block-kit/block-elements#timepicker
 - URL input (UrlInput) - https://api.slack.com/reference/block-kit/block-elements#url
 - Workflow button (WorkflowButton) - https://api.slack.com/reference/block-kit/block-elements#workflow_button
 
