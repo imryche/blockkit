@@ -555,6 +555,15 @@ x Slack file (SlackFile) - https://api.slack.com/reference/block-kit/composition
 
 
 class Text(Component):
+    """
+    Text object
+
+    Defines an object containing some text.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/composition-objects/text-object
+    """
+
     PLAIN = "plain_text"
     MD = "mrkdwn"
 
@@ -612,7 +621,7 @@ class Confirm(Component):
     Defines a dialog that adds a confirmation step to interactive elements.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#confirm
+        https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object
     """
 
     def __init__(
@@ -671,7 +680,7 @@ class ConversationFilter(Component):
     Defines a filter for the list of options in a conversation selector menu.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#filter_conversations
+        https://docs.slack.dev/reference/block-kit/composition-objects/conversation-filter-object
     """
 
     def __init__(
@@ -718,7 +727,7 @@ class DispatchActionConfig(Component):
     block_actions interaction payload.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#dispatch_action_config
+        https://docs.slack.dev/reference/block-kit/composition-objects/dispatch-action-configuration-object
     """
 
     def __init__(self, trigger_actions_on: Sequence[str] | None = None):
@@ -744,7 +753,7 @@ class Option(Component):
     Defines a single item in a number of item selection elements.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#option
+        https://docs.slack.dev/reference/block-kit/composition-objects/option-object
     """
 
     def __init__(
@@ -793,7 +802,7 @@ class OptionGroup(Component, OptionsMixin):
     Defines a way to group options in a menu.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#option_group
+        https://docs.slack.dev/reference/block-kit/composition-objects/option-group-object
     """
 
     def __init__(
@@ -816,7 +825,7 @@ class InputParameter(Component):
     Input parameter object
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#input_parameter
+        https://docs.slack.dev/reference/block-kit/composition-objects/trigger-object#input_parameter
     """
 
     def __init__(self, name: str | None = None, value: str | None = None):
@@ -842,7 +851,7 @@ class Trigger(Component):
     Defines an object containing trigger information.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#trigger
+        https://docs.slack.dev/reference/block-kit/composition-objects/trigger-object
     """
 
     def __init__(
@@ -881,7 +890,7 @@ class Workflow(Component):
     Defines an object containing workflow information.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#workflow
+        https://docs.slack.dev/reference/block-kit/composition-objects/workflow-object
     """
 
     def __init__(self, trigger: Trigger | None = None):
@@ -902,7 +911,7 @@ class SlackFile(Component):
     in an image block or image element.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/composition-objects#slack_file
+        https://docs.slack.dev/reference/block-kit/composition-objects/slack-file-object
     """
 
     def __init__(self, url: str | None = None, id: str | None = None):
@@ -954,7 +963,7 @@ class Button(Component, ActionIdMixin, ConfirmMixin):
     Allows users a direct path to performing basic actions.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#button
+        https://docs.slack.dev/reference/block-kit/block-elements/button-element
     """
 
     PRIMARY = "primary"
@@ -1016,7 +1025,7 @@ class Checkboxes(
     Allows users to choose multiple items from a list of options.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#checkboxes
+        https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element
     """
 
     def __init__(
@@ -1058,7 +1067,7 @@ class DatePicker(
     Allows users to select a date from a calendar style UI.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#datepicker
+        https://docs.slack.dev/reference/block-kit/block-elements/date-picker-element
     """
 
     def __init__(
@@ -1092,7 +1101,7 @@ class DatetimePicker(
     Allows users to select both a date and a time of day, formatted as a Unix timestamp.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#datetimepicker
+        https://docs.slack.dev/reference/block-kit/block-elements/datetime-picker-element
     """
 
     def __init__(
@@ -1132,7 +1141,7 @@ class EmailInput(
     Allows user to enter an email into a single-line field.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#email
+        https://docs.slack.dev/reference/block-kit/block-elements/email-input-element
     """
 
     def __init__(
@@ -1164,7 +1173,7 @@ class FileInput(Component, ActionIdMixin):
     Allows user to upload files.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#file_input
+        https://docs.slack.dev/reference/block-kit/block-elements/file-input-element
     """
 
     FILE_TYPES = [
@@ -1216,7 +1225,7 @@ class ImageEl(Component):
     Displays an image as part of a larger block of content.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#image
+        https://docs.slack.dev/reference/block-kit/block-elements/image-element
     """
 
     def __init__(
@@ -1266,7 +1275,7 @@ class MultiStaticSelect(
     options passed in when defining the element.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#multi_select
+        https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element#static_multi_select
     """
 
     def __init__(
@@ -1316,7 +1325,7 @@ class MultiExternalSelect(
     for a dynamic list of options.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#external_multi_select
+        https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element#external_multi_select
     """
 
     def __init__(
@@ -1357,7 +1366,7 @@ class MultiUsersSelect(
     visible to the current user in the active workspace.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#users_multi_select
+        https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element#users_multi_select
     """
 
     def __init__(
@@ -1408,7 +1417,7 @@ class MultiConversationsSelect(
     channels, DMs, and MPIMs visible to the current user in the active workspace.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
+        https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element#conversation_multi_select
     """
 
     def __init__(
@@ -1463,7 +1472,7 @@ class MultiChannelsSelect(
     channels visible to the current user in the active workspace.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
+        https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element#channel_multi_select
     """
 
     def __init__(
@@ -1510,7 +1519,7 @@ class NumberInput(
     Allows user to enter a number into a single-line field.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#number
+        https://docs.slack.dev/reference/block-kit/block-elements/number-input-element
     """
 
     def __init__(
@@ -1574,7 +1583,7 @@ class Overflow(Component, ActionIdMixin, OptionsMixin, ConfirmMixin):
     Allows users to press a button to view a list of options.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#overflow
+        https://docs.slack.dev/reference/block-kit/block-elements/overflow-menu-element
     """
 
     def __init__(
@@ -1604,7 +1613,7 @@ class PlainTextInput(
     Allows users to enter freeform text data into a single-line or multi-line field.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#input
+        https://docs.slack.dev/reference/block-kit/block-elements/plain-text-input-element
     """
 
     def __init__(
@@ -1658,7 +1667,7 @@ class RadioButtons(
     Allows users to choose one item from a list of possible options.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#radio
+        https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element
     """
 
     def __init__(
@@ -1699,7 +1708,7 @@ class RichTextInput(
     messaging writing experience as in Slack.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#rich_text_input
+        https://docs.slack.dev/reference/block-kit/block-elements/rich-text-input-element
     """
 
     def __init__(
@@ -1739,7 +1748,7 @@ class StaticSelect(
     options passed in when defining the element.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#static_select
+        https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element#static_select
     """
 
     def __init__(
@@ -1787,7 +1796,7 @@ class ExternalSelect(
     allowing for a dynamic list of options.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#external_select
+        https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element#external_select
     """
 
     def __init__(
@@ -1827,7 +1836,7 @@ class UsersSelect(
     the current user in the active workspace.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#users_select
+        https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element#users_select
     """
 
     def __init__(
@@ -1873,7 +1882,7 @@ class ConversationsSelect(
     in the active workspace.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#conversations_select
+        https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element#conversations_select
     """
 
     def __init__(
@@ -1923,7 +1932,7 @@ class ChannelsSelect(
     to the current user in the active workspace.
 
     Slack docs:
-        https://api.slack.com/reference/block-kit/block-elements#channels_select
+        https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element#channels_select
     """
 
     def __init__(
