@@ -37,6 +37,7 @@ from blockkit.core import (
     Text,
     TimePicker,
     Trigger,
+    UrlInput,
     UsersSelect,
     Workflow,
 )
@@ -2223,6 +2224,49 @@ class TestTimePicker:
             .focus_on_load()
             .placeholder("Select a time")
             .timezone(ZoneInfo("Europe/Warsaw"))
+            .build()
+        )
+        assert got == want
+
+
+class TestUrlInput:
+    def test_builds(self):
+        want = {
+            "type": "url_text_input",
+            "action_id": "url_text_input_action",
+            "initial_value": "https://botsignals.co",
+            "dispatch_action_config": {
+                "trigger_actions_on": [
+                    "on_character_entered",
+                ]
+            },
+            "focus_on_load": True,
+            "placeholder": {
+                "type": "plain_text",
+                "text": "Enter a URL",
+            },
+        }
+
+        got = UrlInput(
+            action_id="url_text_input_action",
+            initial_value="https://botsignals.co",
+            dispatch_action_config=DispatchActionConfig(
+                trigger_actions_on=["on_character_entered"]
+            ),
+            focus_on_load=True,
+            placeholder="Enter a URL",
+        ).build()
+        assert got == want
+
+        got = (
+            UrlInput()
+            .action_id("url_text_input_action")
+            .initial_value("https://botsignals.co")
+            .dispatch_action_config(
+                DispatchActionConfig(trigger_actions_on=["on_character_entered"])
+            )
+            .focus_on_load()
+            .placeholder("Enter a URL")
             .build()
         )
         assert got == want

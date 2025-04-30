@@ -953,6 +953,7 @@ x Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-e
 x Select conversations (ConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversations_select
 x Select channels (ChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channels_select
 x Time picker (TimePicker) - https://api.slack.com/reference/block-kit/block-elements#timepicker
+x URL input (UrlInput) - https://api.slack.com/reference/block-kit/block-elements#url
 """
 
 
@@ -1162,7 +1163,7 @@ class EmailInput(
 
     def initial_value(self, initial_value: str) -> Self:
         return self._add_field(
-            "initial_value", initial_value, validators=[Typed(str), Length(1, 255)]
+            "initial_value", initial_value, validators=[Typed(str), Length(1, 74)]
         )
 
 
@@ -2006,8 +2007,45 @@ class TimePicker(
         return self._add_field("timezone", timezone, validators=[Typed(ZoneInfo)])
 
 
+class UrlInput(
+    Component,
+    ActionIdMixin,
+    DispatchActionConfigMixin,
+    FocusOnLoadMixin,
+    PlaceholderMixin,
+):
+    """
+    URL input element
+
+    Allows user to enter a URL into a single-line field.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/block-elements/url-input-element
+    """
+
+    def __init__(
+        self,
+        action_id: str | None = None,
+        initial_value: str | None = None,
+        dispatch_action_config: DispatchActionConfig | None = None,
+        focus_on_load: bool | None = None,
+        placeholder: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "url_text_input")
+        self.action_id(action_id)
+        self.initial_value(initial_value)
+        self.dispatch_action_config(dispatch_action_config)
+        self.focus_on_load(focus_on_load)
+        self.placeholder(placeholder)
+
+    def initial_value(self, initial_value: str) -> Self:
+        return self._add_field(
+            "initial_value", initial_value, validators=[Typed(str), Length(1, 74)]
+        )
+
+
 """
-- URL input (UrlInput) - https://api.slack.com/reference/block-kit/block-elements#url
 - Workflow button (WorkflowButton) - https://api.slack.com/reference/block-kit/block-elements#workflow_button
 
 Blocks:
