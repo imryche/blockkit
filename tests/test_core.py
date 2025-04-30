@@ -40,6 +40,7 @@ from blockkit.core import (
     UrlInput,
     UsersSelect,
     Workflow,
+    WorkflowButton,
 )
 
 
@@ -2269,4 +2270,54 @@ class TestUrlInput:
             .placeholder("Enter a URL")
             .build()
         )
+        assert got == want
+
+
+class TestWorkflowButton:
+    def test_builds(self):
+        want = {
+            "type": "workflow_button",
+            "text": {
+                "type": "plain_text",
+                "text": "Run workflow",
+            },
+            "workflow": {
+                "trigger": {
+                    "url": "https://slack.com/shortcuts/Ft0123ABC456/321zyx",
+                    "customizable_input_parameters": [
+                        {
+                            "name": "input_parameter_a",
+                            "value": "Value for input param A",
+                        },
+                        {
+                            "name": "input_parameter_b",
+                            "value": "Value for input param B",
+                        },
+                    ],
+                }
+            },
+            "action_id": "workflow_button_action",
+            "style": "primary",
+            "accessibility_label": "Run workflow",
+        }
+
+        got = WorkflowButton(
+            text="Run workflow",
+            workflow=Workflow(
+                trigger=Trigger(
+                    url="https://slack.com/shortcuts/Ft0123ABC456/321zyx",
+                    customizable_input_parameters=[
+                        InputParameter(
+                            name="input_parameter_a", value="Value for input param A"
+                        ),
+                        InputParameter(
+                            name="input_parameter_b", value="Value for input param B"
+                        ),
+                    ],
+                )
+            ),
+            action_id="workflow_button_action",
+            style="primary",
+            accessibility_label="Run workflow",
+        ).build()
         assert got == want

@@ -419,6 +419,15 @@ class ActionIdMixin:
         )
 
 
+class TextMixin:
+    def text(self, text: "str | Text") -> Self:
+        return self._add_field(
+            "text",
+            str_to_plain(text),
+            validators=[Typed(Text), Required(), Length(1, 75)],
+        )
+
+
 class FocusOnLoadMixin:
     def focus_on_load(self, focus_on_load: bool = True) -> Self:
         return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
@@ -435,6 +444,25 @@ class PlaceholderMixin:
             "placeholder",
             str_to_plain(placeholder),
             validators=[Typed(Text), Length(1, 150)],
+        )
+
+
+class StyleMixin:
+    PRIMARY: str = "primary"
+    DANGER: str = "danger"
+
+    def style(self, style: str) -> Self:
+        return self._add_field(
+            "style", style, validators=[Typed(str), Strings(self.PRIMARY, self.DANGER)]
+        )
+
+
+class AccessibilityLabelMixin:
+    def accessibility_label(self, accessibility_label: str) -> Self:
+        return self._add_field(
+            "accessibility_label",
+            accessibility_label,
+            validators=[Typed(str), Length(1, 75)],
         )
 
 
@@ -614,7 +642,7 @@ class Text(Component):
         )
 
 
-class Confirm(Component):
+class Confirm(Component, StyleMixin):
     """
     Confirmation dialog
 
@@ -665,11 +693,6 @@ class Confirm(Component):
             "deny",
             str_to_plain(deny),
             validators=[Typed(Text), Required(), Plain(), Length(1, 30)],
-        )
-
-    def style(self, style: str) -> Self:
-        return self._add_field(
-            "style", style, validators=[Typed(str), Strings("primary", "danger")]
         )
 
 
@@ -746,7 +769,7 @@ class DispatchActionConfig(Component):
         )
 
 
-class Option(Component):
+class Option(Component, TextMixin):
     """
     Option object
 
@@ -768,14 +791,6 @@ class Option(Component):
         self.value(value)
         self.description(description)
         self.url(url)
-
-    # TODO: markdown should be available in checkboxes and radiobuttons
-    def text(self, text: str | Text) -> Self:
-        return self._add_field(
-            "text",
-            str_to_plain(text),
-            validators=[Typed(Text), Required(), Length(1, 75)],
-        )
 
     def value(self, value: str) -> Self:
         return self._add_field(
@@ -954,10 +969,18 @@ x Select conversations (ConversationsSelect) - https://api.slack.com/reference/b
 x Select channels (ChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channels_select
 x Time picker (TimePicker) - https://api.slack.com/reference/block-kit/block-elements#timepicker
 x URL input (UrlInput) - https://api.slack.com/reference/block-kit/block-elements#url
+x Workflow button (WorkflowButton) - https://api.slack.com/reference/block-kit/block-elements#workflow_button
 """
 
 
-class Button(Component, ActionIdMixin, ConfirmMixin):
+class Button(
+    Component,
+    TextMixin,
+    ActionIdMixin,
+    StyleMixin,
+    ConfirmMixin,
+    AccessibilityLabelMixin,
+):
     """
     Button element
 
@@ -991,30 +1014,11 @@ class Button(Component, ActionIdMixin, ConfirmMixin):
         self.confirm(confirm)
         self.accessibility_label(accessibility_label)
 
-    def text(self, text: str | Text) -> Self:
-        return self._add_field(
-            "text",
-            str_to_plain(text),
-            validators=[Typed(Text), Required(), Plain(), Length(1, 75)],
-        )
-
     def url(self, url: str) -> Self:
         return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
 
     def value(self, value: str) -> Self:
         return self._add_field("value", value, validators=[Typed(str), Length(1, 2000)])
-
-    def style(self, style: str) -> Self:
-        return self._add_field(
-            "style", style, validators=[Typed(str), Strings(self.PRIMARY, self.DANGER)]
-        )
-
-    def accessibility_label(self, accessibility_label: str) -> Self:
-        return self._add_field(
-            "accessibility_label",
-            accessibility_label,
-            validators=[Typed(str), Length(1, 75)],
-        )
 
 
 class Checkboxes(
@@ -2045,9 +2049,39 @@ class UrlInput(
         )
 
 
-"""
-- Workflow button (WorkflowButton) - https://api.slack.com/reference/block-kit/block-elements#workflow_button
+class WorkflowButton(
+    Component, TextMixin, ActionIdMixin, StyleMixin, AccessibilityLabelMixin
+):
+    """
+    Workflow button element
 
+    Allows users to run a link trigger with customizable inputs.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/block-elements/workflow-button-element
+    """
+
+    def __init__(
+        self,
+        text: str | Text | None = None,
+        workflow: Workflow | None = None,
+        action_id: str | None = None,
+        style: str | None = None,
+        accessibility_label: str | Text | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "workflow_button")
+        self.text(text)
+        self.workflow(workflow)
+        self.action_id(action_id)
+        self.style(style)
+        self.accessibility_label(accessibility_label)
+
+    def workflow(self, workflow: Workflow) -> Self:
+        return self._add_field("workflow", workflow, validators=[Typed(Workflow)])
+
+
+"""
 Blocks:
 
 - Actions (Actions) - https://api.slack.com/reference/block-kit/blocks#actions
