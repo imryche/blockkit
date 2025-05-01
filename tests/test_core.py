@@ -4,6 +4,7 @@ import pytest
 from zoneinfo import ZoneInfo
 
 from blockkit.core import (
+    Actions,
     Button,
     ChannelsSelect,
     Checkboxes,
@@ -2320,4 +2321,43 @@ class TestWorkflowButton:
             style="primary",
             accessibility_label="Run workflow",
         ).build()
+        assert got == want
+
+
+class TestActions:
+    def test_builds(self):
+        want = {
+            "type": "actions",
+            "elements": [
+                {
+                    "type": "button",
+                    "text": {"type": "plain_text", "text": "Click me"},
+                    "action_id": "button_action",
+                }
+            ],
+            "block_id": "actions_block",
+        }
+
+        got = Actions(
+            elements=[
+                Button(
+                    text="Click me",
+                    action_id="button_action",
+                ),
+            ],
+            block_id="actions_block",
+        ).build()
+        assert got == want
+
+        got = (
+            Actions()
+            .add_element(
+                Button(
+                    text="Click me",
+                    action_id="button_action",
+                )
+            )
+            .block_id("actions_block")
+            .build()
+        )
         assert got == want

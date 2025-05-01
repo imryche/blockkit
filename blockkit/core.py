@@ -1,7 +1,7 @@
 import dataclasses
 from abc import ABC, abstractmethod
 from datetime import date, datetime, time
-from typing import Any, Self, Sequence, Type
+from typing import Any, Self, Sequence, Type, TypeAlias, get_args
 
 from zoneinfo import ZoneInfo
 
@@ -2085,6 +2085,61 @@ class WorkflowButton(
 Blocks:
 
 - Actions (Actions) - https://api.slack.com/reference/block-kit/blocks#actions
+"""
+
+
+ActionElement: TypeAlias = (
+    Button
+    | Checkboxes
+    | DatePicker
+    | MultiChannelsSelect
+    | MultiConversationsSelect
+    | MultiExternalSelect
+    | MultiStaticSelect
+    | MultiUsersSelect
+    | Overflow
+    | RadioButtons
+    | RichTextInput
+    | ChannelsSelect
+    | ConversationsSelect
+    | ExternalSelect
+    | StaticSelect
+    | UsersSelect
+    | TimePicker
+    | WorkflowButton
+)
+
+
+class Actions(Component):
+    def __init__(
+        self,
+        elements: Sequence[ActionElement] | None = None,
+        block_id: str | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "actions")
+        self.elements(*elements or ())
+        self.block_id(block_id)
+
+    def elements(self, *elements: ActionElement) -> Self:
+        return self._add_field(
+            "elements",
+            list(elements),
+            validators=[Typed(*get_args(ActionElement)), Required()],
+        )
+
+    def add_element(self, element: ActionElement) -> Self:
+        field = self._get_field("elements")
+        field.value.append(element)
+        return self
+
+    def block_id(self, block_id: str) -> Self:
+        return self._add_field(
+            "block_id", block_id, validators=[Typed(str), Length(1, 255)]
+        )
+
+
+"""
 - Context (Context) - https://api.slack.com/reference/block-kit/blocks#context
 - Divider (Divider) - https://api.slack.com/reference/block-kit/blocks#divider
 - File (File) - https://api.slack.com/reference/block-kit/blocks#file
@@ -2109,5 +2164,4 @@ Blocks:
 - Rich style (RichStyle) - ...
 - Section (Section) - https://api.slack.com/reference/block-kit/blocks#section
 - Video (Video) - https://api.slack.com/reference/block-kit/blocks#video
-
 """
