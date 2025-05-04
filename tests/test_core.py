@@ -16,6 +16,7 @@ from blockkit.core import (
     DatePicker,
     DatetimePicker,
     DispatchActionConfig,
+    Divider,
     EmailInput,
     ExternalSelect,
     FieldValidationError,
@@ -2406,4 +2407,18 @@ class TestContext:
             .block_id("context_block")
             .build()
         )
+        assert got == want
+
+
+class TestDivider:
+    def test_builds(self):
+        want = {
+            "type": "divider",
+            "block_id": "divider_block",
+        }
+
+        got = Divider(block_id="divider_block").build()
+        assert got == want
+
+        got = Divider().block_id("divider_block").build()
         assert got == want

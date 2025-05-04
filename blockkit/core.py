@@ -2093,6 +2093,7 @@ Blocks:
 
 x Actions (Actions) - https://api.slack.com/reference/block-kit/blocks#actions
 x Context (Context) - https://api.slack.com/reference/block-kit/blocks#context
+x Divider (Divider) - https://api.slack.com/reference/block-kit/blocks#divider
 """
 
 
@@ -2187,8 +2188,23 @@ class Context(Component, BlockIdMixin):
         return self
 
 
+class Divider(Component, BlockIdMixin):
+    """
+    Divider block
+
+    Visually separates pieces of info inside of a message.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/divider-block
+    """
+
+    def __init__(self, block_id: str | None = None):
+        super().__init__()
+        self._add_field("type", "divider")
+        self.block_id(block_id)
+
+
 """
-- Divider (Divider) - https://api.slack.com/reference/block-kit/blocks#divider
 - File (File) - https://api.slack.com/reference/block-kit/blocks#file
 - Header (Header) - https://api.slack.com/reference/block-kit/blocks#header
 - Image (Image) - https://api.slack.com/reference/block-kit/blocks#image
