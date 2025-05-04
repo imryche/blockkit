@@ -2119,6 +2119,15 @@ ActionElement: TypeAlias = (
 
 
 class Actions(Component, BlockIdMixin):
+    """
+    Actions block
+
+    Holds multiple interactive elements.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/actions-block
+    """
+
     def __init__(
         self,
         elements: Sequence[ActionElement] | None = None,
