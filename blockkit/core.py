@@ -2125,7 +2125,7 @@ class Actions(Component):
         return self._add_field(
             "elements",
             list(elements),
-            validators=[Typed(*get_args(ActionElement)), Required()],
+            validators=[Typed(*get_args(ActionElement)), Required(), Length(1, 25)],
         )
 
     def add_element(self, element: ActionElement) -> Self:
