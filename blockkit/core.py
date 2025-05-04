@@ -2094,6 +2094,7 @@ Blocks:
 x Actions (Actions) - https://api.slack.com/reference/block-kit/blocks#actions
 x Context (Context) - https://api.slack.com/reference/block-kit/blocks#context
 x Divider (Divider) - https://api.slack.com/reference/block-kit/blocks#divider
+x File (File) - https://api.slack.com/reference/block-kit/blocks#file
 """
 
 
@@ -2204,8 +2205,44 @@ class Divider(Component, BlockIdMixin):
         self.block_id(block_id)
 
 
+class File(Component, BlockIdMixin):
+    """
+    File block
+
+    Displays info about remote files.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/file-block
+    """
+
+    def __init__(
+        self,
+        external_id: str | None = None,
+        source: str | None = None,
+        block_id: str | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "file")
+        self.external_id(external_id)
+        self.source(source)
+        self.block_id(block_id)
+
+    def external_id(self, external_id: str) -> Self:
+        return self._add_field(
+            "external_id",
+            external_id,
+            validators=[Typed(str), Required(), Length(1, 255)],
+        )
+
+    def source(self, source: str) -> Self:
+        return self._add_field(
+            "source",
+            source,
+            validators=[Typed(str), Required(), Strings("remote")],
+        )
+
+
 """
-- File (File) - https://api.slack.com/reference/block-kit/blocks#file
 - Header (Header) - https://api.slack.com/reference/block-kit/blocks#header
 - Image (Image) - https://api.slack.com/reference/block-kit/blocks#image
 - Input (Input) - https://api.slack.com/reference/block-kit/blocks#input

@@ -20,6 +20,7 @@ from blockkit.core import (
     EmailInput,
     ExternalSelect,
     FieldValidationError,
+    File,
     FileInput,
     ImageEl,
     InputParameter,
@@ -2421,4 +2422,21 @@ class TestDivider:
         assert got == want
 
         got = Divider().block_id("divider_block").build()
+        assert got == want
+
+
+class TestFile:
+    def test_builds(self):
+        want = {
+            "type": "file",
+            "external_id": "F123456789",
+            "source": "remote",
+            "block_id": "file_block",
+        }
+
+        got = File(
+            external_id="F123456789",
+            source="remote",
+            block_id="file_block",
+        ).build()
         assert got == want
