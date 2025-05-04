@@ -419,6 +419,13 @@ class ActionIdMixin:
         )
 
 
+class BlockIdMixin:
+    def block_id(self, block_id: str) -> Self:
+        return self._add_field(
+            "block_id", block_id, validators=[Typed(str), Length(1, 255)]
+        )
+
+
 class TextMixin:
     def text(self, text: "str | Text") -> Self:
         return self._add_field(
@@ -2084,7 +2091,8 @@ class WorkflowButton(
 """
 Blocks:
 
-- Actions (Actions) - https://api.slack.com/reference/block-kit/blocks#actions
+x Actions (Actions) - https://api.slack.com/reference/block-kit/blocks#actions
+x Context (Context) - https://api.slack.com/reference/block-kit/blocks#context
 """
 
 
@@ -2110,7 +2118,7 @@ ActionElement: TypeAlias = (
 )
 
 
-class Actions(Component):
+class Actions(Component, BlockIdMixin):
     def __init__(
         self,
         elements: Sequence[ActionElement] | None = None,
@@ -2133,14 +2141,44 @@ class Actions(Component):
         field.value.append(element)
         return self
 
-    def block_id(self, block_id: str) -> Self:
+
+ContextElement: TypeAlias = ImageEl | Text
+
+
+class Context(Component, BlockIdMixin):
+    """
+    Context block
+
+    Provides contextual info, which can include both images and text.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/context-block
+    """
+
+    def __init__(
+        self,
+        elements: Sequence[ContextElement] | None = None,
+        block_id: str | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "context")
+        self.elements(*elements or ())
+        self.block_id(block_id)
+
+    def elements(self, *elements: ContextElement) -> Self:
         return self._add_field(
-            "block_id", block_id, validators=[Typed(str), Length(1, 255)]
+            "elements",
+            list(elements),
+            validators=[Typed(*get_args(ContextElement)), Required(), Length(1, 10)],
         )
+
+    def add_element(self, element: ContextElement) -> Self:
+        field = self._get_field("elements")
+        field.value.append(element)
+        return self
 
 
 """
-- Context (Context) - https://api.slack.com/reference/block-kit/blocks#context
 - Divider (Divider) - https://api.slack.com/reference/block-kit/blocks#divider
 - File (File) - https://api.slack.com/reference/block-kit/blocks#file
 - Header (Header) - https://api.slack.com/reference/block-kit/blocks#header

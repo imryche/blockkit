@@ -10,6 +10,7 @@ from blockkit.core import (
     Checkboxes,
     ComponentValidationError,
     Confirm,
+    Context,
     ConversationFilter,
     ConversationsSelect,
     DatePicker,
@@ -2358,6 +2359,51 @@ class TestActions:
                 )
             )
             .block_id("actions_block")
+            .build()
+        )
+        assert got == want
+
+
+class TestContext:
+    def test_builds(self):
+        want = {
+            "type": "context",
+            "elements": [
+                {
+                    "type": "image",
+                    "alt_text": "alice in wonderland",
+                    "image_url": "https://wonderland.com/static/alice.png",
+                },
+                {
+                    "type": "mrkdwn",
+                    "text": "*Alice in wonderland*",
+                },
+            ],
+            "block_id": "context_block",
+        }
+
+        got = Context(
+            elements=[
+                ImageEl(
+                    alt_text="alice in wonderland",
+                    image_url="https://wonderland.com/static/alice.png",
+                ),
+                Text(text="*Alice in wonderland*"),
+            ],
+            block_id="context_block",
+        ).build()
+        assert got == want
+
+        got = (
+            Context()
+            .add_element(
+                ImageEl(
+                    alt_text="alice in wonderland",
+                    image_url="https://wonderland.com/static/alice.png",
+                )
+            )
+            .add_element(Text(text="*Alice in wonderland*"))
+            .block_id("context_block")
             .build()
         )
         assert got == want
