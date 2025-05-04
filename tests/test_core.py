@@ -22,6 +22,7 @@ from blockkit.core import (
     FieldValidationError,
     File,
     FileInput,
+    Header,
     ImageEl,
     InputParameter,
     MultiChannelsSelect,
@@ -2448,4 +2449,22 @@ class TestFile:
             .block_id("file_block")
             .build()
         )
+        assert got == want
+
+
+class TestHeader:
+    def test_builds(self):
+        want = {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": "Welcome to Wonderland!",
+            },
+            "block_id": "header_block",
+        }
+
+        got = Header(
+            text="Welcome to Wonderland!",
+            block_id="header_block",
+        ).build()
         assert got == want

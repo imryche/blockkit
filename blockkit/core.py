@@ -2242,6 +2242,30 @@ class File(Component, BlockIdMixin):
         )
 
 
+class Header(Component, BlockIdMixin):
+    """
+    Header block
+
+    Displays a larger-sized text.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/header-block
+    """
+
+    def __init__(self, text: str | Text | None = None, block_id: str | None = None):
+        super().__init__()
+        self._add_field("type", "header")
+        self.text(text)
+        self.block_id(block_id)
+
+    def text(self, text: str | Text) -> Self:
+        return self._add_field(
+            "text",
+            str_to_plain(text),
+            validators=[Typed(Text), Required(), Plain(), Length(1, 150)],
+        )
+
+
 """
 - Header (Header) - https://api.slack.com/reference/block-kit/blocks#header
 - Image (Image) - https://api.slack.com/reference/block-kit/blocks#image
