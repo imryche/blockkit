@@ -2440,3 +2440,12 @@ class TestFile:
             block_id="file_block",
         ).build()
         assert got == want
+
+        got = (
+            File()
+            .external_id("F123456789")
+            .source("remote")
+            .block_id("file_block")
+            .build()
+        )
+        assert got == want
