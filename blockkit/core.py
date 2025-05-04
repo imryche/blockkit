@@ -2092,19 +2092,19 @@ ActionElement: TypeAlias = (
     Button
     | Checkboxes
     | DatePicker
-    | MultiChannelsSelect
-    | MultiConversationsSelect
-    | MultiExternalSelect
     | MultiStaticSelect
+    | MultiExternalSelect
     | MultiUsersSelect
+    | MultiConversationsSelect
+    | MultiChannelsSelect
     | Overflow
     | RadioButtons
     | RichTextInput
-    | ChannelsSelect
-    | ConversationsSelect
-    | ExternalSelect
     | StaticSelect
+    | ExternalSelect
     | UsersSelect
+    | ConversationsSelect
+    | ChannelsSelect
     | TimePicker
     | WorkflowButton
 )
