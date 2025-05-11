@@ -1,7 +1,7 @@
 import dataclasses
 from abc import ABC, abstractmethod
 from datetime import date, datetime, time
-from typing import Any, Self, Sequence, Type, TypeAlias, get_args
+from typing import Any, Self, Type, TypeAlias, get_args
 
 from zoneinfo import ZoneInfo
 
@@ -62,7 +62,7 @@ class Length(FieldValidator):
 
 
 class Strings(FieldValidator):
-    def __init__(self, *values: Sequence[str]):
+    def __init__(self, *values: list[str]):
         self.values = values
 
     def validate(self, field_name: str, value: Any) -> None:
@@ -739,7 +739,7 @@ class ConversationFilter(Component):
 
     def __init__(
         self,
-        include: Sequence[str] | None = None,
+        include: list[str] | None = None,
         exclude_bot_users: bool | None = None,
         exclude_external_shared_channels: bool | None = None,
     ):
@@ -751,7 +751,7 @@ class ConversationFilter(Component):
             Either("include", "exclude_bot_users", "exclude_external_shared_channels")
         )
 
-    def include(self, include: Sequence[str] | None) -> Self:
+    def include(self, include: list[str] | None) -> Self:
         return self._add_field(
             "include",
             include,
@@ -784,11 +784,11 @@ class DispatchActionConfig(Component):
         https://docs.slack.dev/reference/block-kit/composition-objects/dispatch-action-configuration-object
     """
 
-    def __init__(self, trigger_actions_on: Sequence[str] | None = None):
+    def __init__(self, trigger_actions_on: list[str] | None = None):
         super().__init__()
         self.trigger_actions_on(trigger_actions_on)
 
-    def trigger_actions_on(self, trigger_actions_on: Sequence[str] | None):
+    def trigger_actions_on(self, trigger_actions_on: list[str] | None):
         return self._add_field(
             "trigger_actions_on",
             trigger_actions_on,
@@ -1067,8 +1067,8 @@ class Checkboxes(
     def __init__(
         self,
         action_id: str | None = None,
-        options: Sequence[Option] | None = None,
-        initial_options: Sequence[Option] | None = None,
+        options: list[Option] | None = None,
+        initial_options: list[Option] | None = None,
         confirm: Confirm | None = None,
         focus_on_load: bool | None = None,
     ):
@@ -1232,7 +1232,7 @@ class FileInput(Component, ActionIdMixin):
     def __init__(
         self,
         action_id: str | None = None,
-        filetypes: Sequence[str] | None = None,
+        filetypes: list[str] | None = None,
         max_files: int | None = None,
     ):
         super().__init__()
@@ -1317,9 +1317,9 @@ class MultiStaticSelect(
     def __init__(
         self,
         action_id: str | None = None,
-        options: Sequence[Option] | None = None,
-        option_groups: Sequence[OptionGroup] | None = None,
-        initial_options: Sequence[Option | OptionGroup] | None = None,
+        options: list[Option] | None = None,
+        option_groups: list[OptionGroup] | None = None,
+        initial_options: list[Option | OptionGroup] | None = None,
         confirm: Confirm | None = None,
         max_selected_items: int | None = None,
         focus_on_load: bool | None = None,
@@ -1368,7 +1368,7 @@ class MultiExternalSelect(
         self,
         action_id: str | None = None,
         min_query_length: int | None = None,
-        initial_options: Sequence[Option | OptionGroup] | None = None,
+        initial_options: list[Option | OptionGroup] | None = None,
         confirm: Confirm | None = None,
         max_selected_items: int | None = None,
         focus_on_load: bool | None = None,
@@ -1408,7 +1408,7 @@ class MultiUsersSelect(
     def __init__(
         self,
         action_id: str | None = None,
-        initial_users: Sequence[str] | None = None,
+        initial_users: list[str] | None = None,
         confirm: Confirm | None = None,
         max_selected_items: int | None = None,
         focus_on_load: bool | None = None,
@@ -1459,7 +1459,7 @@ class MultiConversationsSelect(
     def __init__(
         self,
         action_id: str | None = None,
-        initial_conversations: Sequence[str] | None = None,
+        initial_conversations: list[str] | None = None,
         default_to_current_conversation: bool | None = None,
         confirm: Confirm | None = None,
         max_selected_items: int | None = None,
@@ -1514,7 +1514,7 @@ class MultiChannelsSelect(
     def __init__(
         self,
         action_id: str | None = None,
-        initial_channels: Sequence[str] | None = None,
+        initial_channels: list[str] | None = None,
         confirm: Confirm | None = None,
         max_selected_items: int | None = None,
         focus_on_load: bool | None = None,
@@ -1625,7 +1625,7 @@ class Overflow(Component, ActionIdMixin, OptionsMixin, ConfirmMixin):
     def __init__(
         self,
         action_id: str | None = None,
-        options: Sequence[Option] | None = None,
+        options: list[Option] | None = None,
         confirm: Confirm | None = None,
     ):
         super().__init__()
@@ -1709,7 +1709,7 @@ class RadioButtons(
     def __init__(
         self,
         action_id: str | None = None,
-        options: Sequence[Option] | None = None,
+        options: list[Option] | None = None,
         initial_option: Option | None = None,
         confirm: Confirm | None = None,
         focus_on_load: bool | None = None,
@@ -1790,8 +1790,8 @@ class StaticSelect(
     def __init__(
         self,
         action_id: str | None = None,
-        options: Sequence[Option] | None = None,
-        option_groups: Sequence[OptionGroup] | None = None,
+        options: list[Option] | None = None,
+        option_groups: list[OptionGroup] | None = None,
         initial_option: Option | OptionGroup | None = None,
         confirm: Confirm | None = None,
         focus_on_load: bool | None = None,
@@ -2156,7 +2156,7 @@ class Actions(Component, BlockIdMixin):
 
     def __init__(
         self,
-        elements: Sequence[ActionElement] | None = None,
+        elements: list[ActionElement] | None = None,
         block_id: str | None = None,
     ):
         super().__init__()
@@ -2192,7 +2192,7 @@ class Context(Component, BlockIdMixin):
 
     def __init__(
         self,
-        elements: Sequence[ContextElement] | None = None,
+        elements: list[ContextElement] | None = None,
         block_id: str | None = None,
     ):
         super().__init__()
