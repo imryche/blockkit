@@ -171,7 +171,7 @@ class ComponentValidator(ABC):
 
 
 class Either(ComponentValidator):
-    def __init__(self, *field_names: tuple[str]):
+    def __init__(self, *field_names: str):
         self.field_names = field_names
 
     def validate(self, component: "Component") -> None:
@@ -187,7 +187,7 @@ class Either(ComponentValidator):
 
 
 class OnlyOne(ComponentValidator):
-    def __init__(self, *field_names: tuple[str]):
+    def __init__(self, *field_names: str):
         self.field_names = field_names
 
     def validate(self, component: "Component") -> None:
@@ -299,7 +299,7 @@ class DecimalAllowed(ComponentValidator):
                 )
 
 
-def str_to_plain(value: str) -> "Text":
+def str_to_plain(value: "str | Text | None") -> "Text | None":
     if isinstance(value, str):
         return Text(value).type(Text.PLAIN)
     return value
@@ -322,7 +322,9 @@ class Component:
     _fields: dict[str, Field] = dataclasses.field(default_factory=dict)
     _validators: list[ComponentValidator] = dataclasses.field(default_factory=list)
 
-    def __eq__(self, other: "Component") -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Component):
+            return NotImplemented
         if not isinstance(other, self.__class__):
             return False
         return self.build() == other.build()
@@ -341,12 +343,12 @@ class Component:
         return hash(make_hashable(self.build()))
 
     def _add_field(
-        self,
+        self: Self,
         name: str,
         value: Any,
-        validators: Sequence[FieldValidator] = None,
+        validators: list[FieldValidator] | None = None,
         stringify: bool = False,
-    ):
+    ) -> Self:
         if not validators:
             validators = []
         field = Field(
@@ -413,22 +415,22 @@ class Component:
 
 
 class ActionIdMixin:
-    def action_id(self, action_id: str) -> Self:
-        return self._add_field(
+    def action_id(self, action_id: str | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
             "action_id", action_id, validators=[Typed(str), Length(1, 255)]
         )
 
 
 class BlockIdMixin:
-    def block_id(self, block_id: str) -> Self:
-        return self._add_field(
+    def block_id(self, block_id: str | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
             "block_id", block_id, validators=[Typed(str), Length(1, 255)]
         )
 
 
 class TextMixin:
-    def text(self, text: "str | Text") -> Self:
-        return self._add_field(
+    def text(self, text: "str | Text | None") -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
             "text",
             str_to_plain(text),
             validators=[Typed(Text), Required(), Length(1, 75)],
@@ -436,18 +438,26 @@ class TextMixin:
 
 
 class FocusOnLoadMixin:
-    def focus_on_load(self, focus_on_load: bool = True) -> Self:
-        return self._add_field("focus_on_load", focus_on_load, validators=[Typed(bool)])
+    def focus_on_load(self, focus_on_load: bool | None = True) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "focus_on_load",
+            focus_on_load,
+            validators=[Typed(bool)],
+        )
 
 
 class ConfirmMixin:
-    def confirm(self, confirm: "Confirm") -> Self:
-        return self._add_field("confirm", confirm, validators=[Typed(Confirm)])
+    def confirm(self, confirm: "Confirm | None") -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "confirm",
+            confirm,
+            validators=[Typed(Confirm)],
+        )
 
 
 class PlaceholderMixin:
-    def placeholder(self, placeholder: "str | Text") -> Self:
-        return self._add_field(
+    def placeholder(self, placeholder: "str | Text | None") -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
             "placeholder",
             str_to_plain(placeholder),
             validators=[Typed(Text), Length(1, 150)],
@@ -458,15 +468,17 @@ class StyleMixin:
     PRIMARY: str = "primary"
     DANGER: str = "danger"
 
-    def style(self, style: str) -> Self:
-        return self._add_field(
-            "style", style, validators=[Typed(str), Strings(self.PRIMARY, self.DANGER)]
+    def style(self, style: str | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "style",
+            style,
+            validators=[Typed(str), Strings(self.PRIMARY, self.DANGER)],
         )
 
 
 class AccessibilityLabelMixin:
-    def accessibility_label(self, accessibility_label: str) -> Self:
-        return self._add_field(
+    def accessibility_label(self, accessibility_label: str | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
             "accessibility_label",
             accessibility_label,
             validators=[Typed(str), Length(1, 75)],
@@ -475,35 +487,39 @@ class AccessibilityLabelMixin:
 
 class InitialOptionsMixin:
     def initial_options(self, *initial_options: "Option | OptionGroup") -> Self:
-        return self._add_field(
+        return self._add_field(  # type: ignore[attr-defined]
             "initial_options",
             list(initial_options),
             validators=[Typed(Option, OptionGroup), Length(1, 100)],
         )
 
     def add_initial_option(self, option: "Option | OptionGroup") -> Self:
-        field = self._get_field("initial_options")
+        field = self._get_field("initial_options")  # type: ignore[attr-defined]
         field.value.append(option)
         return self
 
 
 class InitialOptionMixin:
-    def initial_option(self, initial_option: "Option | OptionGroup") -> Self:
-        return self._add_field(
-            "initial_option", initial_option, validators=[Typed(Option, OptionGroup)]
+    def initial_option(self, initial_option: "Option | OptionGroup | None") -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "initial_option",
+            initial_option,
+            validators=[Typed(Option, OptionGroup)],
         )
 
 
 class MaxSelectedItemsMixin:
-    def max_selected_items(self, max_selected_items: int) -> Self:
-        return self._add_field(
-            "max_selected_items", max_selected_items, validators=[Typed(int), Ints(1)]
+    def max_selected_items(self, max_selected_items: int | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "max_selected_items",
+            max_selected_items,
+            validators=[Typed(int), Ints(1)],
         )
 
 
 class OptionsMixin:
-    def options(self, *options: tuple["Option"]) -> Self:
-        return self._add_field(
+    def options(self, *options: "Option") -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
             "options",
             list(options),
             validators=[
@@ -514,30 +530,30 @@ class OptionsMixin:
         )
 
     def add_option(self, option: "Option") -> Self:
-        field = self._get_field("options")
+        field = self._get_field("options")  # type: ignore[attr-defined]
         field.value.append(option)
         return self
 
 
 class OptionGroupsMixin:
     def option_groups(self, *option_groups: "OptionGroup") -> Self:
-        return self._add_field(
+        return self._add_field(  # type: ignore[attr-defined]
             "option_groups",
             list(option_groups),
             validators=[Typed(OptionGroup), Length(1, 100)],
         )
 
     def add_option_group(self, option_group: "OptionGroup") -> Self:
-        field = self._get_field("option_groups")
+        field = self._get_field("option_groups")  # type: ignore[attr-defined]
         field.value.append(option_group)
         return self
 
 
 class DispatchActionConfigMixin:
     def dispatch_action_config(
-        self, dispatch_action_config: "DispatchActionConfig"
+        self, dispatch_action_config: "DispatchActionConfig | None"
     ) -> Self:
-        return self._add_field(
+        return self._add_field(  # type: ignore[attr-defined]
             "dispatch_action_config",
             dispatch_action_config,
             validators=[Typed(DispatchActionConfig)],
@@ -545,17 +561,19 @@ class DispatchActionConfigMixin:
 
 
 class MinQueryLengthMixin:
-    def min_query_length(self, min_query_length: int) -> Self:
-        return self._add_field(
-            "min_query_length", min_query_length, validators=[Typed(int), Ints(1)]
+    def min_query_length(self, min_query_length: int | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "min_query_length",
+            min_query_length,
+            validators=[Typed(int), Ints(1)],
         )
 
 
 class DefaultToCurrentConversationMixin:
     def default_to_current_conversation(
-        self, default_to_current_conversation: bool = True
+        self, default_to_current_conversation: bool | None = True
     ) -> Self:
-        return self._add_field(
+        return self._add_field(  # type: ignore[attr-defined]
             "default_to_current_conversation",
             default_to_current_conversation,
             validators=[Typed(bool)],
@@ -563,14 +581,20 @@ class DefaultToCurrentConversationMixin:
 
 
 class FilterMixin:
-    def filter(self, filter: "ConversationFilter") -> Self:
-        return self._add_field("filter", filter, validators=[Typed(ConversationFilter)])
+    def filter(self, filter: "ConversationFilter | None") -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "filter",
+            filter,
+            validators=[Typed(ConversationFilter)],
+        )
 
 
 class ResponseUrlEnabledMixin:
-    def response_url_enabled(self, response_url_enabled: bool = True) -> Self:
-        return self._add_field(
-            "response_url_enabled", response_url_enabled, validators=[Typed(bool)]
+    def response_url_enabled(self, response_url_enabled: bool | None = True) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "response_url_enabled",
+            response_url_enabled,
+            validators=[Typed(bool)],
         )
 
 
@@ -627,7 +651,7 @@ class Text(Component):
             return self.PLAIN
         return self.MD if is_md(str(text)) else self.PLAIN
 
-    def text(self, text: str) -> Self:
+    def text(self, text: str | None) -> Self:
         self.type(self._detect_type(text))
         return self._add_field(
             "text",
@@ -635,10 +659,10 @@ class Text(Component):
             validators=[Typed(str), Required(), Length(1, 3000)],
         )
 
-    def emoji(self, emoji: bool = True) -> Self:
+    def emoji(self, emoji: bool | None = True) -> Self:
         return self._add_field("emoji", emoji, validators=[Typed(bool)])
 
-    def verbatim(self, verbatim: bool = True) -> Self:
+    def verbatim(self, verbatim: bool | None = True) -> Self:
         return self._add_field("verbatim", verbatim, validators=[Typed(bool)])
 
     def type(self, type: str) -> Self:
@@ -674,28 +698,28 @@ class Confirm(Component, StyleMixin):
         self.deny(deny)
         self.style(style)
 
-    def title(self, title: str | Text) -> Self:
+    def title(self, title: str | Text | None) -> Self:
         return self._add_field(
             "title",
             str_to_plain(title),
             validators=[Typed(Text), Required(), Plain(), Length(1, 100)],
         )
 
-    def text(self, text: str | Text) -> Self:
+    def text(self, text: str | Text | None) -> Self:
         return self._add_field(
             "text",
             str_to_plain(text),
             validators=[Typed(Text), Required(), Plain(), Length(1, 300)],
         )
 
-    def confirm(self, confirm: str | Text) -> Self:
+    def confirm(self, confirm: str | Text | None) -> Self:
         return self._add_field(
             "confirm",
             str_to_plain(confirm),
             validators=[Typed(Text), Required(), Plain(), Length(1, 30)],
         )
 
-    def deny(self, deny: str | Text) -> Self:
+    def deny(self, deny: str | Text | None) -> Self:
         return self._add_field(
             "deny",
             str_to_plain(deny),
@@ -727,20 +751,20 @@ class ConversationFilter(Component):
             Either("include", "exclude_bot_users", "exclude_external_shared_channels")
         )
 
-    def include(self, include: Sequence[str]) -> Self:
+    def include(self, include: Sequence[str] | None) -> Self:
         return self._add_field(
             "include",
             include,
             validators=[Typed(str), Strings("im", "mpim", "private", "public")],
         )
 
-    def exclude_bot_users(self, exclude_bot_users: bool = True) -> Self:
+    def exclude_bot_users(self, exclude_bot_users: bool | None = True) -> Self:
         return self._add_field(
             "exclude_bot_users", exclude_bot_users, validators=[Typed(bool)]
         )
 
     def exclude_external_shared_channels(
-        self, exclude_external_shared_channels: bool = True
+        self, exclude_external_shared_channels: bool | None = True
     ) -> Self:
         return self._add_field(
             "exclude_external_shared_channels",
@@ -764,7 +788,7 @@ class DispatchActionConfig(Component):
         super().__init__()
         self.trigger_actions_on(trigger_actions_on)
 
-    def trigger_actions_on(self, trigger_actions_on: Sequence[str]):
+    def trigger_actions_on(self, trigger_actions_on: Sequence[str] | None):
         return self._add_field(
             "trigger_actions_on",
             trigger_actions_on,
@@ -799,13 +823,13 @@ class Option(Component, TextMixin):
         self.description(description)
         self.url(url)
 
-    def value(self, value: str) -> Self:
+    def value(self, value: str | None) -> Self:
         return self._add_field(
             "value", value, validators=[Typed(str), Required(), Length(1, 150)]
         )
 
     # TODO: markdown should be available in checkbox group and radiobutton group
-    def description(self, description: str | Text) -> Self:
+    def description(self, description: str | Text | None) -> Self:
         return self._add_field(
             "description",
             str_to_plain(description),
@@ -834,7 +858,7 @@ class OptionGroup(Component, OptionsMixin):
         self.label(label)
         self.options(*options or ())
 
-    def label(self, label: str | Text) -> Self:
+    def label(self, label: str | Text | None) -> Self:
         return self._add_field(
             "label",
             str_to_plain(label),
@@ -855,12 +879,12 @@ class InputParameter(Component):
         self.name(name)
         self.value(value)
 
-    def name(self, name: str) -> Self:
+    def name(self, name: str | None) -> Self:
         return self._add_field(
             "name", name, validators=[Typed(str), Required(), Length(1, 3000)]
         )
 
-    def value(self, value: str) -> Self:
+    def value(self, value: str | None) -> Self:
         return self._add_field(
             "value", value, validators=[Typed(str), Required(), Length(1, 3000)]
         )
@@ -885,7 +909,7 @@ class Trigger(Component):
         self.url(url)
         self.customizable_input_parameters(*customizable_input_parameters or ())
 
-    def url(self, url: str) -> Self:
+    def url(self, url: str | None) -> Self:
         return self._add_field(
             "url", url, validators=[Typed(str), Required(), Length(1, 3000)]
         )
@@ -919,7 +943,7 @@ class Workflow(Component):
         super().__init__()
         self.trigger(trigger)
 
-    def trigger(self, trigger: Trigger) -> Self:
+    def trigger(self, trigger: Trigger | None) -> Self:
         return self._add_field(
             "trigger", trigger, validators=[Typed(Trigger), Required()]
         )
@@ -942,10 +966,10 @@ class SlackFile(Component):
         self.id(id)
         self._add_validator(OnlyOne("url", "id"))
 
-    def url(self, url: str) -> Self:
+    def url(self, url: str | None) -> Self:
         return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
 
-    def id(self, id: str) -> Self:
+    def id(self, id: str | None) -> Self:
         return self._add_field("id", id, validators=[Typed(str), Length(1, 30)])
 
 
@@ -1021,10 +1045,10 @@ class Button(
         self.confirm(confirm)
         self.accessibility_label(accessibility_label)
 
-    def url(self, url: str) -> Self:
+    def url(self, url: str | None) -> Self:
         return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
 
-    def value(self, value: str) -> Self:
+    def value(self, value: str | None) -> Self:
         return self._add_field("value", value, validators=[Typed(str), Length(1, 2000)])
 
 
@@ -1098,7 +1122,7 @@ class DatePicker(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
 
-    def initial_date(self, initial_date: str | date) -> Self:
+    def initial_date(self, initial_date: str | date | None) -> Self:
         if isinstance(initial_date, str):
             initial_date = datetime.strptime(initial_date, "%Y-%m-%d").date()
         return self._add_field("initial_date", initial_date, validators=[Typed(date)])
@@ -1132,7 +1156,7 @@ class DatetimePicker(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
 
-    def initial_date_time(self, initial_date_time: str | datetime) -> Self:
+    def initial_date_time(self, initial_date_time: str | datetime | None) -> Self:
         if isinstance(initial_date_time, str):
             initial_date_time = datetime.fromtimestamp(int(initial_date_time))
         return self._add_field(
@@ -1172,7 +1196,7 @@ class EmailInput(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
 
-    def initial_value(self, initial_value: str) -> Self:
+    def initial_value(self, initial_value: str | None) -> Self:
         return self._add_field(
             "initial_value", initial_value, validators=[Typed(str), Length(1, 74)]
         )
@@ -1224,7 +1248,7 @@ class FileInput(Component, ActionIdMixin):
             validators=[Typed(str), Strings(*self.FILE_TYPES)],
         )
 
-    def max_files(self, max_files: int) -> Self:
+    def max_files(self, max_files: int | None) -> Self:
         return self._add_field(
             "max_files", max_files, validators=[Typed(int), Ints(1, 10)]
         )
@@ -1253,17 +1277,17 @@ class ImageEl(Component):
         self.slack_file(slack_file)
         self._add_validator(Either("image_url", "slack_file"))
 
-    def alt_text(self, alt_text: str) -> Self:
+    def alt_text(self, alt_text: str | None) -> Self:
         return self._add_field(
             "alt_text", alt_text, validators=[Typed(str), Length(1, 255)]
         )
 
-    def image_url(self, image_url: str) -> Self:
+    def image_url(self, image_url: str | None) -> Self:
         return self._add_field(
             "image_url", image_url, validators=[Typed(str), Length(1, 3000)]
         )
 
-    def slack_file(self, slack_file: SlackFile) -> Self:
+    def slack_file(self, slack_file: SlackFile | None) -> Self:
         return self._add_field("slack_file", slack_file, validators=[Typed(SlackFile)])
 
 
@@ -1562,14 +1586,14 @@ class NumberInput(
             )
         )
 
-    def is_decimal_allowed(self, is_decimal_allowed: bool) -> Self:
+    def is_decimal_allowed(self, is_decimal_allowed: bool | None) -> Self:
         return self._add_field(
             "is_decimal_allowed",
             is_decimal_allowed,
             validators=[Typed(bool), Required()],
         )
 
-    def initial_value(self, initial_value: int | float) -> Self:
+    def initial_value(self, initial_value: int | float | None) -> Self:
         return self._add_field(
             "initial_value",
             initial_value,
@@ -1577,12 +1601,12 @@ class NumberInput(
             stringify=True,
         )
 
-    def min_value(self, min_value: int | float) -> Self:
+    def min_value(self, min_value: int | float | None) -> Self:
         return self._add_field(
             "min_value", min_value, validators=[Typed(int, float)], stringify=True
         )
 
-    def max_value(self, max_value: int | float) -> Self:
+    def max_value(self, max_value: int | float | None) -> Self:
         return self._add_field(
             "max_value", max_value, validators=[Typed(int, float)], stringify=True
         )
@@ -1651,20 +1675,20 @@ class PlainTextInput(
         self.placeholder(placeholder)
         self._add_validator(Ranging("initial_value", "min_length", "max_length"))
 
-    def initial_value(self, initial_value: str) -> Self:
+    def initial_value(self, initial_value: str | None) -> Self:
         return self._add_field(
             "initial_value", initial_value, validators=[Typed(str), Length(1, 3000)]
         )
 
-    def multiline(self, multiline: bool = True) -> Self:
+    def multiline(self, multiline: bool | None = True) -> Self:
         return self._add_field("multiline", multiline, validators=[Typed(bool)])
 
-    def min_length(self, min_length: int) -> Self:
+    def min_length(self, min_length: int | None) -> Self:
         return self._add_field(
             "min_length", min_length, validators=[Typed(int), Ints(0, 3000)]
         )
 
-    def max_length(self, max_length: int) -> Self:
+    def max_length(self, max_length: int | None) -> Self:
         return self._add_field(
             "max_length", max_length, validators=[Typed(int), Ints(1, 3000)]
         )
@@ -1700,7 +1724,7 @@ class RadioButtons(
         self.focus_on_load(focus_on_load)
         self._add_validator(Within("initial_option", "options"))
 
-    def initial_option(self, initial_option: Option) -> Self:
+    def initial_option(self, initial_option: Option | None) -> Self:
         return self._add_field(
             "initial_option", initial_option, validators=[Typed(Option)]
         )
@@ -1867,7 +1891,7 @@ class UsersSelect(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
 
-    def initial_user(self, initial_user: str) -> Self:
+    def initial_user(self, initial_user: str | None) -> Self:
         return self._add_field(
             "initial_user", initial_user, validators=[Typed(str), Length(1)]
         )
@@ -1919,7 +1943,7 @@ class ConversationsSelect(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
 
-    def initial_conversation(self, initial_conversation: str) -> Self:
+    def initial_conversation(self, initial_conversation: str | None) -> Self:
         return self._add_field(
             "initial_conversation",
             initial_conversation,
@@ -1965,7 +1989,7 @@ class ChannelsSelect(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
 
-    def initial_channel(self, initial_channel: str) -> Self:
+    def initial_channel(self, initial_channel: str | None) -> Self:
         return self._add_field(
             "initial_channel",
             initial_channel,
@@ -2007,12 +2031,12 @@ class TimePicker(
         self.placeholder(placeholder)
         self.timezone(timezone)
 
-    def initial_time(self, initial_time: str | time) -> Self:
+    def initial_time(self, initial_time: str | time | None) -> Self:
         if isinstance(initial_time, str):
             initial_time = datetime.strptime(initial_time, "%H:%M").time()
         return self._add_field("initial_time", initial_time, validators=[Typed(time)])
 
-    def timezone(self, timezone: str | ZoneInfo) -> Self:
+    def timezone(self, timezone: str | ZoneInfo | None) -> Self:
         if isinstance(timezone, str):
             timezone = ZoneInfo(timezone)
         return self._add_field("timezone", timezone, validators=[Typed(ZoneInfo)])
@@ -2050,7 +2074,7 @@ class UrlInput(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
 
-    def initial_value(self, initial_value: str) -> Self:
+    def initial_value(self, initial_value: str | None) -> Self:
         return self._add_field(
             "initial_value", initial_value, validators=[Typed(str), Length(1, 74)]
         )
@@ -2074,7 +2098,7 @@ class WorkflowButton(
         workflow: Workflow | None = None,
         action_id: str | None = None,
         style: str | None = None,
-        accessibility_label: str | Text | None = None,
+        accessibility_label: str | None = None,
     ):
         super().__init__()
         self._add_field("type", "workflow_button")
@@ -2084,7 +2108,7 @@ class WorkflowButton(
         self.style(style)
         self.accessibility_label(accessibility_label)
 
-    def workflow(self, workflow: Workflow) -> Self:
+    def workflow(self, workflow: Workflow | None) -> Self:
         return self._add_field("workflow", workflow, validators=[Typed(Workflow)])
 
 
@@ -2227,14 +2251,14 @@ class File(Component, BlockIdMixin):
         self.source(source)
         self.block_id(block_id)
 
-    def external_id(self, external_id: str) -> Self:
+    def external_id(self, external_id: str | None) -> Self:
         return self._add_field(
             "external_id",
             external_id,
             validators=[Typed(str), Required(), Length(1, 255)],
         )
 
-    def source(self, source: str) -> Self:
+    def source(self, source: str | None) -> Self:
         return self._add_field(
             "source",
             source,
@@ -2258,7 +2282,7 @@ class Header(Component, BlockIdMixin):
         self.text(text)
         self.block_id(block_id)
 
-    def text(self, text: str | Text) -> Self:
+    def text(self, text: str | Text | None) -> Self:
         return self._add_field(
             "text",
             str_to_plain(text),
