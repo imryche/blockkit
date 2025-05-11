@@ -62,7 +62,7 @@ class Length(FieldValidator):
 
 
 class Strings(FieldValidator):
-    def __init__(self, *values: list[str]):
+    def __init__(self, *values: str):
         self.values = values
 
     def validate(self, field_name: str, value: Any) -> None:
