@@ -2119,6 +2119,7 @@ x Actions (Actions) - https://api.slack.com/reference/block-kit/blocks#actions
 x Context (Context) - https://api.slack.com/reference/block-kit/blocks#context
 x Divider (Divider) - https://api.slack.com/reference/block-kit/blocks#divider
 x File (File) - https://api.slack.com/reference/block-kit/blocks#file
+x Header (Header) - https://api.slack.com/reference/block-kit/blocks#header
 """
 
 
@@ -2291,7 +2292,6 @@ class Header(Component, BlockIdMixin):
 
 
 """
-- Header (Header) - https://api.slack.com/reference/block-kit/blocks#header
 - Image (Image) - https://api.slack.com/reference/block-kit/blocks#image
 - Input (Input) - https://api.slack.com/reference/block-kit/blocks#input
 - Markdown (Markdown) - https://api.slack.com/reference/block-kit/blocks#markdown
