@@ -23,6 +23,7 @@ from blockkit.core import (
     File,
     FileInput,
     Header,
+    Image,
     ImageEl,
     InputParameter,
     MultiChannelsSelect,
@@ -2467,4 +2468,39 @@ class TestHeader:
             text="Welcome to Wonderland!",
             block_id="header_block",
         ).build()
+        assert got == want
+
+        got = Header().text("Welcome to Wonderland!").block_id("header_block").build()
+        assert got == want
+
+
+class TestImage:
+    def test_builds(self):
+        want = {
+            "type": "image",
+            "alt_text": "alice in wonderland",
+            "image_url": "https://wonderland.com/static/alice.png",
+            "title": {
+                "type": "plain_text",
+                "text": "alice in wonderland",
+            },
+            "block_id": "image_block",
+        }
+
+        got = Image(
+            alt_text="alice in wonderland",
+            image_url="https://wonderland.com/static/alice.png",
+            title="alice in wonderland",
+            block_id="image_block",
+        ).build()
+        assert got == want
+
+        got = (
+            Image()
+            .alt_text("alice in wonderland")
+            .image_url("https://wonderland.com/static/alice.png")
+            .title("alice in wonderland")
+            .block_id("image_block")
+            .build()
+        )
         assert got == want

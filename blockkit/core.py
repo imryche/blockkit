@@ -598,6 +598,33 @@ class ResponseUrlEnabledMixin:
         )
 
 
+class AltTextMixin:
+    def alt_text(self, alt_text: str | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "alt_text",
+            alt_text,
+            validators=[Typed(str), Required(), Length(1, 255)],
+        )
+
+
+class ImageUrlMixin:
+    def image_url(self, image_url: str | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "image_url",
+            image_url,
+            validators=[Typed(str), Length(1, 3000)],
+        )
+
+
+class SlackFileMixin:
+    def slack_file(self, slack_file: "SlackFile | None") -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "slack_file",
+            slack_file,
+            validators=[Typed(SlackFile)],
+        )
+
+
 """
 Composition objects:
 
@@ -1254,7 +1281,7 @@ class FileInput(Component, ActionIdMixin):
         )
 
 
-class ImageEl(Component):
+class ImageEl(Component, AltTextMixin, ImageUrlMixin, SlackFileMixin):
     """
     Image element
 
@@ -1276,19 +1303,6 @@ class ImageEl(Component):
         self.image_url(image_url)
         self.slack_file(slack_file)
         self._add_validator(Either("image_url", "slack_file"))
-
-    def alt_text(self, alt_text: str | None) -> Self:
-        return self._add_field(
-            "alt_text", alt_text, validators=[Typed(str), Length(1, 255)]
-        )
-
-    def image_url(self, image_url: str | None) -> Self:
-        return self._add_field(
-            "image_url", image_url, validators=[Typed(str), Length(1, 3000)]
-        )
-
-    def slack_file(self, slack_file: SlackFile | None) -> Self:
-        return self._add_field("slack_file", slack_file, validators=[Typed(SlackFile)])
 
 
 class MultiStaticSelect(
@@ -2120,6 +2134,7 @@ x Context (Context) - https://api.slack.com/reference/block-kit/blocks#context
 x Divider (Divider) - https://api.slack.com/reference/block-kit/blocks#divider
 x File (File) - https://api.slack.com/reference/block-kit/blocks#file
 x Header (Header) - https://api.slack.com/reference/block-kit/blocks#header
+x Image (Image) - https://api.slack.com/reference/block-kit/blocks#image
 """
 
 
@@ -2291,8 +2306,40 @@ class Header(Component, BlockIdMixin):
         )
 
 
+class Image(Component, BlockIdMixin, AltTextMixin, ImageUrlMixin, SlackFileMixin):
+    """
+    Image block
+
+    Displays an image.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/image-block
+    """
+
+    def __init__(
+        self,
+        alt_text: str | None = None,
+        image_url: str | None = None,
+        slack_file: SlackFile | None = None,
+        title: str | Text | None = None,
+        block_id: str | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "image")
+        self.alt_text(alt_text)
+        self.image_url(image_url)
+        self.slack_file(slack_file)
+        self.title(title)
+        self.block_id(block_id)
+        self._add_validator(Either("image_url", "slack_file"))
+
+    def title(self, title: str | Text | None) -> Self:
+        return self._add_field(
+            "title", str_to_plain(title), validators=[Typed(Text), Length(1, 2000)]
+        )
+
+
 """
-- Image (Image) - https://api.slack.com/reference/block-kit/blocks#image
 - Input (Input) - https://api.slack.com/reference/block-kit/blocks#input
 - Markdown (Markdown) - https://api.slack.com/reference/block-kit/blocks#markdown
 - Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
