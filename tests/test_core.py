@@ -27,6 +27,7 @@ from blockkit.core import (
     ImageEl,
     Input,
     InputParameter,
+    Markdown,
     MultiChannelsSelect,
     MultiConversationsSelect,
     MultiExternalSelect,
@@ -2545,6 +2546,33 @@ class TestInput:
             .hint("She's changing sizes")
             .optional()
             .block_id("input_block")
+            .build()
+        )
+        assert got == want
+
+
+class TestMarkdown:
+    def test_builds(self):
+        want = {
+            "type": "markdown",
+            "text": "**Shrinking, growing, talking to animals "
+            "- no wonder she's confused!**",
+            "block_id": "markdown_block",
+        }
+
+        got = Markdown(
+            text="**Shrinking, growing, talking to animals "
+            "- no wonder she's confused!**",
+            block_id="markdown_block",
+        ).build()
+        assert got == want
+
+        got = (
+            Markdown()
+            .text(
+                "**Shrinking, growing, talking to animals - no wonder she's confused!**"
+            )
+            .block_id("markdown_block")
             .build()
         )
         assert got == want

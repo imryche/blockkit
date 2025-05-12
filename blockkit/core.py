@@ -2136,6 +2136,7 @@ x File (File) - https://api.slack.com/reference/block-kit/blocks#file
 x Header (Header) - https://api.slack.com/reference/block-kit/blocks#header
 x Image (Image) - https://api.slack.com/reference/block-kit/blocks#image
 x Input (Input) - https://api.slack.com/reference/block-kit/blocks#input
+x Markdown (Markdown) - https://api.slack.com/reference/block-kit/blocks#markdown
 """
 
 
@@ -2421,8 +2422,29 @@ class Input(Component, BlockIdMixin):
         return self._add_field("optional", optional, validators=[Typed(bool)])
 
 
+class Markdown(Component, BlockIdMixin):
+    """
+    Markdown block
+
+    Displays formatted markdown.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/markdown-block
+    """
+
+    def __init__(self, text: str | None = None, block_id: str | None = None):
+        super().__init__()
+        self._add_field("type", "markdown")
+        self.text(text)
+        self.block_id(block_id)
+
+    def text(self, text: str | None = None) -> Self:
+        return self._add_field(
+            "text", text, validators=[Typed(str), Required(), Length(1, 12000)]
+        )
+
+
 """
-- Markdown (Markdown) - https://api.slack.com/reference/block-kit/blocks#markdown
 - Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
 - Rich text section (RichTextSection) - https://api.slack.com/reference/block-kit/blocks#rich_text_section
 - Rich text list (RichTextList) - https://api.slack.com/reference/block-kit/blocks#rich_text_list
