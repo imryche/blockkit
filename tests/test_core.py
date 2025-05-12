@@ -25,6 +25,7 @@ from blockkit.core import (
     Header,
     Image,
     ImageEl,
+    Input,
     InputParameter,
     MultiChannelsSelect,
     MultiConversationsSelect,
@@ -2501,6 +2502,49 @@ class TestImage:
             .image_url("https://wonderland.com/static/alice.png")
             .title("alice in wonderland")
             .block_id("image_block")
+            .build()
+        )
+        assert got == want
+
+
+class TestInput:
+    def test_builds(self):
+        want = {
+            "type": "input",
+            "label": {
+                "type": "plain_text",
+                "text": "Who in the world am I?",
+            },
+            "element": {
+                "type": "plain_text_input",
+            },
+            "dispatch_action": True,
+            "hint": {
+                "type": "plain_text",
+                "text": "She's changing sizes",
+            },
+            "optional": True,
+            "block_id": "input_block",
+        }
+
+        got = Input(
+            label="Who in the world am I?",
+            element=PlainTextInput(),
+            dispatch_action=True,
+            hint="She's changing sizes",
+            optional=True,
+            block_id="input_block",
+        ).build()
+        assert got == want
+
+        got = (
+            Input()
+            .label("Who in the world am I?")
+            .element(PlainTextInput())
+            .dispatch_action()
+            .hint("She's changing sizes")
+            .optional()
+            .block_id("input_block")
             .build()
         )
         assert got == want

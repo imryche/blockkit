@@ -2135,6 +2135,7 @@ x Divider (Divider) - https://api.slack.com/reference/block-kit/blocks#divider
 x File (File) - https://api.slack.com/reference/block-kit/blocks#file
 x Header (Header) - https://api.slack.com/reference/block-kit/blocks#header
 x Image (Image) - https://api.slack.com/reference/block-kit/blocks#image
+x Input (Input) - https://api.slack.com/reference/block-kit/blocks#input
 """
 
 
@@ -2339,8 +2340,88 @@ class Image(Component, BlockIdMixin, AltTextMixin, ImageUrlMixin, SlackFileMixin
         )
 
 
+InputElement: TypeAlias = (
+    Checkboxes
+    | DatePicker
+    | DatetimePicker
+    | EmailInput
+    | FileInput
+    | MultiStaticSelect
+    | MultiExternalSelect
+    | MultiUsersSelect
+    | MultiConversationsSelect
+    | MultiChannelsSelect
+    | NumberInput
+    | PlainTextInput
+    | RadioButtons
+    | RichTextInput
+    | StaticSelect
+    | ExternalSelect
+    | UsersSelect
+    | ConversationsSelect
+    | ChannelsSelect
+    | TimePicker
+    | UrlInput
+)
+
+
+class Input(Component, BlockIdMixin):
+    """
+    Input block
+
+    Collects information from users via elements.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/input-block#input
+    """
+
+    def __init__(
+        self,
+        label: str | Text | None = None,
+        element: InputElement | None = None,
+        dispatch_action: bool | None = None,
+        hint: str | Text | None = None,
+        optional: bool | None = None,
+        block_id: str | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "input")
+        self.label(label)
+        self.element(element)
+        self.dispatch_action(dispatch_action)
+        self.hint(hint)
+        self.optional(optional)
+        self.block_id(block_id)
+
+    def label(self, label: str | Text | None) -> Self:
+        return self._add_field(
+            "label",
+            str_to_plain(label),
+            validators=[Typed(Text), Required(), Length(1, 2000)],
+        )
+
+    def element(self, element: InputElement | None) -> Self:
+        return self._add_field(
+            "element", element, validators=[Typed(*get_args(InputElement)), Required()]
+        )
+
+    def dispatch_action(self, dispatch_action: bool | None = True):
+        return self._add_field(
+            "dispatch_action", dispatch_action, validators=[Typed(bool)]
+        )
+
+    def hint(self, hint: str | Text | None) -> Self:
+        return self._add_field(
+            "hint",
+            str_to_plain(hint),
+            validators=[Typed(Text), Length(1, 2000)],
+        )
+
+    def optional(self, optional: bool | None = True) -> Self:
+        return self._add_field("optional", optional, validators=[Typed(bool)])
+
+
 """
-- Input (Input) - https://api.slack.com/reference/block-kit/blocks#input
 - Markdown (Markdown) - https://api.slack.com/reference/block-kit/blocks#markdown
 - Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
 - Rich text section (RichTextSection) - https://api.slack.com/reference/block-kit/blocks#rich_text_section
