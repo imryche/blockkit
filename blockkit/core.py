@@ -1,4 +1,5 @@
 import dataclasses
+import re
 from abc import ABC, abstractmethod
 from datetime import date, datetime, time
 from typing import Any, Self, Type, TypeAlias, get_args
@@ -41,7 +42,7 @@ class Plain(FieldValidator):
 
 
 class Length(FieldValidator):
-    def __init__(self, min=0, max=999999):
+    def __init__(self, min: int = 0, max: int = 999999):
         self.min = min
         self.max = max
 
@@ -59,6 +60,15 @@ class Length(FieldValidator):
                 f"Length must be between {self.min} and {self.max} "
                 f"(got {value_length})",
             )
+
+
+class HexColor(FieldValidator):
+    def validate(self, field_name: str, value: Any) -> None:
+        if value is None:
+            return
+
+        if not re.match("^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", value):
+            raise FieldValidationError(field_name, f"Invalid HEX color, got {value}")
 
 
 class Strings(FieldValidator):
@@ -2441,6 +2451,56 @@ class Markdown(Component, BlockIdMixin):
     def text(self, text: str | None = None) -> Self:
         return self._add_field(
             "text", text, validators=[Typed(str), Required(), Length(1, 12000)]
+        )
+
+
+class RichBroadcast(Component):
+    """
+    Rich broadcast text element
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#broadcast-element-type
+    """
+
+    HERE = "here"
+    CHANNEL = "channel"
+    EVERYONE = "everyone"
+
+    def __init__(self, range: str | None = None):
+        super().__init__()
+        self._add_field("type", "broadcast")
+        self.range(range)
+
+    def range(self, range: str | None) -> Self:
+        return self._add_field(
+            "range",
+            range,
+            validators=[
+                Typed(str),
+                Required(),
+                Strings(self.HERE, self.CHANNEL, self.EVERYONE),
+            ],
+        )
+
+
+class RichColor(Component):
+    """
+    Rich color text element
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#color-element-type
+    """
+
+    def __init__(self, value: str | None = None):
+        super().__init__()
+        self._add_field("type", "color")
+        self.value(value)
+
+    def value(self, value: str | None) -> Self:
+        return self._add_field(
+            "value",
+            value,
+            validators=[Typed(str), Required(), HexColor()],
         )
 
 

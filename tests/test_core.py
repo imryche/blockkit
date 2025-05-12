@@ -39,6 +39,8 @@ from blockkit.core import (
     Overflow,
     PlainTextInput,
     RadioButtons,
+    RichBroadcast,
+    RichColor,
     RichTextInput,
     SlackFile,
     StaticSelect,
@@ -89,6 +91,16 @@ class TestLength:
 
     def test_valid(self):
         Text("hello, alice!").validate()
+
+
+class TextHexColor:
+    def test_invalid(self):
+        with pytest.raises(FieldValidationError) as e:
+            RichColor(value="#F405G3").validate()
+        assert "Invalid HEX color, got #F405G3" in str(e.value)
+
+    def test_valid(self):
+        RichColor(value="#F405B3").validate()
 
 
 class TestStrings:
@@ -2575,4 +2587,32 @@ class TestMarkdown:
             .block_id("markdown_block")
             .build()
         )
+        assert got == want
+
+
+class TestRichBroadcast:
+    def test_builds(self):
+        want = {
+            "type": "broadcast",
+            "range": "everyone",
+        }
+
+        got = RichBroadcast(range="everyone").build()
+        assert got == want
+
+        got = RichBroadcast().range("everyone").build()
+        assert got == want
+
+
+class TestRichColor:
+    def test_builds(self):
+        want = {
+            "type": "color",
+            "value": "#F405B3",
+        }
+
+        got = RichColor(value="#F405B3").build()
+        assert got == want
+
+        got = RichColor().value("#F405B3").build()
         assert got == want
