@@ -2624,6 +2624,27 @@ class RichDate(Component, UrlMixin):
         return self._add_field("fallback", fallback, validators=[Typed(str)])
 
 
+class RichEmoji(Component):
+    """
+    Rich emoji text element
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#emoji-element-type
+    """
+
+    def __init__(self, name: str | None = None, unicode: str | None = None):
+        super().__init__()
+        self._add_field("type", "emoji")
+        self.name(name)
+        self.unicode(unicode)
+
+    def name(self, name: str | None = None) -> Self:
+        return self._add_field("name", name, validators=[Typed(str), Required()])
+
+    def unicode(self, unicode: str | None = None) -> Self:
+        return self._add_field("unicode", unicode, validators=[Typed(str)])
+
+
 """
 - Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
 - Rich text section (RichTextSection) - https://api.slack.com/reference/block-kit/blocks#rich_text_section

@@ -43,6 +43,7 @@ from blockkit.core import (
     RichChannel,
     RichColor,
     RichDate,
+    RichEmoji,
     RichStyle,
     RichTextInput,
     SlackFile,
@@ -2701,4 +2702,19 @@ class TestRichDate:
             .fallback("Time won't stand still")
             .build()
         )
+        assert got == want
+
+
+class TestRichEmoji:
+    def test_builds(self):
+        want = {
+            "type": "emoji",
+            "name": "rabbit",
+            "unicode": "1f407",
+        }
+
+        got = RichEmoji(name="rabbit", unicode="1f407").build()
+        assert got == want
+
+        got = RichEmoji().name("rabbit").unicode("1f407").build()
         assert got == want
