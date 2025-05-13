@@ -2504,6 +2504,78 @@ class RichColor(Component):
         )
 
 
+class RichStyle(Component):
+    """
+    Rich style object
+
+    An object of six optional boolean properties that dictate style
+    """
+
+    def __init__(
+        self,
+        bold: bool | None = None,
+        italic: bool | None = None,
+        strike: bool | None = None,
+        highlight: bool | None = None,
+        client_highlight: bool | None = None,
+        unlink: bool | None = None,
+    ):
+        super().__init__()
+        self.bold(bold)
+        self.italic(italic)
+        self.strike(strike)
+        self.highlight(highlight)
+        self.client_highlight(client_highlight)
+        self.unlink(unlink)
+
+    def bold(self, bold: bool | None = True) -> Self:
+        return self._add_field("bold", bold, validators=[Typed(bool)])
+
+    def italic(self, italic: bool | None = True) -> Self:
+        return self._add_field("italic", italic, validators=[Typed(bool)])
+
+    def strike(self, strike: bool | None = True) -> Self:
+        return self._add_field("strike", strike, validators=[Typed(bool)])
+
+    def highlight(self, highlight: bool | None = True) -> Self:
+        return self._add_field("highlight", highlight, validators=[Typed(bool)])
+
+    def client_highlight(self, client_highlight: bool | None = True) -> Self:
+        return self._add_field(
+            "client_highlight", client_highlight, validators=[Typed(bool)]
+        )
+
+    def unlink(self, unlink: bool | None = True) -> Self:
+        return self._add_field("unlink", unlink, validators=[Typed(bool)])
+
+
+class RichChannel(Component):
+    """
+    Rich channel text element
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#channel-element-type
+    """
+
+    def __init__(
+        self,
+        channel_id: str | None = None,
+        style: RichStyle | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "channel")
+        self.channel_id(channel_id)
+        self.style(style)
+
+    def channel_id(self, channel_id: str | None = None) -> Self:
+        return self._add_field(
+            "channel_id", channel_id, validators=[Typed(str), Required()]
+        )
+
+    def style(self, style: RichStyle | None = None) -> Self:
+        return self._add_field("style", style, validators=[Typed(RichStyle)])
+
+
 """
 - Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
 - Rich text section (RichTextSection) - https://api.slack.com/reference/block-kit/blocks#rich_text_section

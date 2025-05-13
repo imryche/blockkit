@@ -40,7 +40,9 @@ from blockkit.core import (
     PlainTextInput,
     RadioButtons,
     RichBroadcast,
+    RichChannel,
     RichColor,
+    RichStyle,
     RichTextInput,
     SlackFile,
     StaticSelect,
@@ -2615,4 +2617,58 @@ class TestRichColor:
         assert got == want
 
         got = RichColor().value("#F405B3").build()
+        assert got == want
+
+
+class TestRichStyle:
+    def test_builds(self):
+        want = {
+            "bold": True,
+            "italic": True,
+            "strike": True,
+            "highlight": True,
+            "client_highlight": True,
+            "unlink": True,
+        }
+
+        got = RichStyle(
+            bold=True,
+            italic=True,
+            strike=True,
+            highlight=True,
+            client_highlight=True,
+            unlink=True,
+        ).build()
+        assert got == want
+
+        got = (
+            RichStyle()
+            .bold()
+            .italic()
+            .strike()
+            .highlight()
+            .client_highlight()
+            .unlink()
+            .build()
+        )
+        assert got == want
+
+
+class TestRichChannel:
+    def test_builds(self):
+        want = {
+            "type": "channel",
+            "channel_id": "C123456789",
+            "style": {
+                "bold": True,
+            },
+        }
+
+        got = RichChannel(
+            channel_id="C123456789",
+            style=RichStyle(bold=True),
+        ).build()
+        assert got == want
+
+        got = RichChannel().channel_id("C123456789").style(RichStyle().bold()).build()
         assert got == want
