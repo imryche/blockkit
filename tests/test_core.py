@@ -42,6 +42,7 @@ from blockkit.core import (
     RichBroadcast,
     RichChannel,
     RichColor,
+    RichDate,
     RichStyle,
     RichTextInput,
     SlackFile,
@@ -2671,4 +2672,33 @@ class TestRichChannel:
         assert got == want
 
         got = RichChannel().channel_id("C123456789").style(RichStyle().bold()).build()
+        assert got == want
+
+
+class TestRichDate:
+    def test_builds(self):
+        want = {
+            "type": "date",
+            "timestamp": 1747124856,
+            "format": "{date_num} at {time}",
+            "url": "https://wonderland.com",
+            "fallback": "Time won't stand still",
+        }
+
+        got = RichDate(
+            timestamp=1747124856,
+            format="{date_num} at {time}",
+            url="https://wonderland.com",
+            fallback="Time won't stand still",
+        ).build()
+        assert got == want
+
+        got = (
+            RichDate()
+            .timestamp(datetime.fromtimestamp(1747124856))
+            .format("{date_num} at {time}")
+            .url("https://wonderland.com")
+            .fallback("Time won't stand still")
+            .build()
+        )
         assert got == want

@@ -447,6 +447,13 @@ class TextMixin:
         )
 
 
+class UrlMixin:
+    def url(self, url: str | None = None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "url", url, validators=[Typed(str), Length(1, 3000)]
+        )
+
+
 class FocusOnLoadMixin:
     def focus_on_load(self, focus_on_load: bool | None = True) -> Self:
         return self._add_field(  # type: ignore[attr-defined]
@@ -837,7 +844,7 @@ class DispatchActionConfig(Component):
         )
 
 
-class Option(Component, TextMixin):
+class Option(Component, TextMixin, UrlMixin):
     """
     Option object
 
@@ -872,10 +879,6 @@ class Option(Component, TextMixin):
             str_to_plain(description),
             validators=[Typed(Text), Length(1, 75)],
         )
-
-    # TODO: should be available in overflow menus only
-    def url(self, url: str | None = None) -> Self:
-        return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
 
 
 class OptionGroup(Component, OptionsMixin):
@@ -986,7 +989,7 @@ class Workflow(Component):
         )
 
 
-class SlackFile(Component):
+class SlackFile(Component, UrlMixin):
     """
     Slack file object
 
@@ -1002,9 +1005,6 @@ class SlackFile(Component):
         self.url(url)
         self.id(id)
         self._add_validator(OnlyOne("url", "id"))
-
-    def url(self, url: str | None) -> Self:
-        return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
 
     def id(self, id: str | None) -> Self:
         return self._add_field("id", id, validators=[Typed(str), Length(1, 30)])
@@ -1045,6 +1045,7 @@ class Button(
     Component,
     TextMixin,
     ActionIdMixin,
+    UrlMixin,
     StyleMixin,
     ConfirmMixin,
     AccessibilityLabelMixin,
@@ -1081,9 +1082,6 @@ class Button(
         self.style(style)
         self.confirm(confirm)
         self.accessibility_label(accessibility_label)
-
-    def url(self, url: str | None) -> Self:
-        return self._add_field("url", url, validators=[Typed(str), Length(1, 3000)])
 
     def value(self, value: str | None) -> Self:
         return self._add_field("value", value, validators=[Typed(str), Length(1, 2000)])
@@ -2574,6 +2572,56 @@ class RichChannel(Component):
 
     def style(self, style: RichStyle | None = None) -> Self:
         return self._add_field("style", style, validators=[Typed(RichStyle)])
+
+
+class RichDate(Component, UrlMixin):
+    """
+    Rich date text element
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#date-element-type
+    """
+
+    DAY_DIVIDER_PRETTY = "{day_divider_pretty}"
+    DATE_NUM = "{date_num}"
+    DATE_SLASH = "{date_slash}"
+    DATE_LONG = "{date_long}"
+    DATE_LONG_FULL = "{date_long_full}"
+    DATE_LONG_PRETTY = "{date_long_pretty}"
+    DATE = "{date}"
+    DATE_PRETTY = "{date_pretty}"
+    DATE_SHORT = "{date_short}"
+    DATE_SHORT_PRETTY = "{date_short_pretty}"
+    TIME = "{time}"
+    TIME_SECS = "{time_secs}"
+    AGO = "{ago}"
+
+    def __init__(
+        self,
+        timestamp: int | datetime | None = None,
+        format: str | None = None,
+        url: str | None = None,
+        fallback: str | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "date")
+        self.timestamp(timestamp)
+        self.format(format)
+        self.url(url)
+        self.fallback(fallback)
+
+    def timestamp(self, timestamp: int | datetime | None) -> Self:
+        if isinstance(timestamp, datetime):
+            timestamp = int(timestamp.timestamp())
+        return self._add_field(
+            "timestamp", timestamp, validators=[Typed(int), Required()]
+        )
+
+    def format(self, format: str | None = None) -> Self:
+        return self._add_field("format", format, validators=[Typed(str), Required()])
+
+    def fallback(self, fallback: str | None = None) -> Self:
+        return self._add_field("fallback", fallback, validators=[Typed(str)])
 
 
 """
