@@ -309,6 +309,28 @@ class DecimalAllowed(ComponentValidator):
                 )
 
 
+class StyledCorrectly(ComponentValidator):
+    def __init__(self, extended: bool = False):
+        self.extended = extended
+
+    def validate(self, component: "Component") -> None:
+        style = component._get_field("style").value
+
+        code = style._get_field("code").value
+        highlight = style._get_field("highlight").value
+        client_highlight = style._get_field("client_highlight").value
+        unlink = style._get_field("unlink").value
+
+        if self.extended and code:
+            raise ComponentValidationError(component, "'code' style is not allowed")
+
+        if not self.extended and any((highlight, client_highlight, unlink)):
+            raise ComponentValidationError(
+                component,
+                "'highlight', 'client_highlight', 'unlink' styles are not allowed",
+            )
+
+
 def str_to_plain(value: "str | Text | None") -> "Text | None":
     if isinstance(value, str):
         return Text(value).type(Text.PLAIN)
@@ -639,6 +661,13 @@ class SlackFileMixin:
             "slack_file",
             slack_file,
             validators=[Typed(SlackFile)],
+        )
+
+
+class RichStyleMixin:
+    def style(self, style: "RichStyle | None" = None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "style", style, validators=[Typed(RichStyle)]
         )
 
 
@@ -2514,6 +2543,7 @@ class RichStyle(Component):
         bold: bool | None = None,
         italic: bool | None = None,
         strike: bool | None = None,
+        code: bool | None = None,
         highlight: bool | None = None,
         client_highlight: bool | None = None,
         unlink: bool | None = None,
@@ -2522,6 +2552,7 @@ class RichStyle(Component):
         self.bold(bold)
         self.italic(italic)
         self.strike(strike)
+        self.code(code)
         self.highlight(highlight)
         self.client_highlight(client_highlight)
         self.unlink(unlink)
@@ -2535,6 +2566,9 @@ class RichStyle(Component):
     def strike(self, strike: bool | None = True) -> Self:
         return self._add_field("strike", strike, validators=[Typed(bool)])
 
+    def code(self, code: bool | None = True) -> Self:
+        return self._add_field("code", code, validators=[Typed(bool)])
+
     def highlight(self, highlight: bool | None = True) -> Self:
         return self._add_field("highlight", highlight, validators=[Typed(bool)])
 
@@ -2547,7 +2581,7 @@ class RichStyle(Component):
         return self._add_field("unlink", unlink, validators=[Typed(bool)])
 
 
-class RichChannel(Component):
+class RichChannel(Component, RichStyleMixin):
     """
     Rich channel text element
 
@@ -2564,14 +2598,12 @@ class RichChannel(Component):
         self._add_field("type", "channel")
         self.channel_id(channel_id)
         self.style(style)
+        self._add_validator(StyledCorrectly(extended=True))
 
     def channel_id(self, channel_id: str | None = None) -> Self:
         return self._add_field(
             "channel_id", channel_id, validators=[Typed(str), Required()]
         )
-
-    def style(self, style: RichStyle | None = None) -> Self:
-        return self._add_field("style", style, validators=[Typed(RichStyle)])
 
 
 class RichDate(Component, UrlMixin):
@@ -2641,8 +2673,44 @@ class RichEmoji(Component):
     def name(self, name: str | None = None) -> Self:
         return self._add_field("name", name, validators=[Typed(str), Required()])
 
+    # TODO: validate unicode code point "^[0-9a-f-]+$"
     def unicode(self, unicode: str | None = None) -> Self:
         return self._add_field("unicode", unicode, validators=[Typed(str)])
+
+
+class RichLink(Component, UrlMixin, RichStyleMixin):
+    """
+    Rich link text element
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#link-element-type
+    """
+
+    def __init__(
+        self,
+        url: str | None = None,
+        text: str | None = None,
+        unsafe: bool | None = None,
+        style: RichStyle | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "link")
+        self.url(url)
+        self.text(text)
+        self.unsafe(unsafe)
+        self.style(style)
+        self._add_validator(StyledCorrectly())
+
+    def url(self, url: str | None = None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "url", url, validators=[Typed(str), Required(), Length(1, 3000)]
+        )
+
+    def text(self, text: str | None = None) -> Self:
+        return self._add_field("text", text, validators=[Typed(str)])
+
+    def unsafe(self, unsafe: bool | None = True) -> Self:
+        return self._add_field("unsafe", unsafe, validators=[Typed(bool)])
 
 
 """

@@ -44,6 +44,7 @@ from blockkit.core import (
     RichColor,
     RichDate,
     RichEmoji,
+    RichLink,
     RichStyle,
     RichTextInput,
     SlackFile,
@@ -247,6 +248,36 @@ class TestDecimalAllowed:
                 is_decimal_allowed=False, initial_value=3, min_value=1, max_value=10.0
             ).validate()
         assert "'max_value' decimal values are not allowed, got '10.0'" in str(e)
+
+
+class TestStyledCorrectly:
+    def test_invalid(self):
+        with pytest.raises(ComponentValidationError) as e:
+            RichLink(
+                url="https://wonderland.com",
+                style=RichStyle(highlight=True),
+            ).validate()
+        assert (
+            "'highlight', 'client_highlight', 'unlink' styles are not allowed" in str(e)
+        )
+
+        with pytest.raises(ComponentValidationError) as e:
+            RichChannel(
+                channel_id="C123456789",
+                style=RichStyle(code=True),
+            ).validate()
+        assert "'code' style is not allowed" in str(e)
+
+    def test_valid(self):
+        RichLink(
+            url="https://wonderland.com",
+            style=RichStyle(code=True),
+        ).validate()
+
+        RichChannel(
+            channel_id="C123456789",
+            style=RichStyle(highlight=True),
+        ).validate()
 
 
 class TestConfirm:
@@ -2717,4 +2748,35 @@ class TestRichEmoji:
         assert got == want
 
         got = RichEmoji().name("rabbit").unicode("1f407").build()
+        assert got == want
+
+
+class TestRichLink:
+    def test_builds(self):
+        want = {
+            "type": "link",
+            "url": "https://wonderland.com",
+            "text": "wonderland",
+            "unsafe": True,
+            "style": {
+                "italic": True,
+            },
+        }
+
+        got = RichLink(
+            url="https://wonderland.com",
+            text="wonderland",
+            unsafe=True,
+            style=RichStyle(italic=True),
+        ).build()
+        assert got == want
+
+        got = (
+            RichLink()
+            .url("https://wonderland.com")
+            .text("wonderland")
+            .unsafe()
+            .style(RichStyle(italic=True))
+            .build()
+        )
         assert got == want
