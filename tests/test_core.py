@@ -48,6 +48,7 @@ from blockkit.core import (
     RichStyle,
     RichText,
     RichTextInput,
+    RichUser,
     SlackFile,
     StaticSelect,
     Text,
@@ -2805,4 +2806,24 @@ class TestRichText:
             .style(RichStyle(bold=True))
             .build()
         )
+        assert got == want
+
+
+class TestRichUser:
+    def test_builds(self):
+        want = {
+            "type": "user",
+            "user_id": "U123456789",
+            "style": {
+                "italic": True,
+            },
+        }
+
+        got = RichUser(
+            user_id="U123456789",
+            style=RichStyle(italic=True),
+        ).build()
+        assert got == want
+
+        got = RichUser().user_id("U123456789").style(RichStyle(italic=True)).build()
         assert got == want
