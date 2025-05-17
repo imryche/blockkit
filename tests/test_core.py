@@ -49,6 +49,7 @@ from blockkit.core import (
     RichTextEl,
     RichTextInput,
     RichTextList,
+    RichTextPreformatted,
     RichTextSection,
     RichUserEl,
     RichUserGroupEl,
@@ -2954,6 +2955,53 @@ class TestRichTextList:
             .add_element(RichTextSection().add_element(RichTextEl("Mad Hatter")))
             .indent(0)
             .offset(0)
+            .border(0)
+            .build()
+        )
+        assert got == want
+
+
+class TestRichTextPreformatted:
+    def test_builds(self):
+        want = {
+            "type": "rich_text_preformatted",
+            "elements": [
+                {
+                    "type": "text",
+                    "text": "Curiouser and curiouser!",
+                    "style": {
+                        "bold": True,
+                    },
+                },
+                {
+                    "type": "emoji",
+                    "name": "rabbit",
+                },
+            ],
+            "border": 0,
+        }
+
+        got = RichTextPreformatted(
+            elements=[
+                RichTextEl(
+                    text="Curiouser and curiouser!",
+                    style=RichStyle(bold=True),
+                ),
+                RichEmojiEl(name="rabbit"),
+            ],
+            border=0,
+        ).build()
+        assert got == want
+
+        got = (
+            RichTextPreformatted()
+            .add_element(
+                RichTextEl(
+                    text="Curiouser and curiouser!",
+                    style=RichStyle(bold=True),
+                )
+            )
+            .add_element(RichEmojiEl(name="rabbit"))
             .border(0)
             .build()
         )

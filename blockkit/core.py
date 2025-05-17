@@ -673,6 +673,27 @@ class RichStyleMixin:
         )
 
 
+class RichTextElementsMixin:
+    def elements(self, *elements: "RichTextElement") -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "elements",
+            list(elements),
+            validators=[Typed(*get_args(RichTextElement)), Required()],
+        )
+
+    def add_element(self, element: "RichTextElement") -> Self:
+        field = self._get_field("elements")  # type: ignore[attr-defined]
+        field.value.append(element)
+        return self
+
+
+class RichBorderMixin:
+    def border(self, border: int | None = None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "border", border, validators=[Typed(int), Ints(max=1)]
+        )
+
+
 """
 Composition objects
 """
@@ -2746,7 +2767,7 @@ RichTextElement: TypeAlias = (
 )
 
 
-class RichTextSection(Component):
+class RichTextSection(Component, RichTextElementsMixin):
     """
     Rich text section
 
@@ -2759,20 +2780,8 @@ class RichTextSection(Component):
         self._add_field("type", "rich_text_section")
         self.elements(*elements or ())
 
-    def elements(self, *elements: RichTextElement) -> Self:
-        return self._add_field(
-            "elements",
-            list(elements),
-            validators=[Typed(*get_args(RichTextElement)), Required()],
-        )
 
-    def add_element(self, element: RichTextElement) -> Self:
-        field = self._get_field("elements")
-        field.value.append(element)
-        return self
-
-
-class RichTextList(Component):
+class RichTextList(Component, RichBorderMixin):
     """
     Rich text list
 
@@ -2824,8 +2833,22 @@ class RichTextList(Component):
     def offset(self, offset: int | None = None) -> Self:
         return self._add_field("offset", offset, validators=[Typed(int), Ints(max=6)])
 
-    def border(self, border: int | None = None) -> Self:
-        return self._add_field("border", border, validators=[Typed(int), Ints(max=1)])
+
+class RichTextPreformatted(Component, RichTextElementsMixin, RichBorderMixin):
+    """
+    Rich text preformatted
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#rich_text_preformatted
+    """
+
+    def __init__(
+        self, elements: list[RichTextElement] | None = None, border: int | None = None
+    ):
+        super().__init__()
+        self._add_field("type", "rich_text_preformatted")
+        self.elements(*elements or ())
+        self.border(border)
 
 
 """
