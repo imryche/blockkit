@@ -2753,6 +2753,28 @@ class RichUser(Component, RichStyleMixin):
         return self._add_field("user_id", user_id, validators=[Typed(str), Required()])
 
 
+class RichUserGroup(Component, RichStyleMixin):
+    """
+    Rich usergroup text element
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#user-group-element-type
+    """
+
+    def __init__(self, usergroup_id: str | None = None, style: RichStyle | None = None):
+        super().__init__()
+        self._add_field("type", "usergroup")
+        self.usergroup_id(usergroup_id)
+        self.style(style)
+        self._add_validator(StyledCorrectly(extended=True))
+
+    # TODO: validate usergroup_id
+    def usergroup_id(self, usergroup_id: str | None = None) -> Self:
+        return self._add_field(
+            "usergroup_id", usergroup_id, validators=[Typed(str), Required()]
+        )
+
+
 """
 - Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
 - Rich text section (RichTextSection) - https://api.slack.com/reference/block-kit/blocks#rich_text_section
