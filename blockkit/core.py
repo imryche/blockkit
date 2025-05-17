@@ -2540,6 +2540,7 @@ class RichStyle(Component):
 
     def __init__(
         self,
+        *,
         bold: bool | None = None,
         italic: bool | None = None,
         strike: bool | None = None,
@@ -2711,6 +2712,25 @@ class RichLink(Component, UrlMixin, RichStyleMixin):
 
     def unsafe(self, unsafe: bool | None = True) -> Self:
         return self._add_field("unsafe", unsafe, validators=[Typed(bool)])
+
+
+class RichText(Component, RichStyleMixin):
+    """
+    Rich text element
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#text-element-type
+    """
+
+    def __init__(self, text: str | None = None, style: RichStyle | None = None):
+        super().__init__()
+        self._add_field("type", "text")
+        self.text(text)
+        self.style(style)
+        self._add_validator(StyledCorrectly())
+
+    def text(self, text: str | None = None) -> Self:
+        return self._add_field("text", text, validators=[Typed(str), Required()])
 
 
 """

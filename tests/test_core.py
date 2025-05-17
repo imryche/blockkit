@@ -46,6 +46,7 @@ from blockkit.core import (
     RichEmoji,
     RichLink,
     RichStyle,
+    RichText,
     RichTextInput,
     SlackFile,
     StaticSelect,
@@ -2777,6 +2778,31 @@ class TestRichLink:
             .text("wonderland")
             .unsafe()
             .style(RichStyle(italic=True))
+            .build()
+        )
+        assert got == want
+
+
+class TestRichText:
+    def test_builds(self):
+        want = {
+            "type": "text",
+            "text": "Curiouser and curiouser!",
+            "style": {
+                "bold": True,
+            },
+        }
+
+        got = RichText(
+            text="Curiouser and curiouser!",
+            style=RichStyle(bold=True),
+        ).build()
+        assert got == want
+
+        got = (
+            RichText()
+            .text("Curiouser and curiouser!")
+            .style(RichStyle(bold=True))
             .build()
         )
         assert got == want
