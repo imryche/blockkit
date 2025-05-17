@@ -672,17 +672,7 @@ class RichStyleMixin:
 
 
 """
-Composition objects:
-
-x Confirmation dialog (Confirm) - https://api.slack.com/reference/block-kit/composition-objects#confirm
-x Conversation filter (ConversationFilter) - https://api.slack.com/reference/block-kit/composition-objects#filter_conversations
-x Dispatch action configuration (DispatchActionConfig) - https://api.slack.com/reference/block-kit/composition-objects#dispatch_action_config
-x Option (Option) - https://api.slack.com/reference/block-kit/composition-objects#option
-x Option group (OptionGroup) - https://api.slack.com/reference/block-kit/composition-objects#option_group
-x Text (Text) - https://api.slack.com/reference/block-kit/composition-objects#text
-x Trigger (Trigger) - https://api.slack.com/reference/block-kit/composition-objects#trigger
-x Workflow (Workflow) - https://api.slack.com/reference/block-kit/composition-objects#workflow
-x Slack file (SlackFile) - https://api.slack.com/reference/block-kit/composition-objects#slack_file
+Composition objects
 """
 
 
@@ -1040,33 +1030,7 @@ class SlackFile(Component, UrlMixin):
 
 
 """
-Block elements:
-
-x Button (Button) - https://api.slack.com/reference/block-kit/block-elements#button
-x Checkboxes (Checkboxes) - https://api.slack.com/reference/block-kit/block-elements#checkboxes
-x Date picker (DatePicker) - https://api.slack.com/reference/block-kit/block-elements#datepicker
-x Datetime picker (DatetimePicker) - https://api.slack.com/reference/block-kit/block-elements#datetimepicker
-x Email input (EmailInput) - https://api.slack.com/reference/block-kit/block-elements#email
-x File input - https://api.slack.com/reference/block-kit/block-elements#file_input
-x Image (ImageEl) - https://api.slack.com/reference/block-kit/block-elements#image
-x Multi-select static (MultiStaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_multi_select
-x Multi-select external (MultiExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_multi_select
-x Multi-select users (MultiUsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_multi_select
-x Multi-select conversations (MultiConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversation_multi_select
-x Multi-select channels (MultiChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channel_multi_select
-x Number input (NumberInput) - https://api.slack.com/reference/block-kit/block-elements#number
-x Overflow menu (Overflow) - https://api.slack.com/reference/block-kit/block-elements#overflow
-x Plain-text input (PlainTextInput) - https://api.slack.com/reference/block-kit/block-elements#input
-x Radio buttons (RadioButtons) - https://api.slack.com/reference/block-kit/block-elements#radio
-x Rich text input (RichTextInput) - https://api.slack.com/reference/block-kit/block-elements#rich_text_input
-x Select static (StaticSelect) - https://api.slack.com/reference/block-kit/block-elements#static_select
-x Select external (ExternalSelect) - https://api.slack.com/reference/block-kit/block-elements#external_select
-x Select users (UsersSelect) - https://api.slack.com/reference/block-kit/block-elements#users_select
-x Select conversations (ConversationsSelect) - https://api.slack.com/reference/block-kit/block-elements#conversations_select
-x Select channels (ChannelsSelect) - https://api.slack.com/reference/block-kit/block-elements#channels_select
-x Time picker (TimePicker) - https://api.slack.com/reference/block-kit/block-elements#timepicker
-x URL input (UrlInput) - https://api.slack.com/reference/block-kit/block-elements#url
-x Workflow button (WorkflowButton) - https://api.slack.com/reference/block-kit/block-elements#workflow_button
+Block elements
 """
 
 
@@ -2164,16 +2128,7 @@ class WorkflowButton(
 
 
 """
-Blocks:
-
-x Actions (Actions) - https://api.slack.com/reference/block-kit/blocks#actions
-x Context (Context) - https://api.slack.com/reference/block-kit/blocks#context
-x Divider (Divider) - https://api.slack.com/reference/block-kit/blocks#divider
-x File (File) - https://api.slack.com/reference/block-kit/blocks#file
-x Header (Header) - https://api.slack.com/reference/block-kit/blocks#header
-x Image (Image) - https://api.slack.com/reference/block-kit/blocks#image
-x Input (Input) - https://api.slack.com/reference/block-kit/blocks#input
-x Markdown (Markdown) - https://api.slack.com/reference/block-kit/blocks#markdown
+Blocks
 """
 
 
@@ -2601,6 +2556,7 @@ class RichChannel(Component, RichStyleMixin):
         self.style(style)
         self._add_validator(StyledCorrectly(extended=True))
 
+    # TODO: validate channel_id
     def channel_id(self, channel_id: str | None = None) -> Self:
         return self._add_field(
             "channel_id", channel_id, validators=[Typed(str), Required()]
@@ -2781,16 +2737,6 @@ class RichUserGroup(Component, RichStyleMixin):
 - Rich text list (RichTextList) - https://api.slack.com/reference/block-kit/blocks#rich_text_list
 - Rich text preformatted (RichTextPreformatted) - https://api.slack.com/reference/block-kit/blocks#rich_text_preformatted
 - Rich text quote (RichTextQuote) - https://api.slack.com/reference/block-kit/blocks#rich_text_quote
-- Rich broadcast (RichBroadcast) - https://api.slack.com/reference/block-kit/blocks#broadcast-element-type
-- Rich color (RichColor) - https://api.slack.com/reference/block-kit/blocks#color-element-type
-- Rich channel (RichChannel) - https://api.slack.com/reference/block-kit/blocks#channel-element-type
-- Rich date (RichDate) - https://api.slack.com/reference/block-kit/blocks#date-element-type
-- Rich emoji (RichEmoji) - https://api.slack.com/reference/block-kit/blocks#emoji-element-type
-- Rich link (RichLink) - https://api.slack.com/reference/block-kit/blocks#link-element-type
-- Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#text-element-type
-- Rich user (RichUser) - https://api.slack.com/reference/block-kit/blocks#user-element-type
-- Rich usergroup (RichUsergroup) - https://api.slack.com/reference/block-kit/blocks#user-group-element-type
-- Rich style (RichStyle) - ...
 - Section (Section) - https://api.slack.com/reference/block-kit/blocks#section
 - Video (Video) - https://api.slack.com/reference/block-kit/blocks#video
 """
