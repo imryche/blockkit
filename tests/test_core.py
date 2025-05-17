@@ -2628,34 +2628,6 @@ class TestMarkdown:
         assert got == want
 
 
-class TestRichBroadcast:
-    def test_builds(self):
-        want = {
-            "type": "broadcast",
-            "range": "everyone",
-        }
-
-        got = RichBroadcastEl(range="everyone").build()
-        assert got == want
-
-        got = RichBroadcastEl().range("everyone").build()
-        assert got == want
-
-
-class TestRichColor:
-    def test_builds(self):
-        want = {
-            "type": "color",
-            "value": "#F405B3",
-        }
-
-        got = RichColorEl(value="#F405B3").build()
-        assert got == want
-
-        got = RichColorEl().value("#F405B3").build()
-        assert got == want
-
-
 class TestRichStyle:
     def test_builds(self):
         want = {
@@ -2690,7 +2662,35 @@ class TestRichStyle:
         assert got == want
 
 
-class TestRichChannel:
+class TestRichBroadcastEl:
+    def test_builds(self):
+        want = {
+            "type": "broadcast",
+            "range": "everyone",
+        }
+
+        got = RichBroadcastEl(range="everyone").build()
+        assert got == want
+
+        got = RichBroadcastEl().range("everyone").build()
+        assert got == want
+
+
+class TestRichColorEl:
+    def test_builds(self):
+        want = {
+            "type": "color",
+            "value": "#F405B3",
+        }
+
+        got = RichColorEl(value="#F405B3").build()
+        assert got == want
+
+        got = RichColorEl().value("#F405B3").build()
+        assert got == want
+
+
+class TestRichChannelEl:
     def test_builds(self):
         want = {
             "type": "channel",
@@ -2710,7 +2710,7 @@ class TestRichChannel:
         assert got == want
 
 
-class TestRichDate:
+class TestRichDateEl:
     def test_builds(self):
         want = {
             "type": "date",
@@ -2739,7 +2739,7 @@ class TestRichDate:
         assert got == want
 
 
-class TestRichEmoji:
+class TestRichEmojiEl:
     def test_builds(self):
         want = {
             "type": "emoji",
@@ -2754,7 +2754,7 @@ class TestRichEmoji:
         assert got == want
 
 
-class TestRichLink:
+class TestRichLinkEl:
     def test_builds(self):
         want = {
             "type": "link",
@@ -2785,7 +2785,7 @@ class TestRichLink:
         assert got == want
 
 
-class TestRichText:
+class TestRichTextEl:
     def test_builds(self):
         want = {
             "type": "text",
@@ -2810,7 +2810,7 @@ class TestRichText:
         assert got == want
 
 
-class TestRichUser:
+class TestRichUserEl:
     def test_builds(self):
         want = {
             "type": "user",
@@ -2830,7 +2830,7 @@ class TestRichUser:
         assert got == want
 
 
-class TestRichUserGroup:
+class TestRichUserGroupEl:
     def test_builds(self):
         want = {
             "type": "usergroup",
