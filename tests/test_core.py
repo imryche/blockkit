@@ -39,17 +39,17 @@ from blockkit.core import (
     Overflow,
     PlainTextInput,
     RadioButtons,
-    RichBroadcast,
-    RichChannel,
-    RichColor,
-    RichDate,
-    RichEmoji,
-    RichLink,
+    RichBroadcastEl,
+    RichChannelEl,
+    RichColorEl,
+    RichDateEl,
+    RichEmojiEl,
+    RichLinkEl,
     RichStyle,
-    RichText,
+    RichTextEl,
     RichTextInput,
-    RichUser,
-    RichUserGroup,
+    RichUserEl,
+    RichUserGroupEl,
     SlackFile,
     StaticSelect,
     Text,
@@ -104,11 +104,11 @@ class TestLength:
 class TextHexColor:
     def test_invalid(self):
         with pytest.raises(FieldValidationError) as e:
-            RichColor(value="#F405G3").validate()
+            RichColorEl(value="#F405G3").validate()
         assert "Invalid HEX color, got #F405G3" in str(e.value)
 
     def test_valid(self):
-        RichColor(value="#F405B3").validate()
+        RichColorEl(value="#F405B3").validate()
 
 
 class TestStrings:
@@ -256,7 +256,7 @@ class TestDecimalAllowed:
 class TestStyledCorrectly:
     def test_invalid(self):
         with pytest.raises(ComponentValidationError) as e:
-            RichLink(
+            RichLinkEl(
                 url="https://wonderland.com",
                 style=RichStyle(highlight=True),
             ).validate()
@@ -265,19 +265,19 @@ class TestStyledCorrectly:
         )
 
         with pytest.raises(ComponentValidationError) as e:
-            RichChannel(
+            RichChannelEl(
                 channel_id="C123456789",
                 style=RichStyle(code=True),
             ).validate()
         assert "'code' style is not allowed" in str(e)
 
     def test_valid(self):
-        RichLink(
+        RichLinkEl(
             url="https://wonderland.com",
             style=RichStyle(code=True),
         ).validate()
 
-        RichChannel(
+        RichChannelEl(
             channel_id="C123456789",
             style=RichStyle(highlight=True),
         ).validate()
@@ -2635,10 +2635,10 @@ class TestRichBroadcast:
             "range": "everyone",
         }
 
-        got = RichBroadcast(range="everyone").build()
+        got = RichBroadcastEl(range="everyone").build()
         assert got == want
 
-        got = RichBroadcast().range("everyone").build()
+        got = RichBroadcastEl().range("everyone").build()
         assert got == want
 
 
@@ -2649,10 +2649,10 @@ class TestRichColor:
             "value": "#F405B3",
         }
 
-        got = RichColor(value="#F405B3").build()
+        got = RichColorEl(value="#F405B3").build()
         assert got == want
 
-        got = RichColor().value("#F405B3").build()
+        got = RichColorEl().value("#F405B3").build()
         assert got == want
 
 
@@ -2700,13 +2700,13 @@ class TestRichChannel:
             },
         }
 
-        got = RichChannel(
+        got = RichChannelEl(
             channel_id="C123456789",
             style=RichStyle(bold=True),
         ).build()
         assert got == want
 
-        got = RichChannel().channel_id("C123456789").style(RichStyle().bold()).build()
+        got = RichChannelEl().channel_id("C123456789").style(RichStyle().bold()).build()
         assert got == want
 
 
@@ -2720,7 +2720,7 @@ class TestRichDate:
             "fallback": "Time won't stand still",
         }
 
-        got = RichDate(
+        got = RichDateEl(
             timestamp=1747124856,
             format="{date_num} at {time}",
             url="https://wonderland.com",
@@ -2729,7 +2729,7 @@ class TestRichDate:
         assert got == want
 
         got = (
-            RichDate()
+            RichDateEl()
             .timestamp(datetime.fromtimestamp(1747124856))
             .format("{date_num} at {time}")
             .url("https://wonderland.com")
@@ -2747,10 +2747,10 @@ class TestRichEmoji:
             "unicode": "1f407",
         }
 
-        got = RichEmoji(name="rabbit", unicode="1f407").build()
+        got = RichEmojiEl(name="rabbit", unicode="1f407").build()
         assert got == want
 
-        got = RichEmoji().name("rabbit").unicode("1f407").build()
+        got = RichEmojiEl().name("rabbit").unicode("1f407").build()
         assert got == want
 
 
@@ -2766,7 +2766,7 @@ class TestRichLink:
             },
         }
 
-        got = RichLink(
+        got = RichLinkEl(
             url="https://wonderland.com",
             text="wonderland",
             unsafe=True,
@@ -2775,7 +2775,7 @@ class TestRichLink:
         assert got == want
 
         got = (
-            RichLink()
+            RichLinkEl()
             .url("https://wonderland.com")
             .text("wonderland")
             .unsafe()
@@ -2795,14 +2795,14 @@ class TestRichText:
             },
         }
 
-        got = RichText(
+        got = RichTextEl(
             text="Curiouser and curiouser!",
             style=RichStyle(bold=True),
         ).build()
         assert got == want
 
         got = (
-            RichText()
+            RichTextEl()
             .text("Curiouser and curiouser!")
             .style(RichStyle(bold=True))
             .build()
@@ -2820,13 +2820,13 @@ class TestRichUser:
             },
         }
 
-        got = RichUser(
+        got = RichUserEl(
             user_id="U123456789",
             style=RichStyle(italic=True),
         ).build()
         assert got == want
 
-        got = RichUser().user_id("U123456789").style(RichStyle(italic=True)).build()
+        got = RichUserEl().user_id("U123456789").style(RichStyle(italic=True)).build()
         assert got == want
 
 
@@ -2840,14 +2840,14 @@ class TestRichUserGroup:
             },
         }
 
-        got = RichUserGroup(
+        got = RichUserGroupEl(
             usergroup_id="G123456789",
             style=RichStyle(italic=True),
         ).build()
         assert got == want
 
         got = (
-            RichUserGroup()
+            RichUserGroupEl()
             .usergroup_id("G123456789")
             .style(RichStyle(italic=True))
             .build()

@@ -2436,7 +2436,7 @@ class Markdown(Component, BlockIdMixin):
         )
 
 
-class RichBroadcast(Component):
+class RichBroadcastEl(Component):
     """
     Rich broadcast text element
 
@@ -2462,27 +2462,6 @@ class RichBroadcast(Component):
                 Required(),
                 Strings(self.HERE, self.CHANNEL, self.EVERYONE),
             ],
-        )
-
-
-class RichColor(Component):
-    """
-    Rich color text element
-
-    Slack docs:
-        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#color-element-type
-    """
-
-    def __init__(self, value: str | None = None):
-        super().__init__()
-        self._add_field("type", "color")
-        self.value(value)
-
-    def value(self, value: str | None) -> Self:
-        return self._add_field(
-            "value",
-            value,
-            validators=[Typed(str), Required(), HexColor()],
         )
 
 
@@ -2537,7 +2516,28 @@ class RichStyle(Component):
         return self._add_field("unlink", unlink, validators=[Typed(bool)])
 
 
-class RichChannel(Component, RichStyleMixin):
+class RichColorEl(Component):
+    """
+    Rich color text element
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#color-element-type
+    """
+
+    def __init__(self, value: str | None = None):
+        super().__init__()
+        self._add_field("type", "color")
+        self.value(value)
+
+    def value(self, value: str | None) -> Self:
+        return self._add_field(
+            "value",
+            value,
+            validators=[Typed(str), Required(), HexColor()],
+        )
+
+
+class RichChannelEl(Component, RichStyleMixin):
     """
     Rich channel text element
 
@@ -2563,7 +2563,7 @@ class RichChannel(Component, RichStyleMixin):
         )
 
 
-class RichDate(Component, UrlMixin):
+class RichDateEl(Component, UrlMixin):
     """
     Rich date text element
 
@@ -2613,7 +2613,7 @@ class RichDate(Component, UrlMixin):
         return self._add_field("fallback", fallback, validators=[Typed(str)])
 
 
-class RichEmoji(Component):
+class RichEmojiEl(Component):
     """
     Rich emoji text element
 
@@ -2635,7 +2635,7 @@ class RichEmoji(Component):
         return self._add_field("unicode", unicode, validators=[Typed(str)])
 
 
-class RichLink(Component, UrlMixin, RichStyleMixin):
+class RichLinkEl(Component, UrlMixin, RichStyleMixin):
     """
     Rich link text element
 
@@ -2670,7 +2670,7 @@ class RichLink(Component, UrlMixin, RichStyleMixin):
         return self._add_field("unsafe", unsafe, validators=[Typed(bool)])
 
 
-class RichText(Component, RichStyleMixin):
+class RichTextEl(Component, RichStyleMixin):
     """
     Rich text element
 
@@ -2689,7 +2689,7 @@ class RichText(Component, RichStyleMixin):
         return self._add_field("text", text, validators=[Typed(str), Required()])
 
 
-class RichUser(Component, RichStyleMixin):
+class RichUserEl(Component, RichStyleMixin):
     """
     Rich user text element
 
@@ -2709,7 +2709,7 @@ class RichUser(Component, RichStyleMixin):
         return self._add_field("user_id", user_id, validators=[Typed(str), Required()])
 
 
-class RichUserGroup(Component, RichStyleMixin):
+class RichUserGroupEl(Component, RichStyleMixin):
     """
     Rich usergroup text element
 
