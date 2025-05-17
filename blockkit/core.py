@@ -315,6 +315,8 @@ class StyledCorrectly(ComponentValidator):
 
     def validate(self, component: "Component") -> None:
         style = component._get_field("style").value
+        if not style:
+            return
 
         code = style._get_field("code").value
         highlight = style._get_field("highlight").value
@@ -2731,10 +2733,103 @@ class RichUserGroupEl(Component, RichStyleMixin):
         )
 
 
+RichTextElement: TypeAlias = (
+    RichBroadcastEl
+    | RichColorEl
+    | RichChannelEl
+    | RichDateEl
+    | RichEmojiEl
+    | RichLinkEl
+    | RichTextEl
+    | RichUserEl
+    | RichUserGroupEl
+)
+
+
+class RichTextSection(Component):
+    """
+    Rich text section
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#rich_text_section
+    """
+
+    def __init__(self, elements: list[RichTextElement] | None = None):
+        super().__init__()
+        self._add_field("type", "rich_text_section")
+        self.elements(*elements or ())
+
+    def elements(self, *elements: RichTextElement) -> Self:
+        return self._add_field(
+            "elements",
+            list(elements),
+            validators=[Typed(*get_args(RichTextElement)), Required()],
+        )
+
+    def add_element(self, element: RichTextElement) -> Self:
+        field = self._get_field("elements")
+        field.value.append(element)
+        return self
+
+
+class RichTextList(Component):
+    """
+    Rich text list
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#rich_text_list
+    """
+
+    BULLET = "bullet"
+    ORDERED = "ordered"
+
+    def __init__(
+        self,
+        style: str | None = None,
+        elements: list[RichTextSection] | None = None,
+        indent: int | None = None,
+        offset: int | None = None,
+        border: int | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "rich_text_list")
+        self.style(style)
+        self.elements(*elements or ())
+        self.indent(indent)
+        self.offset(offset)
+        self.border(border)
+
+    def style(self, style: str | None = None) -> Self:
+        return self._add_field(
+            "style",
+            style,
+            validators=[Typed(str), Required(), Strings(self.BULLET, self.ORDERED)],
+        )
+
+    def elements(self, *elements: RichTextSection) -> Self:
+        return self._add_field(
+            "elements",
+            list(elements),
+            validators=[Typed(RichTextSection), Required()],
+        )
+
+    def add_element(self, element: RichTextSection) -> Self:
+        field = self._get_field("elements")
+        field.value.append(element)
+        return self
+
+    def indent(self, indent: int | None = None) -> Self:
+        return self._add_field("indent", indent, validators=[Typed(int), Ints(max=6)])
+
+    def offset(self, offset: int | None = None) -> Self:
+        return self._add_field("offset", offset, validators=[Typed(int), Ints(max=6)])
+
+    def border(self, border: int | None = None) -> Self:
+        return self._add_field("border", border, validators=[Typed(int), Ints(max=1)])
+
+
 """
 - Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
-- Rich text section (RichTextSection) - https://api.slack.com/reference/block-kit/blocks#rich_text_section
-- Rich text list (RichTextList) - https://api.slack.com/reference/block-kit/blocks#rich_text_list
 - Rich text preformatted (RichTextPreformatted) - https://api.slack.com/reference/block-kit/blocks#rich_text_preformatted
 - Rich text quote (RichTextQuote) - https://api.slack.com/reference/block-kit/blocks#rich_text_quote
 - Section (Section) - https://api.slack.com/reference/block-kit/blocks#section

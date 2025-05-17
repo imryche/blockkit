@@ -48,6 +48,8 @@ from blockkit.core import (
     RichStyle,
     RichTextEl,
     RichTextInput,
+    RichTextList,
+    RichTextSection,
     RichUserEl,
     RichUserGroupEl,
     SlackFile,
@@ -2850,6 +2852,109 @@ class TestRichUserGroupEl:
             RichUserGroupEl()
             .usergroup_id("G123456789")
             .style(RichStyle(italic=True))
+            .build()
+        )
+        assert got == want
+
+
+class TestRichTextSection:
+    def test_builds(self):
+        want = {
+            "type": "rich_text_section",
+            "elements": [
+                {
+                    "type": "text",
+                    "text": "Curiouser and curiouser!",
+                    "style": {
+                        "bold": True,
+                    },
+                },
+                {
+                    "type": "emoji",
+                    "name": "rabbit",
+                },
+            ],
+        }
+
+        got = RichTextSection(
+            elements=[
+                RichTextEl(
+                    text="Curiouser and curiouser!",
+                    style=RichStyle(bold=True),
+                ),
+                RichEmojiEl(name="rabbit"),
+            ]
+        ).build()
+        assert got == want
+
+        got = (
+            RichTextSection()
+            .add_element(
+                RichTextEl(
+                    text="Curiouser and curiouser!",
+                    style=RichStyle(bold=True),
+                )
+            )
+            .add_element(RichEmojiEl(name="rabbit"))
+            .build()
+        )
+        assert got == want
+
+
+class TestRichTextList:
+    def test_builds(self):
+        want = {
+            "type": "rich_text_list",
+            "style": "bullet",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "Cheshire Cat",
+                        }
+                    ],
+                },
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "Mad Hatter",
+                        }
+                    ],
+                },
+            ],
+            "indent": 0,
+            "offset": 0,
+            "border": 0,
+        }
+
+        got = RichTextList(
+            style="bullet",
+            elements=[
+                RichTextSection(
+                    elements=[RichTextEl("Cheshire Cat")],
+                ),
+                RichTextSection(
+                    elements=[RichTextEl("Mad Hatter")],
+                ),
+            ],
+            indent=0,
+            offset=0,
+            border=0,
+        ).build()
+        assert got == want
+
+        got = (
+            RichTextList()
+            .style("bullet")
+            .add_element(RichTextSection().add_element(RichTextEl("Cheshire Cat")))
+            .add_element(RichTextSection().add_element(RichTextEl("Mad Hatter")))
+            .indent(0)
+            .offset(0)
+            .border(0)
             .build()
         )
         assert got == want
