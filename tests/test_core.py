@@ -63,6 +63,7 @@ from blockkit.core import (
     Trigger,
     UrlInput,
     UsersSelect,
+    Video,
     Workflow,
     WorkflowButton,
 )
@@ -3223,6 +3224,59 @@ class TestSection:
             Section()
             .add_field(Text(text="Eat me"))
             .add_field(Text(text="Drink me"))
+            .build()
+        )
+        assert got == want
+
+
+class TestVideo:
+    def test_builds(self):
+        want = {
+            "type": "video",
+            "title": {
+                "type": "plain_text",
+                "text": "Down the rabbit hole",
+            },
+            "title_url": "https://wonderland.com/video/intro.mp4",
+            "description": {
+                "type": "plain_text",
+                "text": "The adventure begins below",
+            },
+            "alt_text": "Alice falls down the rabbit hole",
+            "video_url": "https://wonderland.com/video/intro.mp4",
+            "thumbnail_url": "https://wonderland.com/static/hole.png",
+            "provider_icon_url": "https://wonderland.com/static/provider.png",
+            "provider_name": "wonderland",
+            "author_name": "Lewis Carroll",
+            "block_id": "video_block",
+        }
+
+        got = Video(
+            title="Down the rabbit hole",
+            title_url="https://wonderland.com/video/intro.mp4",
+            description="The adventure begins below",
+            alt_text="Alice falls down the rabbit hole",
+            video_url="https://wonderland.com/video/intro.mp4",
+            thumbnail_url="https://wonderland.com/static/hole.png",
+            provider_icon_url="https://wonderland.com/static/provider.png",
+            provider_name="wonderland",
+            author_name="Lewis Carroll",
+            block_id="video_block",
+        ).build()
+        assert got == want
+
+        got = (
+            Video()
+            .title("Down the rabbit hole")
+            .title_url("https://wonderland.com/video/intro.mp4")
+            .description("The adventure begins below")
+            .alt_text("Alice falls down the rabbit hole")
+            .video_url("https://wonderland.com/video/intro.mp4")
+            .thumbnail_url("https://wonderland.com/static/hole.png")
+            .provider_icon_url("https://wonderland.com/static/provider.png")
+            .provider_name("wonderland")
+            .author_name("Lewis Carroll")
+            .block_id("video_block")
             .build()
         )
         assert got == want

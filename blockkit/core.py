@@ -330,6 +330,7 @@ class StyledCorrectly(ComponentValidator):
 
 
 def str_to_plain(value: "str | Text | None") -> "Text | None":
+    # TODO: reject markdown or convert to plain
     if isinstance(value, str):
         return Text(value).type(Text.PLAIN)
     return value
@@ -2964,6 +2965,91 @@ class Section(Component, BlockIdMixin):
     def expand(self, expand: bool | None = True) -> Self:
         return self._add_field("expand", expand, validators=[Typed(bool)])
 
+
+class Video(Component, BlockIdMixin):
+    def __init__(
+        self,
+        title: str | Text | None = None,
+        title_url: str | None = None,  # preferred
+        description: str | Text | None = None,  # preferred
+        alt_text: str | None = None,
+        video_url: str | None = None,
+        thumbnail_url: str | None = None,
+        provider_icon_url: str | None = None,  # optional
+        provider_name: str | None = None,  # optional
+        author_name: str | None = None,  # optional
+        block_id: str | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "video")
+        self.title(title)
+        self.title_url(title_url)
+        self.description(description)
+        self.alt_text(alt_text)
+        self.video_url(video_url)
+        self.thumbnail_url(thumbnail_url)
+        self.provider_icon_url(provider_icon_url)
+        self.provider_name(provider_name)
+        self.author_name(author_name)
+        self.block_id(block_id)
+
+    def title(self, title: str | Text | None) -> Self:
+        return self._add_field(
+            "title",
+            str_to_plain(title),
+            validators=[Typed(Text), Plain(), Required(), Length(1, 200)],
+        )
+
+    def title_url(self, title_url: str | None) -> Self:
+        return self._add_field(
+            "title_url", title_url, validators=[Typed(str), Length(1, 2000)]
+        )
+
+    def description(self, description: str | Text | None) -> Self:
+        return self._add_field(
+            "description",
+            str_to_plain(description),
+            validators=[Typed(Text), Plain(), Length(1, 200)],
+        )
+
+    def alt_text(self, alt_text: str | None) -> Self:
+        return self._add_field(
+            "alt_text", alt_text, validators=[Typed(str), Required(), Length(1)]
+        )
+
+    def video_url(self, video_url: str | None) -> Self:
+        return self._add_field(
+            "video_url", video_url, validators=[Typed(str), Length(1, 2000)]
+        )
+
+    def thumbnail_url(self, thumbnail_url: str | None) -> Self:
+        return self._add_field(
+            "thumbnail_url", thumbnail_url, validators=[Typed(str), Length(1, 2000)]
+        )
+
+    def provider_icon_url(self, provider_icon_url: str | None) -> Self:
+        return self._add_field(
+            "provider_icon_url",
+            provider_icon_url,
+            validators=[Typed(str), Length(1, 2000)],
+        )
+
+    def provider_name(self, provider_name: str | None) -> Self:
+        return self._add_field(
+            "provider_name", provider_name, validators=[Typed(str), Length(1, 50)]
+        )
+
+    def author_name(self, author_name: str | None) -> Self:
+        return self._add_field(
+            "author_name", author_name, validators=[Typed(str), Length(1, 50)]
+        )
+
+
+# TODO: unify def add_* methods
+# TODO: remove default Nones in methods
+# TODO: super().__init__(component_type)
+# TODO: add missing Plain() validators
+# TODO: str fields have missing Length()
 
 """
 - Video (Video) - https://api.slack.com/reference/block-kit/blocks#video
