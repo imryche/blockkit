@@ -2851,10 +2851,25 @@ class RichTextPreformatted(Component, RichTextElementsMixin, RichBorderMixin):
         self.border(border)
 
 
+class RichTextQuote(Component, RichTextElementsMixin, RichBorderMixin):
+    """
+    Rich text quote
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#rich_text_quote
+    """
+
+    def __init__(
+        self, elements: list[RichTextElement] | None = None, border: int | None = None
+    ):
+        super().__init__()
+        self._add_field("type", "rich_text_quote")
+        self.elements(*elements or ())
+        self.border(border)
+
+
 """
 - Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
-- Rich text preformatted (RichTextPreformatted) - https://api.slack.com/reference/block-kit/blocks#rich_text_preformatted
-- Rich text quote (RichTextQuote) - https://api.slack.com/reference/block-kit/blocks#rich_text_quote
 - Section (Section) - https://api.slack.com/reference/block-kit/blocks#section
 - Video (Video) - https://api.slack.com/reference/block-kit/blocks#video
 """

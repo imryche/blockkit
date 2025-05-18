@@ -50,6 +50,7 @@ from blockkit.core import (
     RichTextInput,
     RichTextList,
     RichTextPreformatted,
+    RichTextQuote,
     RichTextSection,
     RichUserEl,
     RichUserGroupEl,
@@ -2995,6 +2996,53 @@ class TestRichTextPreformatted:
 
         got = (
             RichTextPreformatted()
+            .add_element(
+                RichTextEl(
+                    text="Curiouser and curiouser!",
+                    style=RichStyle(bold=True),
+                )
+            )
+            .add_element(RichEmojiEl(name="rabbit"))
+            .border(0)
+            .build()
+        )
+        assert got == want
+
+
+class TestRichTextQuote:
+    def test_builds(self):
+        want = {
+            "type": "rich_text_quote",
+            "elements": [
+                {
+                    "type": "text",
+                    "text": "Curiouser and curiouser!",
+                    "style": {
+                        "bold": True,
+                    },
+                },
+                {
+                    "type": "emoji",
+                    "name": "rabbit",
+                },
+            ],
+            "border": 0,
+        }
+
+        got = RichTextQuote(
+            elements=[
+                RichTextEl(
+                    text="Curiouser and curiouser!",
+                    style=RichStyle(bold=True),
+                ),
+                RichEmojiEl(name="rabbit"),
+            ],
+            border=0,
+        ).build()
+        assert got == want
+
+        got = (
+            RichTextQuote()
             .add_element(
                 RichTextEl(
                     text="Curiouser and curiouser!",
