@@ -330,7 +330,6 @@ class StyledCorrectly(ComponentValidator):
 
 
 def str_to_plain(value: "str | Text | None") -> "Text | None":
-    # TODO: reject markdown or convert to plain
     if isinstance(value, str):
         return Text(value).type(Text.PLAIN)
     return value
@@ -348,10 +347,12 @@ class Field:
             validator(self.name, self.value)
 
 
-@dataclasses.dataclass
 class Component:
-    _fields: dict[str, Field] = dataclasses.field(default_factory=dict)
-    _validators: list[ComponentValidator] = dataclasses.field(default_factory=list)
+    def __init__(self, type: str | None = None):
+        self._fields: dict[str, Field] = {}
+        self._validators: list[ComponentValidator | FieldValidator] = []
+        if type:
+            self._add_field("type", type)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Component):
@@ -1093,9 +1094,7 @@ class Button(
         confirm: Confirm | None = None,
         accessibility_label: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "button")
-
+        super().__init__("button")
         self.text(text)
         self.action_id(action_id)
         self.url(url)
@@ -1128,9 +1127,8 @@ class Checkboxes(
         confirm: Confirm | None = None,
         focus_on_load: bool | None = None,
     ):
-        super().__init__()
+        super().__init__("checkboxes")
         self._max_options = 10
-        self._add_field("type", "checkboxes")
         self.action_id(action_id)
         self.options(*options or ())
         self.initial_options(*initial_options or ())
@@ -1170,8 +1168,7 @@ class DatePicker(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "datepicker")
+        super().__init__("datepicker")
         self.action_id(action_id)
         self.initial_date(initial_date)
         self.confirm(confirm)
@@ -1204,8 +1201,7 @@ class DatetimePicker(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "datetimepicker")
+        super().__init__("datetimepicker")
         self.action_id(action_id)
         self.initial_date_time(initial_date_time)
         self.confirm(confirm)
@@ -1244,8 +1240,7 @@ class EmailInput(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "email_text_input")
+        super().__init__("email_text_input")
         self.action_id(action_id)
         self.initial_value(initial_value)
         self.dispatch_action_config(dispatch_action_config)
@@ -1291,8 +1286,7 @@ class FileInput(Component, ActionIdMixin):
         filetypes: list[str] | None = None,
         max_files: int | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "file_input")
+        super().__init__("file_input")
         self.action_id(action_id)
         self.filetypes(*filetypes or ())
         self.max_files(max_files)
@@ -1326,8 +1320,7 @@ class ImageEl(Component, AltTextMixin, ImageUrlMixin, SlackFileMixin):
         image_url: str | None = None,
         slack_file: SlackFile | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "image")
+        super().__init__("image")
         self.alt_text(alt_text)
         self.image_url(image_url)
         self.slack_file(slack_file)
@@ -1368,8 +1361,7 @@ class MultiStaticSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "multi_static_select")
+        super().__init__("multi_static_select")
         self.action_id(action_id)
         self.options(*options or ())
         self.option_groups(*option_groups or ())
@@ -1417,8 +1409,7 @@ class MultiExternalSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "multi_external_select")
+        super().__init__("multi_external_select")
         self.action_id(action_id)
         self.min_query_length(min_query_length)
         self.initial_options(*initial_options or ())
@@ -1457,8 +1448,7 @@ class MultiUsersSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "multi_users_select")
+        super().__init__("multi_users_select")
         self.action_id(action_id)
         self.initial_users(*initial_users or ())
         self.confirm(confirm)
@@ -1510,8 +1500,7 @@ class MultiConversationsSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "multi_conversations_select")
+        super().__init__("multi_conversations_select")
         self.action_id(action_id)
         self.initial_conversations(*initial_conversations or ())
         self.default_to_current_conversation(default_to_current_conversation)
@@ -1563,8 +1552,7 @@ class MultiChannelsSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "multi_channels_select")
+        super().__init__("multi_channels_select")
         self.action_id(action_id)
         self.initial_channels(*initial_channels or ())
         self.confirm(confirm)
@@ -1612,8 +1600,7 @@ class NumberInput(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "number_input")
+        super().__init__("number_input")
         self.is_decimal_allowed(is_decimal_allowed)
         self.action_id(action_id)
         self.initial_value(initial_value)
@@ -1671,9 +1658,8 @@ class Overflow(Component, ActionIdMixin, OptionsMixin, ConfirmMixin):
         options: list[Option] | None = None,
         confirm: Confirm | None = None,
     ):
-        super().__init__()
+        super().__init__("overflow")
         self._max_options = 5
-        self._add_field("type", "overflow")
         self.action_id(action_id)
         self.options(*options or ())
         self.confirm(confirm)
@@ -1706,8 +1692,7 @@ class PlainTextInput(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "plain_text_input")
+        super().__init__("plain_text_input")
         self.action_id(action_id)
         self.initial_value(initial_value)
         self.multiline(multiline)
@@ -1757,9 +1742,8 @@ class RadioButtons(
         confirm: Confirm | None = None,
         focus_on_load: bool | None = None,
     ):
-        super().__init__()
+        super().__init__("radio_buttons")
         self._max_options = 10
-        self._add_field("type", "radio_buttons")
         self.action_id(action_id)
         self.options(*options or ())
         self.initial_option(initial_option)
@@ -1797,8 +1781,7 @@ class RichTextInput(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "rich_text_input")
+        super().__init__("rich_text_input")
         self.action_id(action_id)
         # TODO: implement after implementing RichText
         # self.initial_value(initial_value)
@@ -1840,8 +1823,7 @@ class StaticSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "static_select")
+        super().__init__("static_select")
         self.action_id(action_id)
         self.options(*options or ())
         self.option_groups(*option_groups or ())
@@ -1888,8 +1870,7 @@ class ExternalSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "external_select")
+        super().__init__("external_select")
         self.action_id(action_id)
         self.min_query_length(min_query_length)
         self.initial_option(initial_option)
@@ -1926,8 +1907,7 @@ class UsersSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "users_select")
+        super().__init__("users_select")
         self.action_id(action_id)
         self.initial_user(initial_user)
         self.confirm(confirm)
@@ -1975,8 +1955,7 @@ class ConversationsSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "conversations_select")
+        super().__init__("conversations_select")
         self.action_id(action_id)
         self.initial_conversation(initial_conversation)
         self.default_to_current_conversation(default_to_current_conversation)
@@ -2023,8 +2002,7 @@ class ChannelsSelect(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "channels_select")
+        super().__init__("channels_select")
         self.action_id(action_id)
         self.initial_channel(initial_channel)
         self.confirm(confirm)
@@ -2065,8 +2043,7 @@ class TimePicker(
         placeholder: str | Text | None = None,
         timezone: str | ZoneInfo | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "timepicker")
+        super().__init__("timepicker")
         self.action_id(action_id)
         self.initial_time(initial_time)
         self.confirm(confirm)
@@ -2109,8 +2086,7 @@ class UrlInput(
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "url_text_input")
+        super().__init__("url_text_input")
         self.action_id(action_id)
         self.initial_value(initial_value)
         self.dispatch_action_config(dispatch_action_config)
@@ -2143,8 +2119,7 @@ class WorkflowButton(
         style: str | None = None,
         accessibility_label: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "workflow_button")
+        super().__init__("workflow_button")
         self.text(text)
         self.workflow(workflow)
         self.action_id(action_id)
@@ -2197,8 +2172,7 @@ class Actions(Component, BlockIdMixin):
         elements: list[ActionElement] | None = None,
         block_id: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "actions")
+        super().__init__("actions")
         self.elements(*elements or ())
         self.block_id(block_id)
 
@@ -2233,8 +2207,7 @@ class Context(Component, BlockIdMixin):
         elements: list[ContextElement] | None = None,
         block_id: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "context")
+        super().__init__("context")
         self.elements(*elements or ())
         self.block_id(block_id)
 
@@ -2262,8 +2235,7 @@ class Divider(Component, BlockIdMixin):
     """
 
     def __init__(self, block_id: str | None = None):
-        super().__init__()
-        self._add_field("type", "divider")
+        super().__init__("divider")
         self.block_id(block_id)
 
 
@@ -2283,8 +2255,7 @@ class File(Component, BlockIdMixin):
         source: str | None = None,
         block_id: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "file")
+        super().__init__("file")
         self.external_id(external_id)
         self.source(source)
         self.block_id(block_id)
@@ -2315,8 +2286,7 @@ class Header(Component, BlockIdMixin):
     """
 
     def __init__(self, text: str | Text | None = None, block_id: str | None = None):
-        super().__init__()
-        self._add_field("type", "header")
+        super().__init__("header")
         self.text(text)
         self.block_id(block_id)
 
@@ -2346,8 +2316,7 @@ class Image(Component, BlockIdMixin, AltTextMixin, ImageUrlMixin, SlackFileMixin
         title: str | Text | None = None,
         block_id: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "image")
+        super().__init__("image")
         self.alt_text(alt_text)
         self.image_url(image_url)
         self.slack_file(slack_file)
@@ -2407,8 +2376,7 @@ class Input(Component, BlockIdMixin):
         optional: bool | None = None,
         block_id: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "input")
+        super().__init__("input")
         self.label(label)
         self.element(element)
         self.dispatch_action(dispatch_action)
@@ -2455,8 +2423,7 @@ class Markdown(Component, BlockIdMixin):
     """
 
     def __init__(self, text: str | None = None, block_id: str | None = None):
-        super().__init__()
-        self._add_field("type", "markdown")
+        super().__init__("markdown")
         self.text(text)
         self.block_id(block_id)
 
@@ -2479,8 +2446,7 @@ class RichBroadcastEl(Component):
     EVERYONE = "everyone"
 
     def __init__(self, range: str | None = None):
-        super().__init__()
-        self._add_field("type", "broadcast")
+        super().__init__("broadcast")
         self.range(range)
 
     def range(self, range: str | None) -> Self:
@@ -2555,8 +2521,7 @@ class RichColorEl(Component):
     """
 
     def __init__(self, value: str | None = None):
-        super().__init__()
-        self._add_field("type", "color")
+        super().__init__("color")
         self.value(value)
 
     def value(self, value: str | None) -> Self:
@@ -2580,8 +2545,7 @@ class RichChannelEl(Component, RichStyleMixin):
         channel_id: str | None = None,
         style: RichStyle | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "channel")
+        super().__init__("channel")
         self.channel_id(channel_id)
         self.style(style)
         self._add_validator(StyledCorrectly(extended=True))
@@ -2622,8 +2586,7 @@ class RichDateEl(Component, UrlMixin):
         url: str | None = None,
         fallback: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "date")
+        super().__init__("date")
         self.timestamp(timestamp)
         self.format(format)
         self.url(url)
@@ -2654,8 +2617,7 @@ class RichEmojiEl(Component):
     """
 
     def __init__(self, name: str | None = None, unicode: str | None = None):
-        super().__init__()
-        self._add_field("type", "emoji")
+        super().__init__("emoji")
         self.name(name)
         self.unicode(unicode)
 
@@ -2684,8 +2646,7 @@ class RichLinkEl(Component, UrlMixin, RichStyleMixin):
         unsafe: bool | None = None,
         style: RichStyle | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "link")
+        super().__init__("link")
         self.url(url)
         self.text(text)
         self.unsafe(unsafe)
@@ -2713,8 +2674,7 @@ class RichTextEl(Component, RichStyleMixin):
     """
 
     def __init__(self, text: str | None = None, style: RichStyle | None = None):
-        super().__init__()
-        self._add_field("type", "text")
+        super().__init__("text")
         self.text(text)
         self.style(style)
         self._add_validator(StyledCorrectly())
@@ -2734,8 +2694,7 @@ class RichUserEl(Component, RichStyleMixin):
     """
 
     def __init__(self, user_id: str | None = None, style: RichStyle | None = None):
-        super().__init__()
-        self._add_field("type", "user")
+        super().__init__("user")
         self.user_id(user_id)
         self.style(style)
         self._add_validator(StyledCorrectly(extended=True))
@@ -2756,8 +2715,7 @@ class RichUserGroupEl(Component, RichStyleMixin):
     """
 
     def __init__(self, usergroup_id: str | None = None, style: RichStyle | None = None):
-        super().__init__()
-        self._add_field("type", "usergroup")
+        super().__init__("usergroup")
         self.usergroup_id(usergroup_id)
         self.style(style)
         self._add_validator(StyledCorrectly(extended=True))
@@ -2791,8 +2749,7 @@ class RichTextSection(Component, RichTextElementsMixin):
     """
 
     def __init__(self, elements: list[RichTextElement] | None = None):
-        super().__init__()
-        self._add_field("type", "rich_text_section")
+        super().__init__("rich_text_section")
         self.elements(*elements or ())
 
 
@@ -2815,8 +2772,7 @@ class RichTextList(Component, RichBorderMixin):
         offset: int | None = None,
         border: int | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "rich_text_list")
+        super().__init__("rich_text_list")
         self.style(style)
         self.elements(*elements or ())
         self.indent(indent)
@@ -2860,8 +2816,7 @@ class RichTextPreformatted(Component, RichTextElementsMixin, RichBorderMixin):
     def __init__(
         self, elements: list[RichTextElement] | None = None, border: int | None = None
     ):
-        super().__init__()
-        self._add_field("type", "rich_text_preformatted")
+        super().__init__("rich_text_preformatted")
         self.elements(*elements or ())
         self.border(border)
 
@@ -2877,8 +2832,7 @@ class RichTextQuote(Component, RichTextElementsMixin, RichBorderMixin):
     def __init__(
         self, elements: list[RichTextElement] | None = None, border: int | None = None
     ):
-        super().__init__()
-        self._add_field("type", "rich_text_quote")
+        super().__init__("rich_text_quote")
         self.elements(*elements or ())
         self.border(border)
 
@@ -2901,8 +2855,7 @@ class RichText(Component, BlockIdMixin):
     def __init__(
         self, elements: list[RichTextObject] | None = None, block_id: str | None = None
     ):
-        super().__init__()
-        self._add_field("type", "rich_text")
+        super().__init__("rich_text")
         self.elements(*elements or ())
         self.block_id(block_id)
 
@@ -2959,8 +2912,7 @@ class Section(Component, BlockIdMixin):
         expand: bool | None = None,
         block_id: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "section")
+        super().__init__("section")
         self.text(text)
         self.fields(*fields or ())
         self.accessory(accessory)
@@ -3017,8 +2969,7 @@ class Video(Component, BlockIdMixin):
         author_name: str | None = None,
         block_id: str | None = None,
     ):
-        super().__init__()
-        self._add_field("type", "video")
+        super().__init__("video")
         self.title(title)
         self.title_url(title_url)
         self.description(description)
@@ -3083,4 +3034,3 @@ class Video(Component, BlockIdMixin):
 
 
 # TODO: unify def add_* methods
-# TODO: super().__init__(component_type)
