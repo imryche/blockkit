@@ -180,15 +180,12 @@ class ComponentValidator(ABC):
         return self.validate(component)
 
 
-class Either(ComponentValidator):
+class AtLeastOne(ComponentValidator):
     def __init__(self, *field_names: str):
         self.field_names = field_names
 
     def validate(self, component: "Component") -> None:
-        if not any(
-            getattr(component._get_field(name), "value", None)
-            for name in self.field_names
-        ):
+        if not any(component._get_field_value(name) for name in self.field_names):
             expected_names = ", ".join(f"'{n}'" for n in self.field_names)
             raise ComponentValidationError(
                 component,
@@ -202,14 +199,13 @@ class OnlyOne(ComponentValidator):
 
     def validate(self, component: "Component") -> None:
         field_count = sum(
-            bool(getattr(component._get_field(name), "value", None))
-            for name in self.field_names
+            bool(component._get_field_value(name)) for name in self.field_names
         )
-        if field_count > 1:
+        if field_count != 1:
             allowed_names = ", ".join(f"'{n}'" for n in self.field_names)
             raise ComponentValidationError(
                 component,
-                f"Only one of the following fields is allowed {allowed_names}",
+                f"Only one of the following fields is required {allowed_names}",
             )
 
 
@@ -406,11 +402,17 @@ class Component:
             return
         self._validators.append(validator)
 
-    def _get_field(self, field_name: str) -> Any:
+    def _get_field(self, field_name: str) -> Field:
         field = self._fields.get(field_name)
         if not field:
             raise AttributeError(f"Field '{field_name}' does not exist")
         return field
+
+    def _get_field_value(self, field_name: str) -> Any:
+        try:
+            return self._get_field(field_name).value
+        except AttributeError:
+            return None
 
     def validate(self):
         for field_ in self._fields.values():
@@ -834,7 +836,9 @@ class ConversationFilter(Component):
         self.exclude_bot_users(exclude_bot_users)
         self.exclude_external_shared_channels(exclude_external_shared_channels)
         self._add_validator(
-            Either("include", "exclude_bot_users", "exclude_external_shared_channels")
+            AtLeastOne(
+                "include", "exclude_bot_users", "exclude_external_shared_channels"
+            )
         )
 
     def include(self, include: list[str] | None) -> Self:
@@ -1326,7 +1330,7 @@ class ImageEl(Component, AltTextMixin, ImageUrlMixin, SlackFileMixin):
         self.alt_text(alt_text)
         self.image_url(image_url)
         self.slack_file(slack_file)
-        self._add_validator(Either("image_url", "slack_file"))
+        self._add_validator(OnlyOne("image_url", "slack_file"))
 
 
 class MultiStaticSelect(
@@ -1373,7 +1377,7 @@ class MultiStaticSelect(
         self.max_selected_items(max_selected_items)
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
-        self._add_validator(Either("options", "option_groups"))
+        self._add_validator(OnlyOne("options", "option_groups"))
         # TODO: Doesn't handle the case where initial_options are set
         # but options or option_groups are empty
         self._add_validator(Within("initial_options", "options"))
@@ -1844,7 +1848,7 @@ class StaticSelect(
         self.confirm(confirm)
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
-        self._add_validator(Either("options", "option_groups"))
+        self._add_validator(OnlyOne("options", "option_groups"))
         # TODO: Doesn't handle the case where initial_option is set
         # but options or option_groups are empty
         self._add_validator(Within("initial_option", "options"))
@@ -2348,7 +2352,7 @@ class Image(Component, BlockIdMixin, AltTextMixin, ImageUrlMixin, SlackFileMixin
         self.slack_file(slack_file)
         self.title(title)
         self.block_id(block_id)
-        self._add_validator(Either("image_url", "slack_file"))
+        self._add_validator(OnlyOne("image_url", "slack_file"))
 
     def title(self, title: str | Text | None) -> Self:
         return self._add_field(
@@ -2895,7 +2899,72 @@ class RichText(Component, BlockIdMixin):
         return self
 
 
+SectionElement: TypeAlias = (
+    Button
+    | Checkboxes
+    | DatePicker
+    | ImageEl
+    | MultiStaticSelect
+    | MultiExternalSelect
+    | MultiUsersSelect
+    | MultiConversationsSelect
+    | MultiChannelsSelect
+    | Overflow
+    | RadioButtons
+    | StaticSelect
+    | ExternalSelect
+    | UsersSelect
+    | ConversationsSelect
+    | ChannelsSelect
+    | TimePicker
+    | WorkflowButton
+)
+
+
+class Section(Component, BlockIdMixin):
+    def __init__(
+        self,
+        text: str | Text | None = None,
+        fields: list[Text] | None = None,
+        accessory: SectionElement | None = None,
+        expand: bool | None = None,
+        block_id: str | None = None,
+    ):
+        super().__init__()
+        self._add_field("type", "section")
+        self.text(text)
+        self.fields(*fields or ())
+        self.accessory(accessory)
+        self.expand(expand)
+        self.block_id(block_id)
+        self._add_validator(OnlyOne("text", "fields"))
+
+    def text(self, text: str | Text | None = None) -> Self:
+        if isinstance(text, str):
+            text = Text(text)
+        return self._add_field("text", text, validators=[Typed(Text), Length(1, 3000)])
+
+    def fields(self, *fields: str | Text) -> Self:
+        return self._add_field(
+            "fields",
+            [Text(f) if isinstance(f, str) else f for f in list(fields)],
+            validators=[Typed(Text)],
+        )
+
+    def add_field(self, field: str | Text) -> Self:
+        field_ = self._get_field("fields")  # type: ignore[attr-defined]
+        field_.value.append(field)
+        return self
+
+    def accessory(self, accessory: SectionElement | None = None) -> Self:
+        return self._add_field(
+            "accessory", accessory, validators=[Typed(*get_args(SectionElement))]
+        )
+
+    def expand(self, expand: bool | None = True) -> Self:
+        return self._add_field("expand", expand, validators=[Typed(bool)])
+
+
 """
-- Section (Section) - https://api.slack.com/reference/block-kit/blocks#section
 - Video (Video) - https://api.slack.com/reference/block-kit/blocks#video
 """

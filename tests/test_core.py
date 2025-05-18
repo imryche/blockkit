@@ -55,6 +55,7 @@ from blockkit.core import (
     RichTextSection,
     RichUserEl,
     RichUserGroupEl,
+    Section,
     SlackFile,
     StaticSelect,
     Text,
@@ -190,7 +191,7 @@ class TestOnlyOne:
                 url="https://files.slack.com/files-pri/T0123456-F0123456/xyz.png",
                 id="F123456",
             ).validate()
-        assert "Only one of the following fields is allowed 'url', 'id'" in str(e)
+        assert "Only one of the following fields is required 'url', 'id'" in str(e)
 
     def test_valid(self):
         SlackFile(id="F123456").validate()
@@ -3152,6 +3153,76 @@ class TestRichText:
                 .add_element(RichTextSection().add_element(RichTextEl("Mad Hatter")))
             )
             .block_id("rich_text_block")
+            .build()
+        )
+        assert got == want
+
+
+class TestSection:
+    def test_builds_text(self):
+        want = {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "_Who in the world am I?_",
+            },
+            "accessory": {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Find out",
+                },
+                "action_id": "button_action",
+            },
+            "expand": False,
+            "block_id": "section_block",
+        }
+
+        got = Section(
+            text="_Who in the world am I?_",
+            accessory=Button(text="Find out", action_id="button_action"),
+            expand=False,
+            block_id="section_block",
+        ).build()
+        assert got == want
+
+        got = (
+            Section()
+            .text("_Who in the world am I?_")
+            .accessory(Button(text="Find out", action_id="button_action"))
+            .expand(False)
+            .block_id("section_block")
+            .build()
+        )
+        assert got == want
+
+    def test_builds_fields(self):
+        want = {
+            "type": "section",
+            "fields": [
+                {
+                    "type": "plain_text",
+                    "text": "Eat me",
+                },
+                {
+                    "type": "plain_text",
+                    "text": "Drink me",
+                },
+            ],
+        }
+
+        got = Section(
+            fields=[
+                Text(text="Eat me"),
+                Text(text="Drink me"),
+            ]
+        ).build()
+        assert got == want
+
+        got = (
+            Section()
+            .add_field(Text(text="Eat me"))
+            .add_field(Text(text="Drink me"))
             .build()
         )
         assert got == want
