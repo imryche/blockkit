@@ -2879,6 +2879,15 @@ RichTextObject: TypeAlias = (
 
 
 class RichText(Component, BlockIdMixin):
+    """
+    Rich text block
+
+    Displays formatted, structured representation of text.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/rich-text-block
+    """
+
     def __init__(
         self, elements: list[RichTextObject] | None = None, block_id: str | None = None
     ):
@@ -2923,6 +2932,15 @@ SectionElement: TypeAlias = (
 
 
 class Section(Component, BlockIdMixin):
+    """
+    Section block
+
+    Displays text, possibly alongside elements.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/section-block
+    """
+
     def __init__(
         self,
         text: str | Text | None = None,
@@ -2967,6 +2985,15 @@ class Section(Component, BlockIdMixin):
 
 
 class Video(Component, BlockIdMixin):
+    """
+    Video block
+
+    Displays an embedded video player.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/video-block
+    """
+
     def __init__(
         self,
         title: str | Text | None = None,
@@ -3050,7 +3077,3 @@ class Video(Component, BlockIdMixin):
 # TODO: super().__init__(component_type)
 # TODO: add missing Plain() validators
 # TODO: str fields have missing Length()
-
-"""
-- Video (Video) - https://api.slack.com/reference/block-kit/blocks#video
-"""
