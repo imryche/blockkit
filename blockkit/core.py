@@ -2589,7 +2589,7 @@ class RichChannelEl(Component, RichStyleMixin):
     # TODO: validate channel_id
     def channel_id(self, channel_id: str | None = None) -> Self:
         return self._add_field(
-            "channel_id", channel_id, validators=[Typed(str), Required()]
+            "channel_id", channel_id, validators=[Typed(str), Required(), Length(1)]
         )
 
 
@@ -2637,10 +2637,12 @@ class RichDateEl(Component, UrlMixin):
         )
 
     def format(self, format: str | None = None) -> Self:
-        return self._add_field("format", format, validators=[Typed(str), Required()])
+        return self._add_field(
+            "format", format, validators=[Typed(str), Required(), Length(1)]
+        )
 
     def fallback(self, fallback: str | None = None) -> Self:
-        return self._add_field("fallback", fallback, validators=[Typed(str)])
+        return self._add_field("fallback", fallback, validators=[Typed(str), Length(1)])
 
 
 class RichEmojiEl(Component):
@@ -2658,11 +2660,13 @@ class RichEmojiEl(Component):
         self.unicode(unicode)
 
     def name(self, name: str | None = None) -> Self:
-        return self._add_field("name", name, validators=[Typed(str), Required()])
+        return self._add_field(
+            "name", name, validators=[Typed(str), Required(), Length(1)]
+        )
 
     # TODO: validate unicode code point "^[0-9a-f-]+$"
     def unicode(self, unicode: str | None = None) -> Self:
-        return self._add_field("unicode", unicode, validators=[Typed(str)])
+        return self._add_field("unicode", unicode, validators=[Typed(str), Length(1)])
 
 
 class RichLinkEl(Component, UrlMixin, RichStyleMixin):
@@ -2694,7 +2698,7 @@ class RichLinkEl(Component, UrlMixin, RichStyleMixin):
         )
 
     def text(self, text: str | None = None) -> Self:
-        return self._add_field("text", text, validators=[Typed(str)])
+        return self._add_field("text", text, validators=[Typed(str), Length(1)])
 
     def unsafe(self, unsafe: bool | None = True) -> Self:
         return self._add_field("unsafe", unsafe, validators=[Typed(bool)])
@@ -2716,7 +2720,9 @@ class RichTextEl(Component, RichStyleMixin):
         self._add_validator(StyledCorrectly())
 
     def text(self, text: str | None = None) -> Self:
-        return self._add_field("text", text, validators=[Typed(str), Required()])
+        return self._add_field(
+            "text", text, validators=[Typed(str), Required(), Length(1)]
+        )
 
 
 class RichUserEl(Component, RichStyleMixin):
@@ -2736,7 +2742,9 @@ class RichUserEl(Component, RichStyleMixin):
 
     # TODO: validate user_id
     def user_id(self, user_id: str | None = None) -> Self:
-        return self._add_field("user_id", user_id, validators=[Typed(str), Required()])
+        return self._add_field(
+            "user_id", user_id, validators=[Typed(str), Required(), Length(1)]
+        )
 
 
 class RichUserGroupEl(Component, RichStyleMixin):
@@ -2757,7 +2765,7 @@ class RichUserGroupEl(Component, RichStyleMixin):
     # TODO: validate usergroup_id
     def usergroup_id(self, usergroup_id: str | None = None) -> Self:
         return self._add_field(
-            "usergroup_id", usergroup_id, validators=[Typed(str), Required()]
+            "usergroup_id", usergroup_id, validators=[Typed(str), Required(), Length(1)]
         )
 
 
@@ -3077,4 +3085,3 @@ class Video(Component, BlockIdMixin):
 # TODO: unify def add_* methods
 # TODO: remove default Nones in methods
 # TODO: super().__init__(component_type)
-# TODO: str fields have missing Length()
