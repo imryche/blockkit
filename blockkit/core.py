@@ -475,7 +475,7 @@ class TextMixin:
 
 
 class UrlMixin:
-    def url(self, url: str | None = None) -> Self:
+    def url(self, url: str | None) -> Self:
         return self._add_field(  # type: ignore[attr-defined]
             "url", url, validators=[Typed(str), Length(1, 3000)]
         )
@@ -670,7 +670,7 @@ class SlackFileMixin:
 
 
 class RichStyleMixin:
-    def style(self, style: "RichStyle | None" = None) -> Self:
+    def style(self, style: "RichStyle | None") -> Self:
         return self._add_field(  # type: ignore[attr-defined]
             "style", style, validators=[Typed(RichStyle)]
         )
@@ -691,7 +691,7 @@ class RichTextElementsMixin:
 
 
 class RichBorderMixin:
-    def border(self, border: int | None = None) -> Self:
+    def border(self, border: int | None) -> Self:
         return self._add_field(  # type: ignore[attr-defined]
             "border", border, validators=[Typed(int), Ints(max=1)]
         )
@@ -2460,7 +2460,7 @@ class Markdown(Component, BlockIdMixin):
         self.text(text)
         self.block_id(block_id)
 
-    def text(self, text: str | None = None) -> Self:
+    def text(self, text: str | None) -> Self:
         return self._add_field(
             "text", text, validators=[Typed(str), Required(), Length(1, 12000)]
         )
@@ -2587,7 +2587,7 @@ class RichChannelEl(Component, RichStyleMixin):
         self._add_validator(StyledCorrectly(extended=True))
 
     # TODO: validate channel_id
-    def channel_id(self, channel_id: str | None = None) -> Self:
+    def channel_id(self, channel_id: str | None) -> Self:
         return self._add_field(
             "channel_id", channel_id, validators=[Typed(str), Required(), Length(1)]
         )
@@ -2636,12 +2636,12 @@ class RichDateEl(Component, UrlMixin):
             "timestamp", timestamp, validators=[Typed(int), Required()]
         )
 
-    def format(self, format: str | None = None) -> Self:
+    def format(self, format: str | None) -> Self:
         return self._add_field(
             "format", format, validators=[Typed(str), Required(), Length(1)]
         )
 
-    def fallback(self, fallback: str | None = None) -> Self:
+    def fallback(self, fallback: str | None) -> Self:
         return self._add_field("fallback", fallback, validators=[Typed(str), Length(1)])
 
 
@@ -2659,13 +2659,13 @@ class RichEmojiEl(Component):
         self.name(name)
         self.unicode(unicode)
 
-    def name(self, name: str | None = None) -> Self:
+    def name(self, name: str | None) -> Self:
         return self._add_field(
             "name", name, validators=[Typed(str), Required(), Length(1)]
         )
 
     # TODO: validate unicode code point "^[0-9a-f-]+$"
-    def unicode(self, unicode: str | None = None) -> Self:
+    def unicode(self, unicode: str | None) -> Self:
         return self._add_field("unicode", unicode, validators=[Typed(str), Length(1)])
 
 
@@ -2692,12 +2692,12 @@ class RichLinkEl(Component, UrlMixin, RichStyleMixin):
         self.style(style)
         self._add_validator(StyledCorrectly())
 
-    def url(self, url: str | None = None) -> Self:
+    def url(self, url: str | None) -> Self:
         return self._add_field(  # type: ignore[attr-defined]
             "url", url, validators=[Typed(str), Required(), Length(1, 3000)]
         )
 
-    def text(self, text: str | None = None) -> Self:
+    def text(self, text: str | None) -> Self:
         return self._add_field("text", text, validators=[Typed(str), Length(1)])
 
     def unsafe(self, unsafe: bool | None = True) -> Self:
@@ -2719,7 +2719,7 @@ class RichTextEl(Component, RichStyleMixin):
         self.style(style)
         self._add_validator(StyledCorrectly())
 
-    def text(self, text: str | None = None) -> Self:
+    def text(self, text: str | None) -> Self:
         return self._add_field(
             "text", text, validators=[Typed(str), Required(), Length(1)]
         )
@@ -2741,7 +2741,7 @@ class RichUserEl(Component, RichStyleMixin):
         self._add_validator(StyledCorrectly(extended=True))
 
     # TODO: validate user_id
-    def user_id(self, user_id: str | None = None) -> Self:
+    def user_id(self, user_id: str | None) -> Self:
         return self._add_field(
             "user_id", user_id, validators=[Typed(str), Required(), Length(1)]
         )
@@ -2763,7 +2763,7 @@ class RichUserGroupEl(Component, RichStyleMixin):
         self._add_validator(StyledCorrectly(extended=True))
 
     # TODO: validate usergroup_id
-    def usergroup_id(self, usergroup_id: str | None = None) -> Self:
+    def usergroup_id(self, usergroup_id: str | None) -> Self:
         return self._add_field(
             "usergroup_id", usergroup_id, validators=[Typed(str), Required(), Length(1)]
         )
@@ -2823,7 +2823,7 @@ class RichTextList(Component, RichBorderMixin):
         self.offset(offset)
         self.border(border)
 
-    def style(self, style: str | None = None) -> Self:
+    def style(self, style: str | None) -> Self:
         return self._add_field(
             "style",
             style,
@@ -2842,10 +2842,10 @@ class RichTextList(Component, RichBorderMixin):
         field.value.append(element)
         return self
 
-    def indent(self, indent: int | None = None) -> Self:
+    def indent(self, indent: int | None) -> Self:
         return self._add_field("indent", indent, validators=[Typed(int), Ints(max=6)])
 
-    def offset(self, offset: int | None = None) -> Self:
+    def offset(self, offset: int | None) -> Self:
         return self._add_field("offset", offset, validators=[Typed(int), Ints(max=6)])
 
 
@@ -2968,7 +2968,7 @@ class Section(Component, BlockIdMixin):
         self.block_id(block_id)
         self._add_validator(OnlyOne("text", "fields"))
 
-    def text(self, text: str | Text | None = None) -> Self:
+    def text(self, text: str | Text | None) -> Self:
         if isinstance(text, str):
             text = Text(text)
         return self._add_field("text", text, validators=[Typed(Text), Length(1, 3000)])
@@ -2985,7 +2985,7 @@ class Section(Component, BlockIdMixin):
         field_.value.append(field)
         return self
 
-    def accessory(self, accessory: SectionElement | None = None) -> Self:
+    def accessory(self, accessory: SectionElement | None) -> Self:
         return self._add_field(
             "accessory", accessory, validators=[Typed(*get_args(SectionElement))]
         )
@@ -3007,14 +3007,14 @@ class Video(Component, BlockIdMixin):
     def __init__(
         self,
         title: str | Text | None = None,
-        title_url: str | None = None,  # preferred
-        description: str | Text | None = None,  # preferred
+        title_url: str | None = None,
+        description: str | Text | None = None,
         alt_text: str | None = None,
         video_url: str | None = None,
         thumbnail_url: str | None = None,
-        provider_icon_url: str | None = None,  # optional
-        provider_name: str | None = None,  # optional
-        author_name: str | None = None,  # optional
+        provider_icon_url: str | None = None,
+        provider_name: str | None = None,
+        author_name: str | None = None,
         block_id: str | None = None,
     ):
         super().__init__()
@@ -3083,5 +3083,4 @@ class Video(Component, BlockIdMixin):
 
 
 # TODO: unify def add_* methods
-# TODO: remove default Nones in methods
 # TODO: super().__init__(component_type)
