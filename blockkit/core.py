@@ -2769,7 +2769,7 @@ RichTextElement: TypeAlias = (
 
 class RichTextSection(Component, RichTextElementsMixin):
     """
-    Rich text section
+    Rich text section object
 
     Slack docs:
         https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#rich_text_section
@@ -2783,7 +2783,7 @@ class RichTextSection(Component, RichTextElementsMixin):
 
 class RichTextList(Component, RichBorderMixin):
     """
-    Rich text list
+    Rich text list object
 
     Slack docs:
         https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#rich_text_list
@@ -2836,7 +2836,7 @@ class RichTextList(Component, RichBorderMixin):
 
 class RichTextPreformatted(Component, RichTextElementsMixin, RichBorderMixin):
     """
-    Rich text preformatted
+    Rich text preformatted object
 
     Slack docs:
         https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#rich_text_preformatted
@@ -2853,7 +2853,7 @@ class RichTextPreformatted(Component, RichTextElementsMixin, RichBorderMixin):
 
 class RichTextQuote(Component, RichTextElementsMixin, RichBorderMixin):
     """
-    Rich text quote
+    Rich text quote object
 
     Slack docs:
         https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#rich_text_quote
@@ -2896,7 +2896,6 @@ class RichText(Component, BlockIdMixin):
 
 
 """
-- Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
 - Section (Section) - https://api.slack.com/reference/block-kit/blocks#section
 - Video (Video) - https://api.slack.com/reference/block-kit/blocks#video
 """
