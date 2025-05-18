@@ -470,7 +470,7 @@ class TextMixin:
         return self._add_field(  # type: ignore[attr-defined]
             "text",
             str_to_plain(text),
-            validators=[Typed(Text), Required(), Length(1, 75)],
+            validators=[Typed(Text), Required(), Plain(), Length(1, 75)],
         )
 
 
@@ -504,7 +504,7 @@ class PlaceholderMixin:
         return self._add_field(  # type: ignore[attr-defined]
             "placeholder",
             str_to_plain(placeholder),
-            validators=[Typed(Text), Length(1, 150)],
+            validators=[Typed(Text), Plain(), Length(1, 150)],
         )
 
 
@@ -2357,7 +2357,9 @@ class Image(Component, BlockIdMixin, AltTextMixin, ImageUrlMixin, SlackFileMixin
 
     def title(self, title: str | Text | None) -> Self:
         return self._add_field(
-            "title", str_to_plain(title), validators=[Typed(Text), Length(1, 2000)]
+            "title",
+            str_to_plain(title),
+            validators=[Typed(Text), Plain(), Length(1, 2000)],
         )
 
 
@@ -2418,7 +2420,7 @@ class Input(Component, BlockIdMixin):
         return self._add_field(
             "label",
             str_to_plain(label),
-            validators=[Typed(Text), Required(), Length(1, 2000)],
+            validators=[Typed(Text), Required(), Plain(), Length(1, 2000)],
         )
 
     def element(self, element: InputElement | None) -> Self:
@@ -2435,7 +2437,7 @@ class Input(Component, BlockIdMixin):
         return self._add_field(
             "hint",
             str_to_plain(hint),
-            validators=[Typed(Text), Length(1, 2000)],
+            validators=[Typed(Text), Plain(), Length(1, 2000)],
         )
 
     def optional(self, optional: bool | None = True) -> Self:
@@ -3024,7 +3026,7 @@ class Video(Component, BlockIdMixin):
         return self._add_field(
             "title",
             str_to_plain(title),
-            validators=[Typed(Text), Plain(), Required(), Length(1, 200)],
+            validators=[Typed(Text), Required(), Plain(), Length(1, 200)],
         )
 
     def title_url(self, title_url: str | None) -> Self:
@@ -3075,5 +3077,4 @@ class Video(Component, BlockIdMixin):
 # TODO: unify def add_* methods
 # TODO: remove default Nones in methods
 # TODO: super().__init__(component_type)
-# TODO: add missing Plain() validators
 # TODO: str fields have missing Length()
