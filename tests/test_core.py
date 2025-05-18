@@ -46,6 +46,7 @@ from blockkit.core import (
     RichEmojiEl,
     RichLinkEl,
     RichStyle,
+    RichText,
     RichTextEl,
     RichTextInput,
     RichTextList,
@@ -3051,6 +3052,106 @@ class TestRichTextQuote:
             )
             .add_element(RichEmojiEl(name="rabbit"))
             .border(0)
+            .build()
+        )
+        assert got == want
+
+
+class TestRichText:
+    def test_builds(self):
+        want = {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "Curiouser and curiouser!",
+                            "style": {
+                                "bold": True,
+                            },
+                        },
+                        {
+                            "type": "emoji",
+                            "name": "rabbit",
+                        },
+                    ],
+                },
+                {
+                    "type": "rich_text_list",
+                    "style": "bullet",
+                    "elements": [
+                        {
+                            "type": "rich_text_section",
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "Cheshire Cat",
+                                }
+                            ],
+                        },
+                        {
+                            "type": "rich_text_section",
+                            "elements": [
+                                {
+                                    "type": "text",
+                                    "text": "Mad Hatter",
+                                }
+                            ],
+                        },
+                    ],
+                },
+            ],
+            "block_id": "rich_text_block",
+        }
+
+        got = RichText(
+            elements=[
+                RichTextSection(
+                    elements=[
+                        RichTextEl(
+                            text="Curiouser and curiouser!",
+                            style=RichStyle(bold=True),
+                        ),
+                        RichEmojiEl(name="rabbit"),
+                    ]
+                ),
+                RichTextList(
+                    style="bullet",
+                    elements=[
+                        RichTextSection(
+                            elements=[RichTextEl("Cheshire Cat")],
+                        ),
+                        RichTextSection(
+                            elements=[RichTextEl("Mad Hatter")],
+                        ),
+                    ],
+                ),
+            ],
+            block_id="rich_text_block",
+        ).build()
+        assert got == want
+
+        got = (
+            RichText()
+            .add_element(
+                RichTextSection()
+                .add_element(
+                    RichTextEl(
+                        text="Curiouser and curiouser!",
+                        style=RichStyle(bold=True),
+                    )
+                )
+                .add_element(RichEmojiEl(name="rabbit"))
+            )
+            .add_element(
+                RichTextList()
+                .style("bullet")
+                .add_element(RichTextSection().add_element(RichTextEl("Cheshire Cat")))
+                .add_element(RichTextSection().add_element(RichTextEl("Mad Hatter")))
+            )
+            .block_id("rich_text_block")
             .build()
         )
         assert got == want

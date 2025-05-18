@@ -2868,6 +2868,33 @@ class RichTextQuote(Component, RichTextElementsMixin, RichBorderMixin):
         self.border(border)
 
 
+RichTextObject: TypeAlias = (
+    RichTextSection | RichTextList | RichTextPreformatted | RichTextQuote
+)
+
+
+class RichText(Component, BlockIdMixin):
+    def __init__(
+        self, elements: list[RichTextObject] | None = None, block_id: str | None = None
+    ):
+        super().__init__()
+        self._add_field("type", "rich_text")
+        self.elements(*elements or ())
+        self.block_id(block_id)
+
+    def elements(self, *elements: RichTextObject) -> Self:
+        return self._add_field(
+            "elements",
+            list(elements),
+            validators=[Typed(*get_args(RichTextObject)), Required()],
+        )
+
+    def add_element(self, element: RichTextObject) -> Self:
+        field = self._get_field("elements")
+        field.value.append(element)
+        return self
+
+
 """
 - Rich text (RichText) - https://api.slack.com/reference/block-kit/blocks#rich_text
 - Section (Section) - https://api.slack.com/reference/block-kit/blocks#section
