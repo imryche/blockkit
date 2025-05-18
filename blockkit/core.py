@@ -416,6 +416,11 @@ class Component:
         except AttributeError:
             return None
 
+    def _add_field_value(self, field_name: str, value: Any) -> Self:
+        field = self._get_field(field_name)
+        field.value.append(value)
+        return self
+
     def validate(self):
         for field_ in self._fields.values():
             field_.validate()
@@ -539,9 +544,7 @@ class InitialOptionsMixin:
         )
 
     def add_initial_option(self, option: "Option | OptionGroup") -> Self:
-        field = self._get_field("initial_options")  # type: ignore[attr-defined]
-        field.value.append(option)
-        return self
+        return self._add_field_value("initial_options", option)  # type: ignore[attr-defined]
 
 
 class InitialOptionMixin:
@@ -575,9 +578,7 @@ class OptionsMixin:
         )
 
     def add_option(self, option: "Option") -> Self:
-        field = self._get_field("options")  # type: ignore[attr-defined]
-        field.value.append(option)
-        return self
+        return self._add_field_value("options", option)  # type: ignore[attr-defined]
 
 
 class OptionGroupsMixin:
@@ -589,9 +590,7 @@ class OptionGroupsMixin:
         )
 
     def add_option_group(self, option_group: "OptionGroup") -> Self:
-        field = self._get_field("option_groups")  # type: ignore[attr-defined]
-        field.value.append(option_group)
-        return self
+        return self._add_field_value("option_groups", option_group)  # type: ignore[attr-defined]
 
 
 class DispatchActionConfigMixin:
@@ -686,9 +685,7 @@ class RichTextElementsMixin:
         )
 
     def add_element(self, element: "RichTextElement") -> Self:
-        field = self._get_field("elements")  # type: ignore[attr-defined]
-        field.value.append(element)
-        return self
+        return self._add_field_value("elements", element)  # type: ignore[attr-defined]
 
 
 class RichBorderMixin:
@@ -1012,9 +1009,7 @@ class Trigger(Component):
         )
 
     def add_input_parameter(self, input_parameter: InputParameter) -> Self:
-        field = self._get_field("customizable_input_parameters")
-        field.value.append(input_parameter)
-        return self
+        return self._add_field_value("customizable_input_parameters", input_parameter)  # type: ignore[attr-defined]
 
 
 class Workflow(Component):
@@ -1143,9 +1138,7 @@ class Checkboxes(
         )
 
     def add_initial_option(self, initial_option: Option) -> Self:
-        field = self._get_field("initial_options")
-        field.value.append(initial_option)
-        return self
+        return self._add_field_value("initial_options", initial_option)  # type: ignore[attr-defined]
 
 
 class DatePicker(
@@ -1462,9 +1455,7 @@ class MultiUsersSelect(
         )
 
     def add_initial_user(self, user_id: str) -> Self:
-        field = self._get_field("initial_users")
-        field.value.append(user_id)
-        return self
+        return self._add_field_value("initial_users", user_id)  # type: ignore[attr-defined]
 
 
 class MultiConversationsSelect(
@@ -1518,9 +1509,7 @@ class MultiConversationsSelect(
         )
 
     def add_initial_conversation(self, conversation_id: str) -> Self:
-        field = self._get_field("initial_conversations")
-        field.value.append(conversation_id)
-        return self
+        return self._add_field_value("initial_conversations", conversation_id)  # type: ignore[attr-defined]
 
 
 class MultiChannelsSelect(
@@ -1568,9 +1557,7 @@ class MultiChannelsSelect(
         )
 
     def add_initial_channel(self, channel_id: str) -> Self:
-        field = self._get_field("initial_channels")
-        field.value.append(channel_id)
-        return self
+        return self._add_field_value("initial_channels", channel_id)  # type: ignore[attr-defined]
 
 
 class NumberInput(
@@ -2184,9 +2171,7 @@ class Actions(Component, BlockIdMixin):
         )
 
     def add_element(self, element: ActionElement) -> Self:
-        field = self._get_field("elements")
-        field.value.append(element)
-        return self
+        return self._add_field_value("elements", element)  # type: ignore[attr-defined]
 
 
 ContextElement: TypeAlias = ImageEl | Text
@@ -2219,9 +2204,7 @@ class Context(Component, BlockIdMixin):
         )
 
     def add_element(self, element: ContextElement) -> Self:
-        field = self._get_field("elements")
-        field.value.append(element)
-        return self
+        return self._add_field_value("elements", element)  # type: ignore[attr-defined]
 
 
 class Divider(Component, BlockIdMixin):
@@ -2794,9 +2777,7 @@ class RichTextList(Component, RichBorderMixin):
         )
 
     def add_element(self, element: RichTextSection) -> Self:
-        field = self._get_field("elements")
-        field.value.append(element)
-        return self
+        return self._add_field_value("elements", element)  # type: ignore[attr-defined]
 
     def indent(self, indent: int | None) -> Self:
         return self._add_field("indent", indent, validators=[Typed(int), Ints(max=6)])
@@ -2867,9 +2848,7 @@ class RichText(Component, BlockIdMixin):
         )
 
     def add_element(self, element: RichTextObject) -> Self:
-        field = self._get_field("elements")
-        field.value.append(element)
-        return self
+        return self._add_field_value("elements", element)  # type: ignore[attr-defined]
 
 
 SectionElement: TypeAlias = (
@@ -2933,9 +2912,7 @@ class Section(Component, BlockIdMixin):
         )
 
     def add_field(self, field: str | Text) -> Self:
-        field_ = self._get_field("fields")  # type: ignore[attr-defined]
-        field_.value.append(field)
-        return self
+        return self._add_field_value("fields", field)  # type: ignore[attr-defined]
 
     def accessory(self, accessory: SectionElement | None) -> Self:
         return self._add_field(
@@ -3031,6 +3008,3 @@ class Video(Component, BlockIdMixin):
         return self._add_field(
             "author_name", author_name, validators=[Typed(str), Length(1, 50)]
         )
-
-
-# TODO: unify def add_* methods
