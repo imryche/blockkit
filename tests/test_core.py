@@ -28,6 +28,7 @@ from blockkit.core import (
     Input,
     InputParameter,
     Markdown,
+    Message,
     MultiChannelsSelect,
     MultiConversationsSelect,
     MultiExternalSelect,
@@ -3277,6 +3278,66 @@ class TestVideo:
             .provider_name("wonderland")
             .author_name("Lewis Carroll")
             .block_id("video_block")
+            .build()
+        )
+        assert got == want
+
+
+class TestMessage:
+    def test_builds(self):
+        want = {
+            "text": "You've tumbled into something curious...",
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Welcome to Wonderland!",
+                    },
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "Things are getting *curiouser and curiouser* - "
+                        "follow the white rabbit to see what's next. :rabbit:",
+                    },
+                },
+            ],
+            "thread_ts": "1716203456.789012",
+            "mrkdwn": True,
+        }
+
+        got = Message(
+            text="You've tumbled into something curious...",
+            blocks=[
+                Header(text="Welcome to Wonderland!"),
+                Section(
+                    text=Text(
+                        "Things are getting *curiouser and curiouser* - "
+                        "follow the white rabbit to see what's next. :rabbit:"
+                    )
+                ),
+            ],
+            thread_ts="1716203456.789012",
+            mrkdwn=True,
+        ).build()
+        assert got == want
+
+        got = (
+            Message()
+            .text("You've tumbled into something curious...")
+            .add_block(Header(text="Welcome to Wonderland!"))
+            .add_block(
+                Section(
+                    text=Text(
+                        "Things are getting *curiouser and curiouser* - "
+                        "follow the white rabbit to see what's next. :rabbit:"
+                    )
+                )
+            )
+            .thread_ts("1716203456.789012")
+            .mrkdwn()
             .build()
         )
         assert got == want

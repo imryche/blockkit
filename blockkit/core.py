@@ -3008,3 +3008,59 @@ class Video(Component, BlockIdMixin):
         return self._add_field(
             "author_name", author_name, validators=[Typed(str), Length(1, 50)]
         )
+
+
+MessageBlock: TypeAlias = (
+    Actions
+    | Context
+    | Divider
+    | File
+    | Header
+    | Image
+    | Input
+    | Markdown
+    | RichText
+    | Section
+    | Video
+)
+
+
+class Message(Component):
+    """
+    Message surface
+
+    Slack docs:
+        https://api.slack.com/surfaces/messages
+    """
+
+    def __init__(
+        self,
+        text: str | None = None,
+        blocks: list[MessageBlock] | None = None,
+        thread_ts: str | None = None,
+        mrkdwn: bool | None = None,
+    ):
+        super().__init__()
+        self.text(text)
+        self.blocks(*blocks or ())
+        self.thread_ts(thread_ts)
+        self.mrkdwn(mrkdwn)
+
+    def text(self, text: str | None) -> Self:
+        return self._add_field("text", text, validators=[Typed(str)])
+
+    def blocks(self, *blocks: MessageBlock) -> Self:
+        return self._add_field(
+            "blocks", list(blocks), validators=[Typed(*get_args(MessageBlock))]
+        )
+
+    def add_block(self, block: MessageBlock) -> Self:
+        return self._add_field_value("blocks", block)
+
+    def thread_ts(self, thread_ts: str | None) -> Self:
+        return self._add_field(
+            "thread_ts", thread_ts, validators=[Typed(str), Length(1)]
+        )
+
+    def mrkdwn(self, mrkdwn: bool | None = True) -> Self:
+        return self._add_field("mrkdwn", mrkdwn, validators=[Typed(bool)])
