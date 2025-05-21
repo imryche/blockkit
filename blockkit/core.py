@@ -3045,6 +3045,7 @@ class Message(Component):
         self.blocks(*blocks or ())
         self.thread_ts(thread_ts)
         self.mrkdwn(mrkdwn)
+        self._add_validator(AtLeastOne("text", "blocks"))
 
     def text(self, text: str | None) -> Self:
         return self._add_field("text", text, validators=[Typed(str)])
