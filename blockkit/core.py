@@ -1,4 +1,5 @@
 import dataclasses
+import json
 import re
 from abc import ABC, abstractmethod
 from datetime import date, datetime, time
@@ -3010,6 +3011,10 @@ class Video(Component, BlockIdMixin):
         )
 
 
+"""
+Surfaces
+"""
+
 MessageBlock: TypeAlias = (
     Actions
     | Context
@@ -3065,3 +3070,108 @@ class Message(Component):
 
     def mrkdwn(self, mrkdwn: bool | None = True) -> Self:
         return self._add_field("mrkdwn", mrkdwn, validators=[Typed(bool)])
+
+
+ModalBlock: TypeAlias = (
+    Actions | Context | Divider | Header | Image | Input | RichText | Section | Video
+)
+
+
+class Modal(Component):
+    """
+    Modal surface
+
+    Slack docs:
+        https://docs.slack.dev/surfaces/modals
+    """
+
+    def __init__(
+        self,
+        title: str | Text | None = None,
+        blocks: list[ModalBlock] | None = None,
+        submit: str | Text | None = None,
+        close: str | Text | None = None,
+        private_metadata: Any = None,
+        callback_id: str | None = None,
+        clear_on_close: bool | None = None,
+        notify_on_close: bool | None = None,
+        external_id: str | None = None,
+        submit_disabled: bool | None = None,
+    ):
+        super().__init__("modal")
+        self.title(title)
+        self.blocks(*blocks or ())
+        self.submit(submit)
+        self.close(close)
+        self.private_metadata(private_metadata)
+        self.callback_id(callback_id)
+        self.clear_on_close(clear_on_close)
+        self.notify_on_close(notify_on_close)
+        self.external_id(external_id)
+        self.submit_disabled(submit_disabled)
+
+    def title(self, title: str | Text | None) -> Self:
+        return self._add_field(
+            "title",
+            str_to_plain(title),
+            validators=[Typed(Text), Required(), Plain(), Length(1, 24)],
+        )
+
+    def blocks(self, *blocks: ModalBlock) -> Self:
+        return self._add_field(
+            "blocks",
+            list(blocks),
+            validators=[Typed(*get_args(ModalBlock)), Required(), Length(1, 100)],
+        )
+
+    def add_block(self, block: ModalBlock | None) -> Self:
+        return self._add_field_value("blocks", block)
+
+    # TODO: required when an input is within the blocks
+    def submit(self, submit: str | Text | None) -> Self:
+        return self._add_field(
+            "submit",
+            str_to_plain(submit),
+            validators=[Typed(Text), Plain(), Length(1, 24)],
+        )
+
+    def close(self, close: str | Text | None) -> Self:
+        return self._add_field(
+            "close",
+            str_to_plain(close),
+            validators=[Typed(Text), Plain(), Length(1, 24)],
+        )
+
+    def private_metadata(self, private_metadata: Any) -> Self:
+        if not isinstance(private_metadata, str):
+            private_metadata = json.dumps(private_metadata)
+        return self._add_field(
+            "private_metadata",
+            private_metadata,
+            validators=[Typed(str), Length(1, 3000)],
+        )
+
+    def callback_id(self, callback_id: str | None) -> Self:
+        return self._add_field(
+            "callback_id", callback_id, validators=[Typed(str), Length(1, 255)]
+        )
+
+    def clear_on_close(self, clear_on_close: bool | None = True) -> Self:
+        return self._add_field(
+            "clear_on_close", clear_on_close, validators=[Typed(bool)]
+        )
+
+    def notify_on_close(self, notify_on_close: bool | None = True) -> Self:
+        return self._add_field(
+            "notify_on_close", notify_on_close, validators=[Typed(bool)]
+        )
+
+    def external_id(self, external_id: str | None) -> Self:
+        return self._add_field(
+            "external_id", external_id, validators=[Typed(str), Length(1)]
+        )
+
+    def submit_disabled(self, submit_disabled: bool | None = True) -> Self:
+        return self._add_field(
+            "submit_disabled", submit_disabled, validators=[Typed(bool)]
+        )

@@ -29,6 +29,7 @@ from blockkit.core import (
     InputParameter,
     Markdown,
     Message,
+    Modal,
     MultiChannelsSelect,
     MultiConversationsSelect,
     MultiExternalSelect,
@@ -3338,6 +3339,93 @@ class TestMessage:
             )
             .thread_ts("1716203456.789012")
             .mrkdwn()
+            .build()
+        )
+        assert got == want
+
+
+class TestModal:
+    def test_builds(self):
+        want = {
+            "type": "modal",
+            "title": {
+                "type": "plain_text",
+                "text": "Enter Wonderland",
+            },
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Welcome to Wonderland!",
+                    },
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "Tell us _who you are_ before you dive in.",
+                    },
+                },
+                {
+                    "type": "input",
+                    "label": {
+                        "type": "plain_text",
+                        "text": "Your name",
+                    },
+                    "element": {
+                        "type": "plain_text_input",
+                    },
+                },
+            ],
+            "submit": {
+                "type": "plain_text",
+                "text": "Let's go!",
+            },
+            "close": {
+                "type": "plain_text",
+                "text": "Not now",
+            },
+            "private_metadata": '{"scene": "fall"}',
+            "callback_id": "enter_wonderland",
+            "clear_on_close": True,
+            "notify_on_close": True,
+            "external_id": "alice_intro",
+            "submit_disabled": False,
+        }
+
+        got = Modal(
+            title="Enter Wonderland",
+            blocks=[
+                Header(text="Welcome to Wonderland!"),
+                Section(text="Tell us _who you are_ before you dive in."),
+                Input(label="Your name", element=PlainTextInput()),
+            ],
+            submit="Let's go!",
+            close="Not now",
+            private_metadata={"scene": "fall"},
+            callback_id="enter_wonderland",
+            clear_on_close=True,
+            notify_on_close=True,
+            external_id="alice_intro",
+            submit_disabled=False,
+        ).build()
+        assert got == want
+
+        got = (
+            Modal()
+            .title("Enter Wonderland")
+            .add_block(Header(text="Welcome to Wonderland!"))
+            .add_block(Section(text="Tell us _who you are_ before you dive in."))
+            .add_block(Input(label="Your name", element=PlainTextInput()))
+            .submit("Let's go!")
+            .close("Not now")
+            .private_metadata({"scene": "fall"})
+            .callback_id("enter_wonderland")
+            .clear_on_close()
+            .notify_on_close()
+            .external_id("alice_intro")
+            .submit_disabled(False)
             .build()
         )
         assert got == want
