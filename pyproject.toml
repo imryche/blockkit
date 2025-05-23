@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "blockkit"
-version = "1.9.2"
-authors = [{ name = "Dima Czernyshow", email = "imryche13@gmail.com" }]
+version = "2.0.0"
+authors = [{ name = "Dima Czernyszow", email = "imryche13@gmail.com" }]
 description = "A fast way to build Block Kit interfaces in Python"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
