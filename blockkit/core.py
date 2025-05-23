@@ -696,6 +696,43 @@ class RichBorderMixin:
         )
 
 
+class BlocksMixin:
+    def blocks(self, *blocks: "ModalBlock") -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "blocks",
+            list(blocks),
+            validators=[Typed(*get_args(ModalBlock)), Required(), Length(1, 100)],
+        )
+
+    def add_block(self, block: "ModalBlock | None") -> Self:
+        return self._add_field_value("blocks", block)  # type: ignore[attr-defined]
+
+
+class PrivateMetadataMixin:
+    def private_metadata(self, private_metadata: Any) -> Self:
+        if not isinstance(private_metadata, str):
+            private_metadata = json.dumps(private_metadata)
+        return self._add_field(  # type: ignore[attr-defined]
+            "private_metadata",
+            private_metadata,
+            validators=[Typed(str), Length(1, 3000)],
+        )
+
+
+class CallbackIdMixin:
+    def callback_id(self, callback_id: str | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "callback_id", callback_id, validators=[Typed(str), Length(1, 255)]
+        )
+
+
+class ExternalIdMixin:
+    def external_id(self, external_id: str | None) -> Self:
+        return self._add_field(  # type: ignore[attr-defined]
+            "external_id", external_id, validators=[Typed(str), Length(1)]
+        )
+
+
 """
 Composition objects
 """
@@ -3077,7 +3114,9 @@ ModalBlock: TypeAlias = (
 )
 
 
-class Modal(Component):
+class Modal(
+    Component, BlocksMixin, PrivateMetadataMixin, CallbackIdMixin, ExternalIdMixin
+):
     """
     Modal surface
 
@@ -3117,16 +3156,6 @@ class Modal(Component):
             validators=[Typed(Text), Required(), Plain(), Length(1, 24)],
         )
 
-    def blocks(self, *blocks: ModalBlock) -> Self:
-        return self._add_field(
-            "blocks",
-            list(blocks),
-            validators=[Typed(*get_args(ModalBlock)), Required(), Length(1, 100)],
-        )
-
-    def add_block(self, block: ModalBlock | None) -> Self:
-        return self._add_field_value("blocks", block)
-
     # TODO: required when an input is within the blocks
     def submit(self, submit: str | Text | None) -> Self:
         return self._add_field(
@@ -3142,20 +3171,6 @@ class Modal(Component):
             validators=[Typed(Text), Plain(), Length(1, 24)],
         )
 
-    def private_metadata(self, private_metadata: Any) -> Self:
-        if not isinstance(private_metadata, str):
-            private_metadata = json.dumps(private_metadata)
-        return self._add_field(
-            "private_metadata",
-            private_metadata,
-            validators=[Typed(str), Length(1, 3000)],
-        )
-
-    def callback_id(self, callback_id: str | None) -> Self:
-        return self._add_field(
-            "callback_id", callback_id, validators=[Typed(str), Length(1, 255)]
-        )
-
     def clear_on_close(self, clear_on_close: bool | None = True) -> Self:
         return self._add_field(
             "clear_on_close", clear_on_close, validators=[Typed(bool)]
@@ -3166,12 +3181,36 @@ class Modal(Component):
             "notify_on_close", notify_on_close, validators=[Typed(bool)]
         )
 
-    def external_id(self, external_id: str | None) -> Self:
-        return self._add_field(
-            "external_id", external_id, validators=[Typed(str), Length(1)]
-        )
-
     def submit_disabled(self, submit_disabled: bool | None = True) -> Self:
         return self._add_field(
             "submit_disabled", submit_disabled, validators=[Typed(bool)]
         )
+
+
+HomeBlock: TypeAlias = (
+    Actions | Context | Divider | Header | Image | Input | RichText | Section | Video
+)
+
+
+class Home(
+    Component, BlocksMixin, PrivateMetadataMixin, CallbackIdMixin, ExternalIdMixin
+):
+    """
+    App Home surface
+
+    Slack docs:
+        https://docs.slack.dev/surfaces/app-home
+    """
+
+    def __init__(
+        self,
+        blocks: list[HomeBlock] | None = None,
+        private_metadata: Any = None,
+        callback_id: str | None = None,
+        external_id: str | None = None,
+    ):
+        super().__init__("home")
+        self.blocks(*blocks or ())
+        self.private_metadata(private_metadata)
+        self.callback_id(callback_id)
+        self.external_id(external_id)

@@ -23,6 +23,7 @@ from blockkit.core import (
     File,
     FileInput,
     Header,
+    Home,
     Image,
     ImageEl,
     Input,
@@ -3429,3 +3430,59 @@ class TestModal:
             .build()
         )
         assert got == want
+
+
+class TestAppHome:
+    def test_builds(self):
+        want = {
+            "type": "home",
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Welcome to Wonderland!",
+                    },
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "I can't go back to yesterday because "
+                        "I was a different person then.",
+                    },
+                },
+            ],
+            "private_metadata": '{"scene": "fall"}',
+            "callback_id": "enter_wonderland",
+            "external_id": "alice_intro",
+        }
+
+        got = Home(
+            blocks=[
+                Header(text="Welcome to Wonderland!"),
+                Section(
+                    text="I can't go back to yesterday because "
+                    "I was a different person then."
+                ),
+            ],
+            private_metadata={"scene": "fall"},
+            callback_id="enter_wonderland",
+            external_id="alice_intro",
+        ).build()
+        assert got == want
+
+        got = (
+            Home()
+            .add_block(Header(text="Welcome to Wonderland!"))
+            .add_block(
+                Section(
+                    text="I can't go back to yesterday because "
+                    "I was a different person then."
+                )
+            )
+            .private_metadata({"scene": "fall"})
+            .callback_id("enter_wonderland")
+            .external_id("alice_intro")
+            .build()
+        )
