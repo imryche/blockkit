@@ -79,3 +79,10 @@ message = (
 ```
 
 Done. No guessing. No runtime surprises. Your IDE helped you write it.
+
+### The difference
+
+The library knows Slack's rules, so you don't have to memorize them. Your editor
+autocompletes everything. Validation happens immediately.
+
+When something's wrong, you'll know right away - not after deploying.
