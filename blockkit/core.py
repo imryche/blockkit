@@ -3099,6 +3099,7 @@ class Message(Component):
     def add_block(self, block: MessageBlock) -> Self:
         return self._add_field_value("blocks", block)
 
+    # TODO: convert int or float timestamps to str automatically
     def thread_ts(self, thread_ts: str | None) -> Self:
         return self._add_field(
             "thread_ts", thread_ts, validators=[Typed(str), Length(1)]
