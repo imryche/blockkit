@@ -3,8 +3,7 @@ import json
 import re
 from abc import ABC, abstractmethod
 from datetime import date, datetime, time
-from typing import Any, Self, Type, TypeAlias, get_args
-
+from typing import Any, Self, TypeAlias, get_args
 from zoneinfo import ZoneInfo
 
 from blockkit.utils import is_md
@@ -141,7 +140,7 @@ class UnixTimestamp(FieldValidator):
 
 
 class Typed(FieldValidator):
-    def __init__(self, *types: Type):
+    def __init__(self, *types: type):
         if not types:
             raise ValueError("At least one type must be specified")
         self.types = types

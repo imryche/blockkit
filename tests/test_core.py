@@ -1,7 +1,7 @@
 from datetime import date, datetime, time
+from zoneinfo import ZoneInfo
 
 import pytest
-from zoneinfo import ZoneInfo
 
 from blockkit.core import (
     Actions,
