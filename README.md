@@ -15,8 +15,8 @@ pip install blockkit
 
 ## Here's the thing
 
-Building Slack apps shouldn't feel like writing JSON. It's tedious. It's error
-prone. And honestly? It's a waste of your time.
+Building Slack apps shouldn't feel like writing JSON by hand. It's tedious. It's
+error prone. And honestly? It's a waste of your time.
 
 You know what you want to build. Your editor should help you build it. That's
 what BlockKit does.
