@@ -87,7 +87,7 @@ autocompletes everything. Validation happens immediately.
 
 When something's wrong, you'll know right away - not after deploying.
 
-### Real example
+## Real example
 
 Let's build something real. An approval flow:
 
@@ -117,6 +117,21 @@ modal = (
 ```
 
 That's it. Clear, readable, and it works the first time.
+
+## Why we built this
+
+We got tired of:
+
+- Reading Slack's docs for the 100th time
+- Building UIs that are impossible to refactor
+- Shipping "perfect" JSON that Slack rejects for mysterious reasons
+
+So we fixed it. One library. No dependencies. Just better.
+
+## Want more?
+
+Check out [blockkit.botsignals.co](https://blockkit.botsignals.co) for the full
+docs. Or don't. The code is pretty self-explanatory.
 
 ---
 
