@@ -10,6 +10,14 @@
 
 ---
 
+**Documentation**:
+<a href="https://blockkit.botsignals.co" target="_blank">https://blockkit.botsignals.co</a>
+
+**Source Code**:
+<a href="https://github.com/imryche/blockkit" target="_blank">https://github.com/imryche/blockkit</a>
+
+---
+
 # BlockKit for Python
 
 Build beautiful Slack UIs fast. Fluent API with type hints, validation, and zero
