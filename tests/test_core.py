@@ -216,6 +216,27 @@ class TestOnlyIf:
         Text("_hello, alice!_", verbatim=True).type(Text.MD).validate()
 
 
+class TestWithin:
+    def test_invalid(self):
+        with pytest.raises(ComponentValidationError) as e:
+            RadioButtons(
+                options=[
+                    Option("Approve", "approve"),
+                    Option("Decline", "decline"),
+                ],
+                initial_option=Option("Deny", "deny"),
+            ).validate()
+        assert "'initial_option' has items that aren't present in the 'options'" in str(
+            e
+        )
+
+    def test_valid(self):
+        RadioButtons(
+            options=[Option("Approve", "approve")],
+            initial_option=Option("Approve", "approve"),
+        ).validate()
+
+
 class TestRanging:
     def test_invalid(self):
         with pytest.raises(ComponentValidationError) as e:

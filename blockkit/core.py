@@ -227,20 +227,19 @@ class OnlyIf(ComponentValidator):
             )
 
 
-# TODO: add tests
 class Within(ComponentValidator):
     def __init__(self, source_field: str, target_field: str):
         self.source_field = source_field
         self.target_field = target_field
 
     def validate(self, component: "Component") -> None:
-        source_value = component._get_field(self.source_field).value
-        target_value = component._get_field(self.target_field).value
+        source_value = component._get_field_value(self.source_field)
+        target_value = component._get_field_value(self.target_field)
 
-        if not target_value:
+        if not (source_value and target_value):
             return
 
-        if not isinstance(source_value, (list, tuple, set)):
+        if not isinstance(source_value, list | tuple | set):
             source_value = [source_value]
 
         if not set(source_value).issubset(set(target_value)):
