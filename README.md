@@ -19,9 +19,9 @@ Building Slack apps shouldn't feel like writing JSON by hand. It's tedious. It's
 error prone. And honestly? It's a waste of your time.
 
 You know what you want to build. Your editor should help you build it. That's
-what BlockKit does.
+what BlockKit for Python does.
 
-### Before BlockKit
+### Before
 
 This is what you're probably doing now:
 
@@ -54,7 +54,7 @@ message = {
 Nest some JSON. Guess field names. Cross your fingers. Test it. Get and error.
 Try again. Sound familiar?
 
-### After BlockKit
+### After
 
 Here's the same thing:
 
@@ -86,3 +86,38 @@ The library knows Slack's rules, so you don't have to memorize them. Your editor
 autocompletes everything. Validation happens immediately.
 
 When something's wrong, you'll know right away - not after deploying.
+
+### Real example
+
+Let's build something real. An approval flow:
+
+```python
+from blockkit import Modal, Section, Input, PlainTextInput, RadioButtons, Option
+
+modal = (
+    Modal()
+    .title("Expense Approval")
+    .add_block(Section("*New expense request from Alice*"))
+    .add_block(
+        Input("Amount").element(
+            PlainTextInput().initial_value("$42.00").action_id("amount")
+        )
+    )
+    .add_block(
+        Input("Decision").element(
+            RadioButtons()
+            .add_option(Option("Approve ✅", "approve"))
+            .add_option(Option("Reject ❌", "reject"))
+            .action_id("decision")
+        )
+    )
+    .submit("Submit")
+    .build()
+)
+```
+
+That's it. Clear, readable, and it works the first time.
+
+---
+
+Made by Botsignals
