@@ -38,26 +38,40 @@ message = {
         "type": "section",
         "text": {
             "type": "mrkdwn",  # or was it "markdown"?
-            "text": "Please approve Alice's expense report"
+            "text": "Please approve *Alice's* expense report for $42"
         },
         "accessory": {
             "type": "button",
             "text": {
                 "type": "plain_text",  # wait, why can't buttons use mrkdwn?
-                "text": "Approve"      # hope this is under 75 chars
+                "text": "Approve"      # hope this isn't too long
             },
-            "action_id": "approve_button",  # better hope this is unique
-            "style": "green"  # WRONG: it's "primary", not "green" 🤦
+            "action_id": "approve_button",
+            "style": "green",  # is it "green"? "success"? "primary"?
+            "confirm": {       # what's the structure again?
+                "title": {
+                    "type": "plain_text",
+                    "text": "Are you sure?"
+                },
+                "text": {
+                    "type": "plain_text",
+                    "text": "This action cannot be undone"
+                },
+                "confirm": {
+                    "type": "plain_text",
+                    "text": "Yes, approve"
+                }
+                # forgot the required "deny" field
+            }
         }
     }],
-    "thread_ts": 1234567890  # WRONG: should be a string, not a number
+    "thread_ts": 1234567890  # wait, should this be a string?
 }
 
-# Looks right? Nope. Two bugs Slack will reject at runtime.
-# Good luck finding them in a large app.
+# Three bugs. Deeply nested JSON. Good luck debugging this.
 ```
 
-Nest some JSON. Guess field names. Cross your fingers. Test it. Get and error.
+Nest some JSON. Guess field names. Cross your fingers. Test it. Get an error.
 Try again. Sound familiar?
 
 ### After
@@ -65,26 +79,33 @@ Try again. Sound familiar?
 Here's the same thing:
 
 ```python
-from blockkit import Message, Section, Button
+from blockkit import Message, Section, Button, Confirm
 
 message = (
     Message()
     .add_block(
-        Section("Please approve Alice's expense report")
+        Section("Please approve *Alice's* expense report for $42")  # ✅ Markdown detected automatically
         .accessory(
             Button("Approve")
             .action_id("approve_button")
-            .style("primary")  # ✅ IDE autocomplete shows valid options
+            .style(Button.PRIMARY)  # ✅ Class constants prevent typos
+            .confirm(
+                Confirm()
+                .title("Are you sure?")
+                .text("This action cannot be undone")
+                .confirm("Yes, approve")
+                .deny("Cancel")  # ✅ Can't forget required fields
+            )
         )
     )
-    .thread_ts("1234567890")  # ✅ Type hints ensure it's a string
-    .build()
+    .thread_ts(1234567890)  # ✅ Converts types automatically
+    .build()  # ✅ Validates everything: types, lengths, required fields
 )
 
-# BlockKit caught those bugs before you even saved the file.
+# Clean. Readable. BlockKit catches errors before you event send it to Slack.
 ```
 
-Done. No guessing. No runtime surprises. Your IDE helped you write it.
+Done. No guessing. No runtime surprises. Your editor helped you write it.
 
 ### The difference
 
