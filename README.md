@@ -37,17 +37,17 @@ message = {
     "blocks": [{
         "type": "section",
         "text": {
-            "type": "mrkdwn",  # or was it "markdown"?
+            "type": "mrkdwn",  # 🤔 or was it "markdown"?
             "text": "Please approve *Alice's* expense report for $42"
         },
         "accessory": {
             "type": "button",
             "text": {
-                "type": "plain_text",  # wait, why can't buttons use mrkdwn?
-                "text": "Approve"      # hope this isn't too long
+                "type": "plain_text",  # 🤔 wait, why can't buttons use mrkdwn?
+                "text": "Approve"      # 🤞 hope this isn't too long
             },
             "action_id": "approve_button",
-            "style": "green",  # is it "green"? "success"? "primary"?
+            "style": "green",  # ❌ is it "green"? "success"? "primary"?
             "confirm": {       # what's the structure again?
                 "title": {
                     "type": "plain_text",
@@ -61,11 +61,11 @@ message = {
                     "type": "plain_text",
                     "text": "Yes, approve"
                 }
-                # forgot the required "deny" field
+                # ❌ forgot the required "deny" field
             }
         }
     }],
-    "thread_ts": 1234567890  # wait, should this be a string?
+    "thread_ts": 1234567890  # ❌ wait, should this be a string?
 }
 
 # Three bugs. Deeply nested JSON. Good luck debugging this.
