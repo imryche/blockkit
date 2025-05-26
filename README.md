@@ -1,4 +1,8 @@
-![Screenshot](https://github.com/imryche/blockkit/raw/master/images/logo.png)
+<p align="center">
+  <picture>
+    <img alt="blockkit-logo" src="https://github.com/imryche/blockkit/raw/master/docs/img/blockkit.svg">
+  </picture>
+</p>
 
 ![Build status](https://github.com/imryche/blockkit/actions/workflows/python-app.yml/badge.svg)
 [![PyPI version](https://badge.fury.io/py/blockkit.svg)](https://badge.fury.io/py/blockkit)
