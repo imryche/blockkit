@@ -43,12 +43,12 @@ message = {
         "accessory": {
             "type": "button",
             "text": {
-                "type": "plain_text",  # 🤔 wait, why can't buttons use mrkdwn?
+                "type": "plain_text",  # 😕 wait, why can't buttons use mrkdwn?
                 "text": "Approve"      # 🤞 hope this isn't too long
             },
             "action_id": "approve_button",
             "style": "green",  # ❌ is it "green"? "success"? "primary"?
-            "confirm": {       # what's the structure again?
+            "confirm": {       # 🤔 what's the structure again?
                 "title": {
                     "type": "plain_text",
                     "text": "Are you sure?"
