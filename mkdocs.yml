@@ -1,0 +1,4 @@
+site_name: My Docs
+site_url: https://blockkit.botsignals.co
+theme:
+  name: material

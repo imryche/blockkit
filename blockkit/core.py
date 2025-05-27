@@ -50,7 +50,7 @@ class Length(FieldValidator):
         if value is None:
             return
 
-        if isinstance(value, (list, tuple, set)) and len(value) < 1:
+        if isinstance(value, list | tuple | set) and len(value) < 1:
             return
 
         value_length = len(value)
@@ -80,7 +80,7 @@ class Strings(FieldValidator):
             return
 
         expected_values = ", ".join(f"'{v}'" for v in self.values)
-        if isinstance(value, (list, tuple, set)):
+        if isinstance(value, list | tuple | set):
             unexpected = set(value).difference(self.values)
             if unexpected:
                 pretty_unexpected = ", ".join(f"'{v}'" for v in unexpected)
@@ -149,7 +149,7 @@ class Typed(FieldValidator):
         if value is None:
             return
 
-        values = [value] if not isinstance(value, (list, tuple, set)) else value
+        values = [value] if not isinstance(value, list | tuple | set) else value
 
         for value in values:
             if isinstance(value, self.types):
@@ -366,7 +366,7 @@ class Component:
                 return tuple(sorted((k, make_hashable(v)) for k, v in obj.items()))
             elif isinstance(obj, list):
                 return tuple(make_hashable(item) for item in obj)
-            elif isinstance(obj, (set, tuple)):
+            elif isinstance(obj, set | tuple):
                 return tuple(make_hashable(item) for item in obj)
             else:
                 return obj
@@ -433,7 +433,7 @@ class Component:
         for field in self._fields.values():
             if field.value is None:
                 continue
-            if isinstance(field.value, (list, tuple, set)) and len(field.value) < 1:
+            if isinstance(field.value, list | tuple | set) and len(field.value) < 1:
                 continue
             if type(field.value) is date:
                 field.value = field.value.strftime("%Y-%m-%d")
@@ -448,7 +448,7 @@ class Component:
             obj[field.name] = field.value
             if hasattr(field.value, "build"):
                 obj[field.name] = field.value.build()
-            if isinstance(field.value, (list, tuple, set)):
+            if isinstance(field.value, list | tuple | set):
                 obj[field.name] = [
                     item.build() if hasattr(item, "build") else item
                     for item in field.value
