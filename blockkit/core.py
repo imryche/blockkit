@@ -517,6 +517,7 @@ class StyleMixin:
     PRIMARY: str = "primary"
     DANGER: str = "danger"
 
+    # TODO: use typing.Literal
     def style(self, style: str | None) -> Self:
         return self._add_field(  # type: ignore[attr-defined]
             "style",
