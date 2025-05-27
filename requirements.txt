@@ -1,4 +1,0 @@
-pytest>=6.0,<7.0
-pydantic[email]>=2,<3
-black>=23.0
-python-dateutil>=2.8,<3.0
