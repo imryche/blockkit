@@ -3078,7 +3078,7 @@ class Message(Component):
         self,
         text: str | None = None,
         blocks: list[MessageBlock] | None = None,
-        thread_ts: str | None = None,
+        thread_ts: str | int | float | None = None,
         mrkdwn: bool | None = None,
     ):
         super().__init__()
@@ -3099,8 +3099,9 @@ class Message(Component):
     def add_block(self, block: MessageBlock) -> Self:
         return self._add_field_value("blocks", block)
 
-    # TODO: convert int or float timestamps to str automatically
-    def thread_ts(self, thread_ts: str | None) -> Self:
+    def thread_ts(self, thread_ts: str | int | float | None) -> Self:
+        if isinstance(thread_ts, int | float):
+            thread_ts = str(thread_ts)
         return self._add_field(
             "thread_ts", thread_ts, validators=[Typed(str), Length(1)]
         )

@@ -3342,7 +3342,7 @@ class TestMessage:
                     )
                 ),
             ],
-            thread_ts="1716203456.789012",
+            thread_ts=1716203456.789012,
             mrkdwn=True,
         ).build()
         assert got == want
