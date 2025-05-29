@@ -102,8 +102,6 @@ Section("Hello world")
 Section("Hello *world*")
 ```
 
-You focus on the content. We handle the details.
-
 ### Mistakes get caught early
 
 Forget a required field? We'll tell you before Slack does.
@@ -119,8 +117,6 @@ Button("Delete").confirm(
     # Missing: .deny("Cancel")
 ).build()
 ```
-
-Better to know now than later.
 
 ### Rules are built in
 
