@@ -1736,6 +1736,23 @@ class TestRichTextInput:
         want = {
             "type": "rich_text_input",
             "action_id": "rich_text_input_action",
+            "initial_value": {
+                "type": "rich_text",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "Curiouser and curiouser!",
+                                "style": {
+                                    "bold": True,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
             "dispatch_action_config": {
                 "trigger_actions_on": [
                     "on_character_entered",
@@ -1750,6 +1767,17 @@ class TestRichTextInput:
 
         got = RichTextInput(
             action_id="rich_text_input_action",
+            initial_value=RichText(
+                elements=[
+                    RichTextSection(
+                        elements=[
+                            RichTextEl(
+                                "Curiouser and curiouser!", style=RichStyle(bold=True)
+                            )
+                        ]
+                    )
+                ]
+            ),
             dispatch_action_config=DispatchActionConfig(
                 trigger_actions_on=["on_character_entered"]
             ),
@@ -1761,6 +1789,15 @@ class TestRichTextInput:
         got = (
             RichTextInput()
             .action_id("rich_text_input_action")
+            .initial_value(
+                RichText().add_element(
+                    RichTextSection().add_element(
+                        RichTextEl()
+                        .text("Curiouser and curiouser!")
+                        .style(RichStyle().bold())
+                    )
+                )
+            )
             .dispatch_action_config(
                 DispatchActionConfig(trigger_actions_on=["on_character_entered"])
             )
