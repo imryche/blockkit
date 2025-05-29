@@ -3,7 +3,7 @@ import json
 import re
 from abc import ABC, abstractmethod
 from datetime import date, datetime, time
-from typing import Any, Self, TypeAlias, get_args
+from typing import Any, Final, Literal, Self, TypeAlias, get_args
 from zoneinfo import ZoneInfo
 
 from blockkit.utils import is_md
@@ -514,11 +514,10 @@ class PlaceholderMixin:
 
 
 class StyleMixin:
-    PRIMARY: str = "primary"
-    DANGER: str = "danger"
+    PRIMARY: Final[Literal["primary"]] = "primary"
+    DANGER: Final[Literal["danger"]] = "danger"
 
-    # TODO: use typing.Literal
-    def style(self, style: str | None) -> Self:
+    def style(self, style: Literal["primary", "danger"] | None) -> Self:
         return self._add_field(  # type: ignore[attr-defined]
             "style",
             style,
@@ -747,15 +746,15 @@ class Text(Component):
         https://docs.slack.dev/reference/block-kit/composition-objects/text-object
     """
 
-    PLAIN = "plain_text"
-    MD = "mrkdwn"
+    PLAIN: Final[Literal["plain_text"]] = "plain_text"
+    MD: Final[Literal["mrkdwn"]] = "mrkdwn"
 
     def __init__(
         self,
         text: str | None = None,
         emoji: bool | None = None,
         verbatim: bool | None = None,
-        type: str | None = None,
+        type: Literal["plain_text", "mrkdwn"] | None = None,
     ):
         super().__init__()
         self.text(text)
@@ -770,7 +769,7 @@ class Text(Component):
         text = self._get_field("text")
         return len(text.value or "")
 
-    def _detect_type(self, text):
+    def _detect_type(self, text) -> Literal["plain_text", "mrkdwn"]:
         if text is None:
             return self.PLAIN
         return self.MD if is_md(str(text)) else self.PLAIN
@@ -789,7 +788,7 @@ class Text(Component):
     def verbatim(self, verbatim: bool | None = True) -> Self:
         return self._add_field("verbatim", verbatim, validators=[Typed(bool)])
 
-    def type(self, type: str) -> Self:
+    def type(self, type: Literal["plain_text", "mrkdwn"]) -> Self:
         return self._add_field(
             "type",
             type,
@@ -813,7 +812,7 @@ class Confirm(Component, StyleMixin):
         text: str | Text | None = None,
         confirm: str | Text | None = None,
         deny: str | Text | None = None,
-        style: str | None = None,
+        style: Literal["primary", "danger"] | None = None,
     ):
         super().__init__()
         self.title(title)
@@ -861,9 +860,14 @@ class ConversationFilter(Component):
         https://docs.slack.dev/reference/block-kit/composition-objects/conversation-filter-object
     """
 
+    IM: Final[Literal["im"]] = "im"
+    MPIM: Final[Literal["mpim"]] = "mpim"
+    PRIVATE: Final[Literal["private"]] = "private"
+    PUBLIC: Final[Literal["public"]] = "public"
+
     def __init__(
         self,
-        include: list[str] | None = None,
+        include: list[Literal["im", "mpim", "private", "public"]] | None = None,
         exclude_bot_users: bool | None = None,
         exclude_external_shared_channels: bool | None = None,
     ):
@@ -877,11 +881,16 @@ class ConversationFilter(Component):
             )
         )
 
-    def include(self, include: list[str] | None) -> Self:
+    def include(
+        self, include: list[Literal["im", "mpim", "private", "public"]] | None
+    ) -> Self:
         return self._add_field(
             "include",
             include,
-            validators=[Typed(str), Strings("im", "mpim", "private", "public")],
+            validators=[
+                Typed(str),
+                Strings(self.IM, self.MPIM, self.PRIVATE, self.PUBLIC),
+            ],
         )
 
     def exclude_bot_users(self, exclude_bot_users: bool | None = True) -> Self:
@@ -910,18 +919,31 @@ class DispatchActionConfig(Component):
         https://docs.slack.dev/reference/block-kit/composition-objects/dispatch-action-configuration-object
     """
 
-    def __init__(self, trigger_actions_on: list[str] | None = None):
+    ON_ENTER_PRESSED: Final[Literal["on_enter_pressed"]] = "on_enter_pressed"
+    ON_CHARACTER_ENTERED: Final[Literal["on_character_entered"]] = (
+        "on_character_entered"
+    )
+
+    def __init__(
+        self,
+        trigger_actions_on: list[Literal["on_enter_pressed", "on_character_entered"]]
+        | None = None,
+    ):
         super().__init__()
         self.trigger_actions_on(trigger_actions_on)
 
-    def trigger_actions_on(self, trigger_actions_on: list[str] | None):
+    def trigger_actions_on(
+        self,
+        trigger_actions_on: list[Literal["on_enter_pressed", "on_character_entered"]]
+        | None,
+    ):
         return self._add_field(
             "trigger_actions_on",
             trigger_actions_on,
             validators=[
                 Typed(str),
                 Required(),
-                Strings("on_enter_pressed", "on_character_entered"),
+                Strings(self.ON_ENTER_PRESSED, self.ON_CHARACTER_ENTERED),
             ],
         )
 
@@ -1113,16 +1135,13 @@ class Button(
         https://docs.slack.dev/reference/block-kit/block-elements/button-element
     """
 
-    PRIMARY = "primary"
-    DANGER = "danger"
-
     def __init__(
         self,
         text: str | Text | None = None,
         action_id: str | None = None,
         url: str | None = None,
         value: str | None = None,
-        style: str | None = None,
+        style: Literal["primary", "danger"] | None = None,
         confirm: Confirm | None = None,
         accessibility_label: str | None = None,
     ):
@@ -2145,7 +2164,7 @@ class WorkflowButton(
         text: str | Text | None = None,
         workflow: Workflow | None = None,
         action_id: str | None = None,
-        style: str | None = None,
+        style: Literal["primary", "danger"] | None = None,
         accessibility_label: str | None = None,
     ):
         super().__init__("workflow_button")
@@ -2274,10 +2293,12 @@ class File(Component, BlockIdMixin):
         https://docs.slack.dev/reference/block-kit/blocks/file-block
     """
 
+    REMOTE: Final[Literal["remote"]] = "remote"
+
     def __init__(
         self,
         external_id: str | None = None,
-        source: str | None = None,
+        source: Literal["remote"] | None = None,
         block_id: str | None = None,
     ):
         super().__init__("file")
@@ -2292,11 +2313,11 @@ class File(Component, BlockIdMixin):
             validators=[Typed(str), Required(), Length(1, 255)],
         )
 
-    def source(self, source: str | None) -> Self:
+    def source(self, source: Literal["remote"] | None) -> Self:
         return self._add_field(
             "source",
             source,
-            validators=[Typed(str), Required(), Strings("remote")],
+            validators=[Typed(str), Required(), Strings(self.REMOTE)],
         )
 
 
@@ -2466,15 +2487,15 @@ class RichBroadcastEl(Component):
         https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#broadcast-element-type
     """
 
-    HERE = "here"
-    CHANNEL = "channel"
-    EVERYONE = "everyone"
+    HERE: Final[Literal["here"]] = "here"
+    CHANNEL: Final[Literal["channel"]] = "channel"
+    EVERYONE: Final[Literal["everyone"]] = "everyone"
 
-    def __init__(self, range: str | None = None):
+    def __init__(self, range: Literal["here", "channel", "everyone"] | None = None):
         super().__init__("broadcast")
         self.range(range)
 
-    def range(self, range: str | None) -> Self:
+    def range(self, range: Literal["here", "channel", "everyone"] | None) -> Self:
         return self._add_field(
             "range",
             range,
@@ -2786,12 +2807,12 @@ class RichTextList(Component, RichBorderMixin):
         https://docs.slack.dev/reference/block-kit/blocks/rich-text-block#rich_text_list
     """
 
-    BULLET = "bullet"
-    ORDERED = "ordered"
+    BULLET: Final[Literal["bullet"]] = "bullet"
+    ORDERED: Final[Literal["ordered"]] = "ordered"
 
     def __init__(
         self,
-        style: str | None = None,
+        style: Literal["bullet", "ordered"] | None = None,
         elements: list[RichTextSection] | None = None,
         indent: int | None = None,
         offset: int | None = None,
@@ -2804,7 +2825,7 @@ class RichTextList(Component, RichBorderMixin):
         self.offset(offset)
         self.border(border)
 
-    def style(self, style: str | None) -> Self:
+    def style(self, style: Literal["bullet", "ordered"] | None) -> Self:
         return self._add_field(
             "style",
             style,
