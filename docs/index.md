@@ -21,10 +21,10 @@ BlockKit fixes this. Write Python. Get perfect JSON. Ship faster.
 
 ## What is this?
 
-BlockKit is a Python library that makes building Slack UIs actually enjoyable.
-Type hints tell you what's possible. Method chaining lets you build naturally.
-Validation catches mistakes before Slack does. Zero dependencies means it won't
-break your project.
+BlockKit for Python is a library that makes building Slack UIs actually
+enjoyable. Type hints tell you what's possible. Method chaining lets you build
+naturally. Validation catches mistakes before Slack does. Zero dependencies
+means it won't break your project.
 
 ## Install it
 
@@ -129,3 +129,87 @@ Button("This is way too long " * 10)
 ```
 
 The library helps you follow the rules. You ship working code.
+
+## Real examples
+
+### A message with buttons
+
+```python
+from blockkit import Message, Section, Actions, Button
+
+message = (
+    Message()
+    .add_block(Section("Your order has been shipped!"))
+    .add_block(
+        Actions()
+        .add_element(Button("Track Package").action_id("track"))
+        .add_element(Button("View Details").action_id("details"))
+    )
+    .build()
+)
+```
+
+### A form that works
+
+```python
+from blockkit import Modal, Input, PlainTextInput, Checkboxes, Option
+
+modal = (
+    Modal()
+    .title("Create Task")
+    .add_block(
+        Input("Task Name")
+        .element(PlainTextInput().action_id("task_name"))
+    )
+    .add_block(
+        Input("Assignees")
+        .element(
+            Checkboxes()
+            .action_id("assignees")
+            .add_option(Option("Alice", "U123"))
+            .add_option(Option("Bob", "U456"))
+        )
+    )
+    .submit("Create")
+    .build()
+)
+```
+
+### Rich text that makes sense
+
+```python
+from blockkit import RichText, RichTextSection, RichTextEl, RichStyle
+
+rich_text = (
+    RichText()
+    .add_element(
+        RichTextSection()
+        .add_element(RichTextEl("Important: ").style(RichStyle().bold()))
+        .add_element(RichTextEl("Please review the following changes"))
+    )
+    .build()
+)
+```
+
+### A home tab users will see
+
+```python
+from blockkit import Home, Header, Section, Divider, Context, ImageEl, Text
+
+home = (
+    Home()
+    .add_block(Header("Welcome back!"))
+    .add_block(Section("Here's what's happening today:"))
+    .add_block(Divider())
+    .add_block(
+        Section("**5 new messages**")
+        .accessory(Button("View All").action_id("view_messages"))
+    )
+    .add_block(
+        Context()
+        .add_element(ImageEl("https://example.com/icon.png", "icon"))
+        .add_element(Text("Last updated 5 minutes ago"))
+    )
+    .build()
+)
+```
