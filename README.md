@@ -170,4 +170,4 @@ docs. Or don't. The code is pretty self-explanatory.
 
 ---
 
-Made by Botsignals.
+Made by Botsignals
