@@ -1,4 +1,4 @@
-name: pages
+name: ci
 on:
   push:
     branches:
