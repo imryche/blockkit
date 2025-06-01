@@ -2,6 +2,7 @@ repo_url: https://github.com/imryche/blockkit
 repo_name: imryche/blockkit
 site_name: BlockKit for Python
 site_url: https://blockkit.botsignals.co
+
 theme:
   name: material
   palette:
@@ -9,6 +10,10 @@ theme:
     accent: deep purple
   features:
     - content.code.copy
+
+nav:
+  - Introduction: "index.md"
+  - Quickstart: "quickstart.md"
 
 markdown_extensions:
   - pymdownx.highlight:
