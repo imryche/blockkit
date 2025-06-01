@@ -46,13 +46,13 @@ block" errors. No wondering if you got the structure right.
 
 ## Make it yours
 
-Change the deployment message:
+Change the message:
 
 ```python
 Section("🚀 Version 2.1.4 deployed successfully to production.")
 ```
 
-Add more deployment actions:
+Add more actions:
 
 ```python
 Actions()
