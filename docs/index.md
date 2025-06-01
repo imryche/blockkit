@@ -213,3 +213,18 @@ home = (
     .build()
 )
 ```
+
+## How it fits together
+
+Every Slack UI has the same structure:
+
+1. **Surfaces** - The container (Message, Modal, Home)
+2. **Blocks** - The layout (Section, Actions, Input)
+3. **Elements** - The interactive bits (Button, Select, Checkboxes)
+4. **Composition** - The details (Text, Option, Confirm)
+
+Build from the outside in. Start with a surface. Add blocks. Fill with elements.
+
+## License
+
+MIT. Use it however you want.
