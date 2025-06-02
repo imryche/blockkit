@@ -81,3 +81,10 @@ You built a Slack message without touching JSON. The library:
 - Guided you with autocompletion in your editor
 - Validated everything against Slack's rules before you sent it
 - Made sure required fields weren't missing
+
+## What's next
+
+That's a real Slack message. Built in Python. Sent to your channel. Working
+buttons included.
+
+Ready to build something bigger? Explore all the building blocks you can use.

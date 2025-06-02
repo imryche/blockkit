@@ -14,6 +14,7 @@ theme:
 nav:
   - Introduction: "index.md"
   - Quickstart: "quickstart.md"
+  - Beyond basics: "beyond.md"
 
 markdown_extensions:
   - pymdownx.highlight:
