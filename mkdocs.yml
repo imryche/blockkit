@@ -15,6 +15,7 @@ nav:
   - Introduction: "index.md"
   - Quickstart: "quickstart.md"
   - Beyond basics: "beyond.md"
+  - Releases: "releases.md"
 
 markdown_extensions:
   - pymdownx.highlight:
