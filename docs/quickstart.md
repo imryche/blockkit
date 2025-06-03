@@ -20,8 +20,7 @@ message = (
     Message()
     .add_block(Section("Your deployment to production is complete."))
     .add_block(
-        Actions()
-        .add_element(Button("View Logs").action_id("view_logs"))
+        Actions().add_element(Button("View Logs").action_id("view_logs"))
     )
     .build()
 )

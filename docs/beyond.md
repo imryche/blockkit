@@ -22,14 +22,15 @@ One line of information. That's often enough.
 Users need details. Who reported this? When? How urgent?
 
 ```python
-from blockkit import Context, Text
+from blockkit import Context, Message, Section, Text
 
 message = (
     Message()
     .add_block(Section("New support ticket #1247"))
     .add_block(
-        Context()
-        .add_element(Text("Reported by Alice • High priority • 2 minutes ago"))
+        Context().add_element(
+            Text("Reported by Alice • High priority • 2 minutes ago")
+        )
     )
     .build()
 )
@@ -42,14 +43,15 @@ Now they know what, who, and when.
 Information is good. But let's add actions to it.
 
 ```python
-from blockkit import Actions, Button
+from blockkit import Actions, Button, Context, Message, Section, Text
 
 message = (
     Message()
     .add_block(Section("New support ticket #1247"))
     .add_block(
-        Context()
-        .add_element(Text("Reported by Alice • High priority • 2 minutes ago"))
+        Context().add_element(
+            Text("Reported by Alice • High priority • 2 minutes ago")
+        )
     )
     .add_block(
         Actions()
@@ -67,15 +69,36 @@ Now they can do something about it.
 Some actions are final. Help them think twice.
 
 ```python
-Button("Close Ticket")
-.action_id("close")
-.style(Button.DANGER)
-.confirm(
-    Confirm()
-    .title("Close this ticket?")
-    .text("The customer will be notified that their issue is resolved")
-    .confirm("Yes, close it")
-    .deny("Keep it open")
+from blockkit import Actions, Button, Confirm, Context, Message, Section, Text
+
+message = (
+    Message()
+    .add_block(Section("New support ticket #1247"))
+    .add_block(
+        Context().add_element(
+            Text("Reported by Alice • High priority • 2 minutes ago")
+        )
+    )
+    .add_block(
+        Actions()
+        .add_element(Button("Assign to me").action_id("assign"))
+        .add_element(Button("View Details").action_id("details"))
+        .add_element(
+            Button("Close Ticket")
+            .action_id("close")
+            .style(Button.DANGER)
+            .confirm(
+                Confirm()
+                .title("Close this ticket?")
+                .text(
+                    "The customer will be notified that their issue is resolved"
+                )
+                .confirm("Yes, close it")
+                .deny("Keep it open")
+            )
+        )
+    )
+    .build()
 )
 ```
 
@@ -88,14 +111,15 @@ Messages are great for showing information. Modals are better for collecting it.
 Start simple:
 
 ```python
-from blockkit import Modal, Input, PlainTextInput
+from blockkit import Input, Modal, PlainTextInput
 
 modal = (
     Modal()
     .title("Create Support Ticket")
     .add_block(
-        Input("Describe the issue")
-        .element(PlainTextInput().action_id("description"))
+        Input("Describe the issue").element(
+            PlainTextInput().action_id("description")
+        )
     )
     .submit("Create Ticket")
     .build()
@@ -109,18 +133,18 @@ One question. One input. One submit button.
 Real forms need multiple fields. Different types of input.
 
 ```python
-from blockkit import Checkboxes, Option, StaticSelect
+from blockkit import Checkboxes, Input, Modal, Option, PlainTextInput, StaticSelect
 
 modal = (
     Modal()
     .title("Create Support Ticket")
     .add_block(
-        Input("Describe the issue")
-        .element(PlainTextInput().multiline().action_id("description"))
+        Input("Describe the issue").element(
+            PlainTextInput().multiline().action_id("description")
+        )
     )
     .add_block(
-        Input("Priority")
-        .element(
+        Input("Priority").element(
             StaticSelect()
             .add_option(Option("Low", "low"))
             .add_option(Option("Medium", "medium"))
@@ -129,8 +153,7 @@ modal = (
         )
     )
     .add_block(
-        Input("Category")
-        .element(
+        Input("Category").element(
             Checkboxes()
             .add_option(Option("Bug Report", "bug"))
             .add_option(Option("Feature Request", "feature"))
@@ -153,7 +176,7 @@ people can always always return to.
 Start with the essentials:
 
 ```python
-from blockkit import Home, Header, Divider
+from blockkit import Divider, Header, Home
 
 home = (
     Home()
@@ -171,27 +194,26 @@ Header. Introduction. Visual separation.
 App homes should feel alive. Show current information.
 
 ```python
+from blockkit import Button, Context, Divider, Header, Home, Section, Text
+
 home = (
     Home()
     .add_block(Header("Support Dashboard"))
     .add_block(Section("Your team's tickets:"))
     .add_block(Divider())
     .add_block(
-        Section("*12 open tickets*")
-        .accessory(Button("View All").action_id("view_all"))
+        Section("*12 open tickets*").accessory(
+            Button("View All").action_id("view_all")
+        )
     )
     .add_block(
-        Section("*3 high priority*")
-        .accessory(Button("Review Now").action_id("high_priority"))
+        Section("*3 high priority*").accessory(
+            Button("Review Now").action_id("high_priority")
+        )
     )
-    .add_block(
-        Section("*Average response time: 2.4 hours*")
-    )
+    .add_block(Section("*Average response time: 2.4 hours*"))
     .add_block(Divider())
-    .add_block(
-        Context()
-        .add_element(Text("Last updated 5 minutes ago"))
-    )
+    .add_block(Context().add_element(Text("Last updated 5 minutes ago")))
     .build()
 )
 ```

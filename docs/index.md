@@ -125,7 +125,7 @@ have too many fields. We enforce all of them.
 
 ```python
 # This raises an error - button text has a 75 character limit
-Button("This is way too long " * 10)
+Button("This is way too long " * 10).build()
 ```
 
 The library helps you follow the rules. You ship working code.
@@ -158,12 +158,10 @@ modal = (
     Modal()
     .title("Create Task")
     .add_block(
-        Input("Task Name")
-        .element(PlainTextInput().action_id("task_name"))
+        Input("Task Name").element(PlainTextInput().action_id("task_name"))
     )
     .add_block(
-        Input("Assignees")
-        .element(
+        Input("Assignees").element(
             Checkboxes()
             .action_id("assignees")
             .add_option(Option("Alice", "U123"))
@@ -202,8 +200,9 @@ home = (
     .add_block(Section("Here's what's happening today:"))
     .add_block(Divider())
     .add_block(
-        Section("**5 new messages**")
-        .accessory(Button("View All").action_id("view_messages"))
+        Section("**5 new messages**").accessory(
+            Button("View All").action_id("view_messages")
+        )
     )
     .add_block(
         Context()
