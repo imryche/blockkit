@@ -1,0 +1,27 @@
+name: Publish package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up python
+        run: uv python install
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish package
+        run: uv publish
