@@ -1245,7 +1245,7 @@ class DatetimePicker(
     def __init__(
         self,
         action_id: str | None = None,
-        initial_date_time: str | datetime | None = None,
+        initial_date_time: int | datetime | None = None,
         confirm: Confirm | None = None,
         focus_on_load: bool | None = None,
         placeholder: str | Text | None = None,
@@ -1257,11 +1257,11 @@ class DatetimePicker(
         self.focus_on_load(focus_on_load)
         self.placeholder(placeholder)
 
-    def initial_date_time(self, initial_date_time: str | datetime | None) -> Self:
-        if isinstance(initial_date_time, str):
-            initial_date_time = datetime.fromtimestamp(int(initial_date_time))
+    def initial_date_time(self, initial_date_time: int | datetime | None) -> Self:
+        if isinstance(initial_date_time, datetime):
+            initial_date_time = int(initial_date_time.timestamp())
         return self._add_field(
-            "initial_date_time", initial_date_time, validators=[Typed(datetime)]
+            "initial_date_time", initial_date_time, validators=[Typed(int)]
         )
 
 

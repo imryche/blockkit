@@ -1,3 +1,15 @@
+## v2.0.2 (June 13, 2025)
+
+#### Fixed
+
+- Now DatetimePicker initial_date_time accepts integers or datetime objects
+
+## v2.0.1 (June 10, 2025)
+
+#### Fixed
+
+- Added `py.typed` for the type checking support.
+
 ## v2.0.0 (June 4, 2025)
 
 We're excited to announce BlockKit v2.0.0 - a complete ground-up rewrite that
@@ -81,4 +93,3 @@ errors.
 
 Every component follows the same patterns - if you know how to use one, you know
 how to use them all.
-

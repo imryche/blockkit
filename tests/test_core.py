@@ -821,7 +821,7 @@ class TestDatetimePicker:
         want = {
             "type": "datetimepicker",
             "action_id": "datetimepicker_action",
-            "initial_date_time": "1628633820",
+            "initial_date_time": 1628633820,
             "confirm": {
                 "title": {
                     "type": "plain_text",
@@ -862,7 +862,7 @@ class TestDatetimePicker:
         got = (
             DatetimePicker()
             .action_id("datetimepicker_action")
-            .initial_date_time("1628633820")
+            .initial_date_time(1628633820)
             .confirm(
                 Confirm(
                     title="Please confirm",
