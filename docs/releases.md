@@ -12,7 +12,7 @@ toc_depth: 2
 
 #### Fixed
 
-- Now `DatetimePicker.initial_date_time` accepts integers or datetime objects
+- Now `DatetimePicker.initial_date_time` accepts integers or datetime objects.
 
 ## v2.0.1 (June 10, 2025)
 
