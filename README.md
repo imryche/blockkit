@@ -4,7 +4,7 @@
   </picture>
 </p>
 
-![Build status](https://github.com/imryche/blockkit/actions/workflows/python-app.yml/badge.svg)
+![Build status](https://github.com/imryche/blockkit/actions/workflows/ci.yml/badge.svg)
 [![PyPI version](https://badge.fury.io/py/blockkit.svg)](https://badge.fury.io/py/blockkit)
 [![Downloads](https://static.pepy.tech/badge/blockkit)](https://pepy.tech/project/blockkit)
 
