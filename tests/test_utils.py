@@ -27,6 +27,7 @@ from blockkit.utils import is_md
         ("basic text", False),
         ("not*bold*yet", False),
         ("- item 1\n- item 2\n- item 3", False),
+        (":white_check_mark: *You're in*. We'll remind you 10 minutes before", True),
     ],
 )
 def test_is_md(text, is_markdown):

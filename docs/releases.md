@@ -2,6 +2,12 @@
 toc_depth: 2
 ---
 
+## v2.0.3 (June 21, 2025)
+
+#### Fixed
+
+- Improve markdown detection in `is_md`.
+
 ## v2.0.2 (June 13, 2025)
 
 #### Fixed

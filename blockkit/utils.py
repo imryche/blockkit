@@ -4,7 +4,7 @@ import re
 def is_md(text):
     patterns = [
         # Bold, italic, strikethrough, inline code: *text*, _text_, ~text~, `text`
-        r"(?:^|\s)([*_~`])([^\1]+)\1(?:$|\s)",
+        r"(?:^|\W)([*_~`])([^\1]+)\1(?:$|\W)",
         # Code block: line starting with ```
         r"^```",
         # Quote: line starting with >
