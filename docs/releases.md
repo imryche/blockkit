@@ -2,6 +2,13 @@
 toc_depth: 2
 ---
 
+## v2.0.4 (Jul 1, 2025)
+
+#### Fixed
+
+- Fix the validation logic of the `Section` component's fields
+  [#119](https://github.com/imryche/blockkit/pull/119).
+
 ## v2.0.3 (June 21, 2025)
 
 #### Fixed
