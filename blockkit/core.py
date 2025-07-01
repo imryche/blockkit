@@ -2960,7 +2960,7 @@ class Section(Component, BlockIdMixin):
         self.accessory(accessory)
         self.expand(expand)
         self.block_id(block_id)
-        self._add_validator(OnlyOne("text", "fields"))
+        self._add_validator(AtLeastOne("text", "fields"))
 
     def text(self, text: str | Text | None) -> Self:
         if isinstance(text, str):
