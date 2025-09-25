@@ -28,6 +28,11 @@ message = (
 
 That's it. Real Slack BlockKit JSON. Ready to send.
 
+Wondering what it looks like now in Slack? You can check your exact message in the Slack block kit builder before sending it;
+```python
+message.get_block_kit_explorer_url()
+```
+
 ## Send it
 
 ```python

@@ -4,6 +4,7 @@ import re
 from abc import ABC, abstractmethod
 from datetime import date, datetime, time
 from typing import Any, Final, Literal, Self, TypeAlias, get_args
+from urllib import parse
 from zoneinfo import ZoneInfo
 
 from blockkit.utils import is_md
@@ -3134,6 +3135,13 @@ class Message(Component):
 
     def mrkdwn(self, mrkdwn: bool | None = True) -> Self:
         return self._add_field("mrkdwn", mrkdwn, validators=[Typed(bool)])
+
+    def get_block_kit_explorer_url(self) -> str:
+        """This function returns a link visualising what the message would look like in Slack."""
+        compact_json = json.dumps(self.build(), separators=(",", ":"))
+        encoded_json = parse.quote(compact_json)
+        base_url = "https://app.slack.com/block-kit-builder#"
+        return base_url + encoded_json
 
 
 ModalBlock: TypeAlias = (
