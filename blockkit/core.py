@@ -2843,10 +2843,10 @@ class RichTextList(Component, RichBorderMixin):
         return self._add_field_value("elements", element)  # type: ignore[attr-defined]
 
     def indent(self, indent: int | None) -> Self:
-        return self._add_field("indent", indent, validators=[Typed(int), Ints(max=6)])
+        return self._add_field("indent", indent, validators=[Typed(int), Ints(max=8)])
 
     def offset(self, offset: int | None) -> Self:
-        return self._add_field("offset", offset, validators=[Typed(int), Ints(max=6)])
+        return self._add_field("offset", offset, validators=[Typed(int), Ints()])
 
 
 class RichTextPreformatted(Component, RichTextElementsMixin, RichBorderMixin):
