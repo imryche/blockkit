@@ -4,6 +4,7 @@ import re
 from abc import ABC, abstractmethod
 from datetime import date, datetime, time
 from typing import Any, Final, Literal, Self, TypeAlias, get_args
+from urllib import parse
 from zoneinfo import ZoneInfo
 
 from blockkit.utils import is_md
@@ -739,6 +740,28 @@ class ExternalIdMixin:
         return self._add_field(  # type: ignore[attr-defined]
             "external_id", external_id, validators=[Typed(str), Length(1)]
         )
+
+
+class BuilderUrlMixin:
+    def builder_url(self) -> str:
+        """
+        Returns a URL to preview this message in Slack's Block Kit Builder.
+        """
+
+        surface = self.build()
+        filter_fields = {
+            Message: ("blocks",),
+            Modal: ("type", "title", "submit", "close", "blocks"),
+            Home: ("type", "blocks"),
+        }.get(type(self), None)
+
+        if filter_fields:
+            surface = {k: v for k, v in surface.items() if k in filter_fields}
+
+        encoded_json = parse.quote(
+            json.dumps(surface, ensure_ascii=False, separators=(",", ":")), safe=""
+        )
+        return f"https://app.slack.com/block-kit-builder#{encoded_json}"
 
 
 """
@@ -3192,7 +3215,7 @@ MessageBlock: TypeAlias = (
 )
 
 
-class Message(Component):
+class Message(Component, BuilderUrlMixin):
     """
     Message surface
 
@@ -3242,7 +3265,12 @@ ModalBlock: TypeAlias = (
 
 
 class Modal(
-    Component, BlocksMixin, PrivateMetadataMixin, CallbackIdMixin, ExternalIdMixin
+    Component,
+    BlocksMixin,
+    PrivateMetadataMixin,
+    CallbackIdMixin,
+    ExternalIdMixin,
+    BuilderUrlMixin,
 ):
     """
     Modal surface
@@ -3320,7 +3348,12 @@ HomeBlock: TypeAlias = (
 
 
 class Home(
-    Component, BlocksMixin, PrivateMetadataMixin, CallbackIdMixin, ExternalIdMixin
+    Component,
+    BlocksMixin,
+    PrivateMetadataMixin,
+    CallbackIdMixin,
+    ExternalIdMixin,
+    BuilderUrlMixin,
 ):
     """
     App Home surface

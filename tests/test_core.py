@@ -3674,3 +3674,4 @@ class TestAppHome:
             .external_id("alice_intro")
             .build()
         )
+        assert got == want
