@@ -139,6 +139,7 @@ class UnixTimestamp(FieldValidator):
             )
 
 
+# TODO: add support for checking generic types like Typed(list[RawText | RichText])
 class Typed(FieldValidator):
     def __init__(self, *types: type):
         if not types:
@@ -449,10 +450,19 @@ class Component:
             if hasattr(field.value, "build"):
                 obj[field.name] = field.value.build()
             if isinstance(field.value, list | tuple | set):
-                obj[field.name] = [
-                    item.build() if hasattr(item, "build") else item
-                    for item in field.value
-                ]
+                items = []
+                for item in field.value:
+                    if isinstance(item, list | tuple | set):
+                        nested_items = [
+                            nested.build() if hasattr(nested, "build") else nested
+                            for nested in item
+                        ]
+                        items.append(nested_items)
+                    else:
+                        items.append(item.build() if hasattr(item, "build") else item)
+
+                obj[field.name] = items
+
         return obj
 
 
@@ -793,6 +803,21 @@ class Text(Component):
             "type",
             type,
             validators=[Typed(str), Required(), Strings("plain_text", "mrkdwn")],
+        )
+
+
+class RawText(Component):
+    """
+    Raw text object
+    """
+
+    def __init__(self, text: str = None):
+        super().__init__("raw_text")
+        self.text(text)
+
+    def text(self, text: str | None) -> Self:
+        return self._add_field(
+            "text", text, validators=[Typed(str), Required(), Length(1, 10000)]
         )
 
 
@@ -2986,6 +3011,80 @@ class Section(Component, BlockIdMixin):
         return self._add_field("expand", expand, validators=[Typed(bool)])
 
 
+class ColumnSettings(Component):
+    """
+    Column settings
+
+    Lets you change text alignment and text wrapping behavior for table columns
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/table-block/
+    """
+
+    LEFT: Final[Literal["left"]] = "left"
+    CENTER: Final[Literal["center"]] = "center"
+    RIGHT: Final[Literal["right"]] = "right"
+
+    def __init__(
+        self,
+        align: Literal["left", "center", "right"] | None = None,
+        is_wrapped: bool | None = None,
+    ):
+        super().__init__()
+        self.align(align)
+        self.is_wrapped(is_wrapped)
+
+    def align(self, align: Literal["left", "center", "right"] | None) -> Self:
+        return self._add_field(
+            "align",
+            align,
+            validators=[Typed(str), Strings(self.LEFT, self.CENTER, self.RIGHT)],
+        )
+
+    def is_wrapped(self, is_wrapped: bool = True) -> Self:
+        return self._add_field("is_wrapped", is_wrapped, validators=[Typed(bool)])
+
+
+class Table(Component, BlockIdMixin):
+    """
+    Table block
+
+    Displays structured information in a table.
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/table-block
+    """
+
+    def __init__(
+        self,
+        rows: list[list[RawText | RichText]] | None = None,
+        column_settings: list[ColumnSettings] | None = None,
+        block_id: str | None = None,
+    ):
+        super().__init__("table")
+        self.rows(*rows or ())
+        self.column_settings(*column_settings or ())
+        self.block_id(block_id)
+
+    def rows(self, *rows: list[RawText | RichText]) -> Self:
+        return self._add_field(
+            "rows",
+            list(rows),
+            validators=[Typed(list), Required(), Length(1, 100)],
+        )
+
+    def add_row(self, *row: list[RawText | RichText]) -> Self:
+        return self._add_field_value("rows", list(row))
+
+    def column_settings(self, *column_settings: ColumnSettings) -> Self:
+        return self._add_field(
+            "column_settings", list(column_settings), validators=[Typed(ColumnSettings)]
+        )
+
+    def add_column_setting(self, column_setting: ColumnSettings) -> Self:
+        return self._add_field_value("column_settings", column_setting)
+
+
 class Video(Component, BlockIdMixin):
     """
     Video block
@@ -3088,6 +3187,7 @@ MessageBlock: TypeAlias = (
     | Markdown
     | RichText
     | Section
+    | Table
     | Video
 )
 
