@@ -1,3 +1,5 @@
+from blockkit.core import ColumnSettings
+from blockkit.core import RawText
 from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
@@ -27,6 +29,7 @@ from blockkit.core import (
     Image,
     ImageEl,
     Input,
+    Table,
     InputParameter,
     Markdown,
     Message,
@@ -3287,6 +3290,133 @@ class TestSection:
             .add_field(Text(text="Drink me"))
             .build()
         )
+        assert got == want
+
+
+class TestTable:
+    def test_builds(self):
+        want = {
+            "type": "table",
+            "column_settings": [
+                {"is_wrapped": True},
+                {"align": "right"},
+            ],
+            "rows": [
+                [
+                    {"type": "raw_text", "text": "Header A"},
+                    {"type": "raw_text", "text": "Header B"},
+                ],
+                [
+                    {"type": "raw_text", "text": "Data 1A"},
+                    {
+                        "type": "rich_text",
+                        "elements": [
+                            {
+                                "type": "rich_text_section",
+                                "elements": [
+                                    {
+                                        "text": "Data 1B",
+                                        "type": "link",
+                                        "url": "https://slack.com",
+                                    }
+                                ],
+                            }
+                        ],
+                    },
+                ],
+                [
+                    {"type": "raw_text", "text": "Data 2A"},
+                    {
+                        "type": "rich_text",
+                        "elements": [
+                            {
+                                "type": "rich_text_section",
+                                "elements": [
+                                    {
+                                        "text": "Data 2B",
+                                        "type": "link",
+                                        "url": "https://slack.com",
+                                    }
+                                ],
+                            }
+                        ],
+                    },
+                ],
+            ],
+        }
+
+        got = Table(
+            column_settings=[
+                ColumnSettings(is_wrapped=True),
+                ColumnSettings(align=ColumnSettings.RIGHT),
+            ],
+            rows=[
+                [
+                    RawText(text="Header A"),
+                    RawText(text="Header B"),
+                ],
+                [
+                    RawText(text="Data 1A"),
+                    RichText(
+                        elements=[
+                            RichTextSection(
+                                elements=[
+                                    RichLinkEl(
+                                        text="Data 1B",
+                                        url="https://slack.com",
+                                    )
+                                ]
+                            )
+                        ]
+                    ),
+                ],
+                [
+                    {"type": "raw_text", "text": "Data 2A"},
+                    {
+                        "type": "rich_text",
+                        "elements": [
+                            {
+                                "type": "rich_text_section",
+                                "elements": [
+                                    {
+                                        "text": "Data 2B",
+                                        "type": "link",
+                                        "url": "https://slack.com",
+                                    }
+                                ],
+                            }
+                        ],
+                    },
+                ],
+            ],
+        ).build()
+        assert got == want
+
+        got = (
+            Table()
+            .add_column_setting(ColumnSettings(is_wrapped=True))
+            .add_column_setting(ColumnSettings(align=ColumnSettings.RIGHT))
+            .add_row(
+                RawText().text("Header A"),
+                RawText().text("Header B"),
+            )
+            .add_row(
+                RawText().text("Data 1A"),
+                RichText().add_element(
+                    RichTextSection().add_element(
+                        RichLinkEl().text("Data 1B").url("https://slack.com")
+                    )
+                ),
+            )
+            .add_row(
+                RawText().text("Data 2A"),
+                RichText().add_element(
+                    RichTextSection().add_element(
+                        RichLinkEl().text("Data 2B").url("https://slack.com")
+                    )
+                ),
+            )
+        ).build()
         assert got == want
 
 

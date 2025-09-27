@@ -139,6 +139,7 @@ class UnixTimestamp(FieldValidator):
             )
 
 
+# TODO: add support for checking generic types like Typed(list[RawText | RichText])
 class Typed(FieldValidator):
     def __init__(self, *types: type):
         if not types:
@@ -449,10 +450,19 @@ class Component:
             if hasattr(field.value, "build"):
                 obj[field.name] = field.value.build()
             if isinstance(field.value, list | tuple | set):
-                obj[field.name] = [
-                    item.build() if hasattr(item, "build") else item
-                    for item in field.value
-                ]
+                items = []
+                for item in field.value:
+                    if isinstance(item, list | tuple | set):
+                        nested_items = [
+                            nested.build() if hasattr(nested, "build") else nested
+                            for nested in item
+                        ]
+                        items.append(nested_items)
+                    else:
+                        items.append(item.build() if hasattr(item, "build") else item)
+
+                obj[field.name] = items
+
         return obj
 
 
@@ -793,6 +803,21 @@ class Text(Component):
             "type",
             type,
             validators=[Typed(str), Required(), Strings("plain_text", "mrkdwn")],
+        )
+
+
+class RawText(Component):
+    """
+    Raw text object
+    """
+
+    def __init__(self, text: str = None):
+        super().__init__("raw_text")
+        self.text(text)
+
+    def text(self, text: str | None) -> Self:
+        return self._add_field(
+            "text", text, validators=[Typed(str), Required(), Length(1, 10000)]
         )
 
 
@@ -2235,32 +2260,6 @@ class Actions(Component, BlockIdMixin):
         return self._add_field_value("elements", element)  # type: ignore[attr-defined]
 
 
-class ColumnSettings:
-    """
-    Column settings
-
-    Lets you change text alignment and text wrapping behavior for table columns
-
-    Slack docs:
-        https://docs.slack.dev/reference/block-kit/blocks/table-block/
-    """
-    def __init__(
-        self,
-        align: Literal["left", "center", "right"] | None = None,
-        is_wrapped: bool | None = None,
-    ):
-        self.align = align
-        self.is_wrapped = is_wrapped
-
-    def build(self) -> dict[str, Any]:
-        obj: dict[str, Any] = {}
-        if self.align is not None:
-            obj["align"] = str(self.align)
-        if self.is_wrapped is not None:
-            obj["is_wrapped"] = self.is_wrapped
-        return obj
-
-
 ContextElement: TypeAlias = ImageEl | Text
 
 
@@ -3012,12 +3011,45 @@ class Section(Component, BlockIdMixin):
         return self._add_field("expand", expand, validators=[Typed(bool)])
 
 
+class ColumnSettings(Component):
+    """
+    Column settings
+
+    Lets you change text alignment and text wrapping behavior for table columns
+
+    Slack docs:
+        https://docs.slack.dev/reference/block-kit/blocks/table-block/
+    """
+
+    LEFT: Final[Literal["left"]] = "left"
+    CENTER: Final[Literal["center"]] = "center"
+    RIGHT: Final[Literal["right"]] = "right"
+
+    def __init__(
+        self,
+        align: Literal["left", "center", "right"] | None = None,
+        is_wrapped: bool | None = None,
+    ):
+        super().__init__()
+        self.align(align)
+        self.is_wrapped(is_wrapped)
+
+    def align(self, align: Literal["left", "center", "right"] | None) -> Self:
+        return self._add_field(
+            "align",
+            align,
+            validators=[Typed(str), Strings(self.LEFT, self.CENTER, self.RIGHT)],
+        )
+
+    def is_wrapped(self, is_wrapped: bool = True) -> Self:
+        return self._add_field("is_wrapped", is_wrapped, validators=[Typed(bool)])
+
+
 class Table(Component, BlockIdMixin):
     """
     Table block
 
     Displays structured information in a table.
-    WARNING: There is a maximum of 100 rows & 20 cells per row.
 
     Slack docs:
         https://docs.slack.dev/reference/block-kit/blocks/table-block
@@ -3025,7 +3057,7 @@ class Table(Component, BlockIdMixin):
 
     def __init__(
         self,
-        rows: list[list[RichText]] | None = None,
+        rows: list[list[RawText | RichText]] | None = None,
         column_settings: list[ColumnSettings] | None = None,
         block_id: str | None = None,
     ):
@@ -3034,34 +3066,23 @@ class Table(Component, BlockIdMixin):
         self.column_settings(*column_settings or ())
         self.block_id(block_id)
 
-    def rows(self, *rows: list[RichText]) -> Self:
-        filtered_rows = []
-        for row in rows[:100]:
-            filtered_rows.append(row[:20])
-        return self._add_field("rows", filtered_rows, validators=[Typed(list)])
+    def rows(self, *rows: list[RawText | RichText]) -> Self:
+        return self._add_field(
+            "rows",
+            list(rows),
+            validators=[Typed(list), Required(), Length(1, 100)],
+        )
+
+    def add_row(self, *row: list[RawText | RichText]) -> Self:
+        return self._add_field_value("rows", list(row))
 
     def column_settings(self, *column_settings: ColumnSettings) -> Self:
-        return self._add_field("column_settings", column_settings, validators=[Typed(ColumnSettings)])
+        return self._add_field(
+            "column_settings", list(column_settings), validators=[Typed(ColumnSettings)]
+        )
 
-    def validate(self) -> None:
-        super().validate()  # type: ignore[no-untyped-call]
-
-        expected_row_length: int | None = None
-        rows = self._fields["rows"].value
-        column_settings = self._fields["column_settings"].value
-        for row_index, row in enumerate(rows):
-            if expected_row_length is None:
-                expected_row_length = len(row)
-
-            if expected_row_length != len(row):
-                raise ValueError(f"Row with {row_index=} has {len(row)=} items where {expected_row_length=}.")
-        if column_settings and len(column_settings) != len(rows):
-            raise ValueError(f"Column settings has {len(column_settings)=} where we have {len(rows)=}.")
-
-    def build(self) -> dict[str, Any]:
-        obj: dict[str, Any] = super().build()  # type: ignore[no-untyped-call]
-        obj["rows"] = [[obj.build() for obj in row] for row in obj["rows"]]
-        return obj
+    def add_column_setting(self, column_setting: ColumnSettings) -> Self:
+        return self._add_field_value("column_settings", column_setting)
 
 
 class Video(Component, BlockIdMixin):
