@@ -732,6 +732,28 @@ class ExternalIdMixin:
         )
 
 
+class BuilderUrlMixin:
+    def builder_url(self) -> str:
+        """
+        Returns a URL to preview this message in Slack's Block Kit Builder.
+        """
+
+        surface = self.build()
+        filter_fields = {
+            Message: ("blocks",),
+            Modal: ("type", "title", "submit", "close", "blocks"),
+            Home: ("type", "blocks"),
+        }.get(type(self), None)
+
+        if filter_fields:
+            surface = {k: v for k, v in surface.items() if k in filter_fields}
+
+        encoded_json = parse.quote(
+            json.dumps(surface, ensure_ascii=False, separators=(",", ":")), safe=""
+        )
+        return f"https://app.slack.com/block-kit-builder#{encoded_json}"
+
+
 """
 Composition objects
 """
@@ -3093,7 +3115,7 @@ MessageBlock: TypeAlias = (
 )
 
 
-class Message(Component):
+class Message(Component, BuilderUrlMixin):
     """
     Message surface
 
@@ -3136,13 +3158,6 @@ class Message(Component):
     def mrkdwn(self, mrkdwn: bool | None = True) -> Self:
         return self._add_field("mrkdwn", mrkdwn, validators=[Typed(bool)])
 
-    def get_block_kit_explorer_url(self) -> str:
-        """This function returns a link visualising what the message would look like in Slack."""
-        compact_json = json.dumps(self.build(), separators=(",", ":"))
-        encoded_json = parse.quote(compact_json)
-        base_url = "https://app.slack.com/block-kit-builder#"
-        return base_url + encoded_json
-
 
 ModalBlock: TypeAlias = (
     Actions | Context | Divider | Header | Image | Input | RichText | Section | Video
@@ -3150,7 +3165,12 @@ ModalBlock: TypeAlias = (
 
 
 class Modal(
-    Component, BlocksMixin, PrivateMetadataMixin, CallbackIdMixin, ExternalIdMixin
+    Component,
+    BlocksMixin,
+    PrivateMetadataMixin,
+    CallbackIdMixin,
+    ExternalIdMixin,
+    BuilderUrlMixin,
 ):
     """
     Modal surface
@@ -3228,7 +3248,12 @@ HomeBlock: TypeAlias = (
 
 
 class Home(
-    Component, BlocksMixin, PrivateMetadataMixin, CallbackIdMixin, ExternalIdMixin
+    Component,
+    BlocksMixin,
+    PrivateMetadataMixin,
+    CallbackIdMixin,
+    ExternalIdMixin,
+    BuilderUrlMixin,
 ):
     """
     App Home surface
