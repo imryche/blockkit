@@ -4,15 +4,15 @@ build-backend = "hatchling.build"
 
 [project]
 name = "blockkit"
-version = "2.0.4"
+version = "2.1.0"
 authors = [{ name = "Dima Czernyszow", email = "imryche13@gmail.com" }]
 description = "A fast way to build Block Kit interfaces in Python"
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
 dependencies = []
 
@@ -22,7 +22,7 @@ Issues = "https://github.com/imryche/blockkit/issues"
 
 
 [tool.ruff]
-line-length=88
+line-length = 88
 extend-select = ["I", "UP", "ASYNC"]
 extend-ignore = ["UP007"]
 
@@ -31,8 +31,8 @@ extend-select = ["I", "UP", "E501", "ASYNC"]
 
 [dependency-groups]
 dev = [
-    "ipdb>=0.13.13",
-    "mkdocs-material>=9.6.14",
-    "mypy>=1.15.0",
-    "pytest>=8.3.5",
+  "ipdb>=0.13.13",
+  "mkdocs-material>=9.6.14",
+  "mypy>=1.15.0",
+  "pytest>=8.3.5",
 ]
