@@ -35,7 +35,7 @@ wheels = [
 
 [[package]]
 name = "blockkit"
-version = "2.1.1"
+version = "2.1.2"
 source = { editable = "." }
 
 [package.dev-dependencies]

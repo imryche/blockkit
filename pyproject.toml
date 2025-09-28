@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "blockkit"
-version = "2.1.1"
+version = "2.1.2"
 authors = [{ name = "Dima Czernyszow", email = "imryche13@gmail.com" }]
 description = "A fast way to build Block Kit interfaces in Python"
 readme = "README.md"
