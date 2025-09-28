@@ -2,6 +2,15 @@
 toc_depth: 2
 ---
 
+## v2.1.0 (Sep 28, 2025)
+
+#### Added
+
+- Support for `Table` block.
+  [#122](https://github.com/imryche/blockkit/pull/122).
+- `builder_url()` method for generating preview URLs.
+  [#123](https://github.com/imryche/blockkit/pull/123).
+
 ## v2.0.4 (Jul 1, 2025)
 
 #### Fixed
