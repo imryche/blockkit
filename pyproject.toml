@@ -23,11 +23,10 @@ Issues = "https://github.com/imryche/blockkit/issues"
 
 [tool.ruff]
 line-length = 88
-extend-select = ["I", "UP", "ASYNC"]
-extend-ignore = ["UP007"]
 
 [tool.ruff.lint]
 extend-select = ["I", "UP", "E501", "ASYNC"]
+extend-ignore = ["UP007"]
 
 [dependency-groups]
 dev = [

@@ -3021,7 +3021,9 @@ class Section(Component, BlockIdMixin):
         )
 
     def add_field(self, field: str | Text) -> Self:
-        return self._add_field_value("fields", field)  # type: ignore[attr-defined]
+        return self._add_field_value(
+            "fields", Text(field) if isinstance(field, str) else field
+        )  # type: ignore[attr-defined]
 
     def accessory(self, accessory: SectionElement | None) -> Self:
         return self._add_field(

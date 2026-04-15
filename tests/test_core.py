@@ -3292,6 +3292,9 @@ class TestSection:
         )
         assert got == want
 
+        got = Section().add_field("Eat me").add_field("Drink me").build()
+        assert got == want
+
 
 class TestTable:
     def test_builds(self):
