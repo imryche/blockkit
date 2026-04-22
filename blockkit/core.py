@@ -244,7 +244,14 @@ class Within(ComponentValidator):
         if not isinstance(source_value, list | tuple | set):
             source_value = [source_value]
 
-        if not set(source_value).issubset(set(target_value)):
+        flattened_target = []
+        for item in target_value:
+            if isinstance(item, OptionGroup):
+                flattened_target.extend(item._get_field_value("options") or [])
+            else:
+                flattened_target.append(item)
+
+        if not set(source_value).issubset(set(flattened_target)):
             raise ComponentValidationError(
                 component,
                 f"'{self.source_field}' has items that aren't "
