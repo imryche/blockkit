@@ -1120,16 +1120,8 @@ class TestMultiStaticSelect:
             ],
             "initial_options": [
                 {
-                    "label": {
-                        "type": "plain_text",
-                        "text": "Group 1",
-                    },
-                    "options": [
-                        {
-                            "text": {"type": "plain_text", "text": "Option 1"},
-                            "value": "option_1",
-                        }
-                    ],
+                    "text": {"type": "plain_text", "text": "Option 1"},
+                    "value": "option_1",
                 },
             ],
         }
@@ -1144,9 +1136,7 @@ class TestMultiStaticSelect:
                 ),
             ],
             initial_options=[
-                OptionGroup(
-                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
-                )
+                Option(text="Option 1", value="option_1")
             ],
         ).build()
         assert got == want
@@ -1165,9 +1155,7 @@ class TestMultiStaticSelect:
                 ),
             )
             .add_initial_option(
-                OptionGroup(
-                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
-                )
+                Option(text="Option 1", value="option_1")
             )
             .build()
         )
@@ -1933,16 +1921,8 @@ class TestStaticSelect:
                 },
             ],
             "initial_option": {
-                "label": {
-                    "type": "plain_text",
-                    "text": "Group 1",
-                },
-                "options": [
-                    {
-                        "text": {"type": "plain_text", "text": "Option 1"},
-                        "value": "option_1",
-                    }
-                ],
+                "text": {"type": "plain_text", "text": "Option 1"},
+                "value": "option_1",
             },
         }
         got = StaticSelect(
@@ -1955,9 +1935,7 @@ class TestStaticSelect:
                     label="Group 2", options=[Option(text="Option 2", value="option_2")]
                 ),
             ],
-            initial_option=OptionGroup(
-                label="Group 1", options=[Option(text="Option 1", value="option_1")]
-            ),
+            initial_option=Option(text="Option 1", value="option_1"),
         ).build()
         assert got == want
 
@@ -1975,9 +1953,7 @@ class TestStaticSelect:
                 ),
             )
             .initial_option(
-                OptionGroup(
-                    label="Group 1", options=[Option(text="Option 1", value="option_1")]
-                )
+                Option(text="Option 1", value="option_1")
             )
             .build()
         )
