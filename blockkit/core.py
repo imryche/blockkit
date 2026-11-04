@@ -3222,7 +3222,10 @@ class Container(Component, BlockIdMixin):
     Slack docs: https://docs.slack.dev/reference/block-kit/blocks/container-block/
 
     Note: Does *not* support the rich_text_title attribute, which appears to have
-    undocumented restrictions about the types of elements it supports.
+    undocumented restrictions about the types of elements it supports. Specifically,
+    the RichText elements must be of type 'rich_text_header', and 'rich_text_divider',
+    which appear to be part of the unsupported `expanded_rich_text` type (see:
+    https://docs.slack.dev/reference/types/expanded_rich_text-type/ ).
     """
     # TODO: Add support for the rich_text_title attribute, when official documentation
     # becomes available.
