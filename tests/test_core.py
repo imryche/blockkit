@@ -2585,15 +2585,17 @@ class TestHeader:
                 "text": "Welcome to Wonderland!",
             },
             "block_id": "header_block",
+            "level": 2,
         }
 
         got = Header(
             text="Welcome to Wonderland!",
             block_id="header_block",
+            level=2,
         ).build()
         assert got == want
 
-        got = Header().text("Welcome to Wonderland!").block_id("header_block").build()
+        got = Header().text("Welcome to Wonderland!").block_id("header_block").level(2).build()
         assert got == want
 
 
