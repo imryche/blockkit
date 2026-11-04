@@ -11,6 +11,7 @@ from blockkit.core import (
     ColumnSettings,
     ComponentValidationError,
     Confirm,
+    Container,
     Context,
     ConversationFilter,
     ConversationsSelect,
@@ -2585,15 +2586,17 @@ class TestHeader:
                 "text": "Welcome to Wonderland!",
             },
             "block_id": "header_block",
+            "level": 2,
         }
 
         got = Header(
             text="Welcome to Wonderland!",
             block_id="header_block",
+            level=2,
         ).build()
         assert got == want
 
-        got = Header().text("Welcome to Wonderland!").block_id("header_block").build()
+        got = Header().text("Welcome to Wonderland!").block_id("header_block").level(2).build()
         assert got == want
 
 
@@ -3468,6 +3471,96 @@ class TestVideo:
             .provider_name("wonderland")
             .author_name("Lewis Carroll")
             .block_id("video_block")
+            .build()
+        )
+        assert got == want
+
+
+class TestContainer:
+    def test_builds(self):
+        want = {
+            "type": "container",
+            "title": {
+                "type": "plain_text",
+                "text": "A plain container title",
+            },
+            "subtitle": {
+                "type": "plain_text",
+                "text": "A container subtitle",
+            },
+            "is_collapsible": False,
+            "default_collapsed": False,
+            "has_header_divider": True,
+            "width": "full",
+            "child_blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "The top section",
+                    }
+                },
+                {
+                    "type": "divider",
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "The bottom section",
+                    }
+                },
+            ],
+            "icon": {
+                "type": "image",
+                "alt_text": "alice in wonderland",
+                "image_url": "https://wonderland.com/static/alice.png",
+            },
+            "block_id": "container_block",
+        }
+
+        got = Container(
+            title="A plain container title",
+            subtitle=Text("A container subtitle"),
+            is_collapsible=False,
+            default_collapsed=False,
+            has_header_divider=True,
+            width="full",
+            child_blocks=[
+                Section(text="The top section"),
+                Divider(),
+                Section(text="The bottom section"),
+            ],
+            icon=ImageEl(
+                alt_text="alice in wonderland",
+                image_url="https://wonderland.com/static/alice.png",
+            ),
+            block_id="container_block",
+        ).build()
+        assert got == want
+
+        got = (
+            Container()
+            .title("A plain container title")
+            .subtitle(
+                Text("A container subtitle")
+            )
+            .is_collapsible(False)
+            .default_collapsed(False)
+            .has_header_divider(True)
+            .width("full")
+            .child_blocks(
+                Section(text="The top section"),
+                Divider(),
+                Section(text="The bottom section"),
+            )
+            .icon(
+                ImageEl(
+                    alt_text="alice in wonderland",
+                    image_url="https://wonderland.com/static/alice.png",
+                ),
+            )
+            .block_id("container_block")
             .build()
         )
         assert got == want
