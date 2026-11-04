@@ -2377,10 +2377,11 @@ class Header(Component, BlockIdMixin):
         https://docs.slack.dev/reference/block-kit/blocks/header-block
     """
 
-    def __init__(self, text: str | Text | None = None, block_id: str | None = None):
+    def __init__(self, text: str | Text | None = None, block_id: str | None = None, level: int | None = None):
         super().__init__("header")
         self.text(text)
         self.block_id(block_id)
+        self.level(level)
 
     def text(self, text: str | Text | None) -> Self:
         return self._add_field(
@@ -2388,6 +2389,9 @@ class Header(Component, BlockIdMixin):
             str_to_plain(text),
             validators=[Typed(Text), Required(), Plain(), Length(1, 150)],
         )
+
+    def level(self, level: int | Text | None) -> Self:
+        return self._add_field("level", level, validators=[Typed(int), Ints(min=1, max=4)])
 
 
 class Image(Component, BlockIdMixin, AltTextMixin, ImageUrlMixin, SlackFileMixin):
