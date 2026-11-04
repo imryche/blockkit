@@ -3197,6 +3197,95 @@ class Video(Component, BlockIdMixin):
         )
 
 
+ContainerBlock: TypeAlias = (
+    Actions
+    | Context
+    | Divider
+    | File
+    | Header
+    | Image
+    | Input
+    # | Layout  TODO: Add 'Layout' to this list when the Layout block is supported.
+    | RichText
+    | Section
+    | Table
+    | Video
+)
+
+
+class Container(Component, BlockIdMixin):
+    """
+    Container
+
+    A general-purpose wrapper for grouping child blocks together, with a configurable size.
+
+    Slack docs: https://docs.slack.dev/reference/block-kit/blocks/container-block/
+
+    Note: Does *not* support the rich_text_title attribute, which appears to have
+    undocumented restrictions about the types of elements it supports.
+    """
+    # TODO: Add support for the rich_text_title attribute, when official documentation
+    # becomes available.
+
+    def __init__(
+        self,
+        title: str | None = None,
+        subtitle: Text | None = None,
+        child_blocks: list[ContainerBlock] | None = None,
+        width: Literal["narrow", "standard", "wide", "full"] | None = "standard",
+        is_collapsible: bool | None = False,
+        default_collapsed: bool | None = False,
+        has_header_divider: bool | None = False,
+        icon: ImageEl | None = None,
+        block_id: str | None = None,
+    ):
+        super().__init__(type="container")
+        self.title(title)
+        self.subtitle(subtitle)
+        self.child_blocks(*child_blocks or ())
+        self.width(width)
+        self.is_collapsible(is_collapsible)
+        self.default_collapsed(default_collapsed)
+        self.has_header_divider(has_header_divider)
+        self.icon(icon)
+        self.block_id(block_id)
+
+    def title(self, title: str | Text | None) -> Self:
+        return self._add_field(
+            "title",
+            str_to_plain(title),
+            validators=[Typed(Text), Plain(), Required(), Length(1, 150)],
+        )
+
+    def subtitle(self, subtitle: Text | None) -> Self:
+        return self._add_field("subtitle", subtitle, validators=[Typed(Text), Length(1, 150)])
+
+    def child_blocks(self, *child_blocks: ContainerBlock) -> Self:
+        return self._add_field(
+            "child_blocks", list(child_blocks), validators=[Required(), Typed(*get_args(ContainerBlock))]
+        )
+
+    def add_child_block(self, child_block: ContainerBlock) -> Self:
+        return self._add_field_value("child_blocks", child_block)
+
+    def width(self, width: Literal["narrow", "standard", "wide", "full"] | None) -> Self:
+        return self._add_field(
+            "width", width, validators=[Typed(str), Required(), Strings("narrow", "standard", "wide", "full")]
+        )
+
+    def is_collapsible(self, is_collapsible: bool | None = False) -> Self:
+        return self._add_field("is_collapsible", is_collapsible, validators=[Typed(bool)])
+
+    def default_collapsed(self, default_collapsed: bool | None = False) -> Self:
+        return self._add_field("default_collapsed", default_collapsed, validators=[Typed(bool)])
+
+    def has_header_divider(self, has_header_divider: bool | None = False) -> Self:
+        return self._add_field("has_header_divider", has_header_divider, validators=[Typed(bool)])
+
+    def icon(self, icon: ImageEl | None = None) -> Self:
+        return self._add_field("icon", icon, validators=[Typed(ImageEl)])
+
+
 """
 Surfaces
 """
