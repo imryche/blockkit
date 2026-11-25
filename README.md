@@ -110,7 +110,7 @@ message = (
     .build()  # ✅ Validates everything: types, lengths, required fields
 )
 
-# Clean. Readable. BlockKit catches errors before you event send it to Slack.
+# Clean. Readable. BlockKit catches errors before you even send it to Slack.
 ```
 
 Done. No guessing. No runtime surprises. Your editor helped you write it.
